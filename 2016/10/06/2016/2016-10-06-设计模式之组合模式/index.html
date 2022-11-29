@@ -28,7 +28,7 @@
 <meta property="og:description" content="定义：&amp;nbsp;允许你将对象组合成树形结构来表现“整体&#x2F;部分”层次结构。组合能让客户以一致对方法处理个别对象以及对象组合。  在这章节中作者引出了非常基本的设计原则： 11. 类应该只有一个改变的理由    组合模式的关键是定义了一个抽象构件类，它既可以代表叶子，又可以代表容器，而客户端针对该抽象构件类进行编程，无须知道它到底表示的是叶子还是容器，可以对其进行统一处理。同时容器对象与抽象构件类">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2016-10-05T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-03-05T03:22:54.334Z">
+<meta property="article:modified_time" content="2022-11-29T12:35:27.965Z">
 <meta property="article:author" content="Leeeyou">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
@@ -219,7 +219,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -246,7 +246,7 @@
 <p>定义：&nbsp;允许你将对象组合成树形结构来表现“整体/部分”层次结构。组合能让客户以一致对方法处理个别对象以及对象组合。</p>
 </blockquote>
 <p>在这章节中作者引出了非常基本的设计原则：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1. 类应该只有一个改变的理由  </span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1. 类应该只有一个改变的理由  </span><br></pre></td></tr></table></figure>
 
 <p>组合模式的关键是定义了一个抽象构件类，它既可以代表叶子，又可以代表容器，而客户端针对该抽象构件类进行编程，无须知道它到底表示的是叶子还是容器，可以对其进行统一处理。<br>同时容器对象与抽象构件类之间还建立一个聚合关联关系，在容器对象中既可以包含叶子，也可以包含容器，以此实现递归组合，形成一个树形结构。<br>如果不使用组合模式，客户端代码将过多地依赖于容器对象复杂的内部实现结构，容器对象内部实现结构的变化将引起客户代码的频繁变化，带来了代码维护复杂、可扩展性差等弊端。组合模式的引入将在一定程度上解决这些问题。</p>
 <p>下面的内容转载自：<a target="_blank" rel="noopener" href="http://blog.csdn.net/lovelion/article/details/17517213">http://blog.csdn.net/lovelion/article/details/17517213</a></p>

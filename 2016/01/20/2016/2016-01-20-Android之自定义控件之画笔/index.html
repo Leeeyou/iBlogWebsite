@@ -42,7 +42,7 @@
 <meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/dst_in_%E7%BE%8E%E5%A5%B3%E7%BB%83%E4%B9%A0_%E5%90%8E.png">
 <meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/eraserview.png">
 <meta property="article:published_time" content="2016-01-19T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-03-05T03:22:54.312Z">
+<meta property="article:modified_time" content="2022-11-29T12:35:27.962Z">
 <meta property="article:author" content="Leeeyou">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="自定义控件">
@@ -236,7 +236,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -265,11 +265,11 @@
 <h2 id="矩阵"><a href="#矩阵" class="headerlink" title="矩阵"></a>矩阵</h2><p>关于矩阵不清楚的童鞋可以转到<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%9F%A9%E9%98%B5">wiki</a></p>
 <h2 id="ColorMatrixColorFilter"><a href="#ColorMatrixColorFilter" class="headerlink" title="ColorMatrixColorFilter"></a>ColorMatrixColorFilter</h2><p>色彩矩阵过滤器，利用它可以实现很多美图秀秀中的效果，比如：变灰、变暗、颜色反转、老照片、高度对比等<br><img src="../../../../images/githubpages/colormatrix_%E5%8F%98%E6%9A%97.png" alt="变暗"><br><img src="../../../../images/githubpages/colormatrix_%E5%8F%98%E7%81%B0.png" alt="变灰"><br><img src="../../../../images/githubpages/colormatrix_%E5%8F%8D%E7%9B%B8.png" alt="反相效果"><br><img src="../../../../images/githubpages/colormatrix_%E7%BA%A2%E8%93%9D%E8%89%B2%E4%BA%92%E7%9B%B8%E5%8F%98%E6%8D%A2.png" alt="红蓝色相互变换"><br><img src="../../../../images/githubpages/colormatrix_%E8%80%81%E7%85%A7%E7%89%87.png" alt="老照片效果"><br><img src="../../../../images/githubpages/colormatrix_%E5%8E%BB%E8%89%B2%E5%90%8E%E9%AB%98%E5%BA%A6%E5%AF%B9%E6%AF%94.png" alt="去色后高度对比"><br><img src="../../../../images/githubpages/colormatrix_%E9%A5%B1%E5%92%8C%E5%BA%A6%E5%AF%B9%E6%AF%94%E5%BA%A6%E5%8A%A0%E5%BC%BA.png" alt="饱和度对比度加强"></p>
 <h2 id="LightingColorFilter"><a href="#LightingColorFilter" class="headerlink" title="LightingColorFilter"></a>LightingColorFilter</h2><p>光照颜色过滤器，利用它可以实现的效果就像有色光照在物体上染色一样。如过滤掉绿色：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mPaint.setColorFilter(<span class="keyword">new</span> LightingColorFilter(<span class="number">0xFFFF00FF</span>, <span class="number">0x00000000</span>));</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mPaint.setColorFilter(<span class="keyword">new</span> <span class="title class_">LightingColorFilter</span>(<span class="number">0xFFFF00FF</span>, <span class="number">0x00000000</span>));</span><br></pre></td></tr></table></figure>
 <p><img src="../../../../images/githubpages/lightcolorfilter.png" alt="lightcolorfilter"></p>
 <h2 id="PorterDuffColorFilter"><a href="#PorterDuffColorFilter" class="headerlink" title="PorterDuffColorFilter"></a>PorterDuffColorFilter</h2><p>混合颜色过滤器，可以通过指定一个颜色和一种模式，进行混合从而产生相应的效果。</p>
 <p>红色+加深 混合：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mPaint.setColorFilter(<span class="keyword">new</span> PorterDuffColorFilter(Color.RED, PorterDuff.Mode.DARKEN));</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mPaint.setColorFilter(<span class="keyword">new</span> <span class="title class_">PorterDuffColorFilter</span>(Color.RED, PorterDuff.Mode.DARKEN));</span><br></pre></td></tr></table></figure>
 <p><img src="../../../../images/githubpages/porterduffcolorfilter.png" alt="porterduffcolorfilter"></p>
 <h2 id="PorterDuffXfermode"><a href="#PorterDuffXfermode" class="headerlink" title="PorterDuffXfermode"></a>PorterDuffXfermode</h2><p>这个是 <strong>最重量级 最重量级 最重量级</strong> 的东东了。ProterDuff是两个人名的组合: Tomas Proter和 Tom Duff. 他们是最早在SIGGRAPH上提出图形混合概念的大神级人物。有兴趣的童靴们可以自己查下并深入了解，在此不再做过多描述。<br>PorterDuffXfermode是一个非常强大的转换模式，通过它可以使用图像合成的16条Porter-Duff规则的任意一条来控制Paint如何与已有的Canvas图像进行交互。<br><img src="../../../../images/githubpages/porterduffxfermode2.jpg" alt="PorterDuffXfermode"></p>
 <p>Demo中花了大量的篇幅练习和体会PorterDuffXfermode的强大，包括如下自定义view:  </p>

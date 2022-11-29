@@ -28,7 +28,7 @@
 <meta property="og:description" content="WakeLock是一种锁的机制，只要有人拿到这个锁，系统就无法进入休眠，该锁可以被用户程序和内核获得。这个锁有超时机制，超时的锁会在时间过去以后自动解锁。如果没有锁了或者超时，内核就会启动休眠机制进入休眠。 为了理解整个WakeLock框架，考虑应用层申请的锁是则怎样传到kernel？ Java层Android提供了 android.os.PowerManager 类，类中提供 newWakeLo">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2015-05-05T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-11-29T07:26:02.220Z">
+<meta property="article:modified_time" content="2022-11-29T12:35:27.960Z">
 <meta property="article:author" content="Leeeyou">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="WakeLock">
@@ -220,7 +220,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-11-29 15:26:02" itemprop="dateModified" datetime="2021-11-29T15:26:02+08:00">2021-11-29</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -246,7 +246,7 @@
         <p>WakeLock是一种锁的机制，只要有人拿到这个锁，系统就无法进入休眠，该锁可以被用户程序和内核获得。这个锁有超时机制，超时的锁会在时间过去以后自动解锁。如果没有锁了或者超时，内核就会启动休眠机制进入休眠。</p>
 <p>为了理解整个WakeLock框架，考虑应用层申请的锁是则怎样传到kernel？</p>
 <h1 id="Java层"><a href="#Java层" class="headerlink" title="Java层"></a>Java层</h1><p>Android提供了 <strong>android.os.PowerManager</strong> 类，类中提供 <strong>newWakeLock(int flags, String tag)</strong> 方法来取得相应层次的锁（此函数的定义 <em>frameworks/base/core/java/android/os/PowerManager.java</em> ）。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);</span><br><span class="line">PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, “My Tag”);</span><br><span class="line">wl.acquire();<span class="comment">//申请锁这个里面会调用PowerManagerService里面acquireWakeLock()</span></span><br><span class="line">wl.release(); <span class="comment">//释放锁，显示的释放，如果申请的锁不在此释放系统就不会进入休眠。</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">PowerManager</span> <span class="variable">pm</span> <span class="operator">=</span> (PowerManager)getSystemService(Context.POWER_SERVICE);</span><br><span class="line">PowerManager.<span class="type">WakeLock</span> <span class="variable">wl</span> <span class="operator">=</span> pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, “My Tag”);</span><br><span class="line">wl.acquire();<span class="comment">//申请锁这个里面会调用PowerManagerService里面acquireWakeLock()</span></span><br><span class="line">wl.release(); <span class="comment">//释放锁，显示的释放，如果申请的锁不在此释放系统就不会进入休眠。</span></span><br></pre></td></tr></table></figure>
 
 <p>flags表明要获取哪种WakeLock，不同的Lock对cpu 、屏幕、键盘灯有不同影响。</p>
 <table>
@@ -283,23 +283,23 @@
 </tbody></table>
 <h1 id="Frameworks层"><a href="#Frameworks层" class="headerlink" title="Frameworks层"></a>Frameworks层</h1><p>源码位置：<em>frameworks/base/services/java/com/android/server/PowerManagerService.java</em></p>
 <p>这个类是来管理所有的应用程序申请的wakelock（比如音视频播放器，camera等申请的wakelock都是通过这个类来管理的）</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> String PARTIAL_NAME = <span class="string">&quot;PowerManagerService&quot;</span></span><br><span class="line">Power.acquireWakeLock(Power.PARTIAL_WAKE_LOCK,PARTIAL_NAME);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">PARTIAL_NAME</span> <span class="operator">=</span> <span class="string">&quot;PowerManagerService&quot;</span></span><br><span class="line">Power.acquireWakeLock(Power.PARTIAL_WAKE_LOCK,PARTIAL_NAME);</span><br></pre></td></tr></table></figure>
 
 <p>这个函数调用Power类里面的 **acquireWakeLock()**，此时的PARTIAL_NAME作为参数传递到底层去。</p>
 <p>Power类的源码位置：*/frameworks/base/core/java/android/os/Power.java*</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">acquireWakeLock</span><span class="params">(<span class="keyword">int</span> lock, String id)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title function_">acquireWakeLock</span><span class="params">(<span class="type">int</span> lock, String id)</span>;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>native申明的方法在Power类中没有实现，其实现体在 <em>frameworks/base/core/jni/android_os_Power.cpp</em>中，所以调用Power类的 <strong>acquireWakeLock()</strong> 方法时会调用JNI下的实现方法。</p>
 </blockquote>
 <h1 id="JNI层"><a href="#JNI层" class="headerlink" title="JNI层"></a>JNI层</h1><p>源码路径：<em>frameworks/base/core/jni/android_os_Power.cpp</em></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">acquireWakeLock</span><span class="params">(JNIEnv *env, jobject clazz,jint lock, jstring idObj)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *id = env-&gt;GetStringUTFChars(idObj, <span class="literal">NULL</span>);</span><br><span class="line">    acquire_wake_lock(lock, id);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(idObj, id);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">acquireWakeLock</span><span class="params">(JNIEnv *env, jobject clazz,jint lock, jstring idObj)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *id = env-&gt;GetStringUTFChars(idObj, <span class="literal">NULL</span>);</span><br><span class="line">    acquire_wake_lock(lock, id);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(idObj, id);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>在 <strong>acquireWakeLock()</strong> 中调用了路径 <em>hardware/libhardware_legacy/power/power.c</em>下面的cquire_wake_lock(lock, id)</p>
 </blockquote>
 <h1 id="Kernel层"><a href="#Kernel层" class="headerlink" title="Kernel层"></a>Kernel层</h1><p>在power.c下的 <strong>acquire_wake_lock(lock, id)</strong> 函数如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">acquire_wake_lock</span><span class="params">(<span class="keyword">int</span> lock, <span class="keyword">const</span> <span class="keyword">char</span>* id)</span></span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">    <span class="keyword">return</span> write(fd, id, <span class="built_in">strlen</span>(id));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">acquire_wake_lock</span><span class="params">(<span class="type">int</span> lock, <span class="type">const</span> <span class="type">char</span>* id)</span></span><br><span class="line">&#123;  </span><br><span class="line">    <span class="keyword">return</span> write(fd, id, <span class="built_in">strlen</span>(id));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>fd就是文件描述符，在此表示“/sys/power/wake_lock”，id就是从PowerManagerService类中传下来的参数即：PARTIAL_NAME = “PowerManagerService”。到此就是通过文件系统来与kernel层交互的地方。</p>

@@ -214,7 +214,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-06-17 21:17:18" itemprop="dateModified" datetime="2021-06-17T21:17:18+08:00">2021-06-17</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -333,7 +333,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-06-17 17:23:12" itemprop="dateModified" datetime="2021-06-17T17:23:12+08:00">2021-06-17</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -436,7 +436,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-08 10:49:25" itemprop="dateModified" datetime="2021-03-08T10:49:25+08:00">2021-03-08</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -463,7 +463,7 @@
 <p><img src="https://github.com/Leeeyou/blog/blob/master/images/2019/code/source-code-analysis-recyclerview-demo.gif?raw=true" alt="source-code-analysis-recyclerview-demo"></p>
 <p>RecyclerView继承自ViewGroup，属于系统级别的自定义控件，而它的源码长达12000多行，还不包括抽取出去的其他辅助类、管理类等，可想而知其复杂性，本文的分析思路主要是集中在RecyclerView的缓存机制上，通过滑动事件结合源码分析它的复用-回收机制，而RecyclerView的绘制流程、ItemDecoration、LayoutManager、State、Recycler等会一笔带过。</p>
 <p>自定义控件三部曲：<strong>onMeasure - onLayout - onDraw</strong>，RecyclerView也不例外。查看源码可以看到，RecyclerView测量的一部分逻辑委托给了LayoutManager，源码如下所示，进来判断是否存在LayoutManager实例，不存在则调用defaultOnMeasure进行默认测量。然后就是一个if…else…判断是否为AutoMeasure，LinearLayoutManager和GridLayoutManager使用这种模式，而StaggerLayoutManager在一定条件下会使用自定义测量这种模式。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onMeasure</span><span class="params">(<span class="keyword">int</span> widthSpec, <span class="keyword">int</span> heightSpec)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mLayout == <span class="keyword">null</span>) &#123;</span><br><span class="line">        defaultOnMeasure(widthSpec, heightSpec);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//LinearLayoutManager和GridLayoutManager使用这种模式</span></span><br><span class="line">    <span class="keyword">if</span> (mLayout.mAutoMeasure) &#123;</span><br><span class="line">        ...</span><br><span class="line">        mLayout.onMeasure(mRecycler, mState, widthSpec, heightSpec);</span><br><span class="line">        ...</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (mHasFixedSize) &#123;</span><br><span class="line">            mLayout.onMeasure(mRecycler, mState, widthSpec, heightSpec);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">//而StaggerLayoutManager在一定条件下会使用自定义测量这种模式</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onMeasure</span><span class="params">(<span class="type">int</span> widthSpec, <span class="type">int</span> heightSpec)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (mLayout == <span class="literal">null</span>) &#123;</span><br><span class="line">        defaultOnMeasure(widthSpec, heightSpec);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//LinearLayoutManager和GridLayoutManager使用这种模式</span></span><br><span class="line">    <span class="keyword">if</span> (mLayout.mAutoMeasure) &#123;</span><br><span class="line">        ...</span><br><span class="line">        mLayout.onMeasure(mRecycler, mState, widthSpec, heightSpec);</span><br><span class="line">        ...</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (mHasFixedSize) &#123;</span><br><span class="line">            mLayout.onMeasure(mRecycler, mState, widthSpec, heightSpec);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">//而StaggerLayoutManager在一定条件下会使用自定义测量这种模式</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/iBlogWebsite/2019/02/12/2019/2019-02-12-%E6%89%8B%E6%8A%8A%E6%89%8Bdebug%E6%BA%90%E7%A0%81%E4%B9%8BRecyclerView/#more" rel="contents">
@@ -521,7 +521,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-21 15:20:56" itemprop="dateModified" datetime="2021-04-21T15:20:56+08:00">2021-04-21</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -548,10 +548,10 @@
 <p><img src="https://github.com/Leeeyou/blog/blob/master/images/2019/code/source-code-analysis-eventbus-demo.gif?raw=true" alt="source-code-analysis-eventbus-demo"></p>
 <p>gif中首先展示了发送一个LoginSuccessEvent的正常事件，在MainActivity和SecondActivity中都有订阅，这里主要展示一对多的场景；接着分别以正常方式和粘性方式发送了一个RegisterSuccessEvent事件，看看在GoToLoginActivity中有怎样不同的表现。</p>
 <p>本文的思路是先分析注册和注销的流程，也就是订阅和解订阅；再分析发布正常事件和发布粘性事件的流程。</p>
-<h1 id="1-注册和注销的流程分析"><a href="#1-注册和注销的流程分析" class="headerlink" title="1. 注册和注销的流程分析"></a>1. 注册和注销的流程分析</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">EventBus.getDefault().register(<span class="keyword">this</span>)</span><br><span class="line">EventBus.getDefault().unregister(<span class="keyword">this</span>)</span><br></pre></td></tr></table></figure>
+<h1 id="1-注册和注销的流程分析"><a href="#1-注册和注销的流程分析" class="headerlink" title="1. 注册和注销的流程分析"></a>1. 注册和注销的流程分析</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">EventBus.getDefault().register(<span class="built_in">this</span>)</span><br><span class="line">EventBus.getDefault().unregister(<span class="built_in">this</span>)</span><br></pre></td></tr></table></figure>
 
 <h2 id="1-1-register"><a href="#1-1-register" class="headerlink" title="1.1. register"></a>1.1. register</h2><p>首先通过EventBus.getDefault()拿到实例对象，源码如下所示，</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> EventBus <span class="title">getDefault</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (defaultInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (EventBus.class) &#123;</span><br><span class="line">            <span class="keyword">if</span> (defaultInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">                defaultInstance = <span class="keyword">new</span> EventBus();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> defaultInstance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> EventBus <span class="title function_">getDefault</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (defaultInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (EventBus.class) &#123;</span><br><span class="line">            <span class="keyword">if</span> (defaultInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">                defaultInstance = <span class="keyword">new</span> <span class="title class_">EventBus</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> defaultInstance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这是一种双重校验的懒汉式单例，双重校验机制只会在第一次创建实例时有锁的介入，一旦实例创建成功，下次再获取实例就不会进入锁块了。还有一点需要注意务必要用volatile关键字修饰defaultInstance变量，保证在操作defaultInstance对象时，都是从内存中加载最新的状态。后续通过getDefault()拿到的都是defaultInstance这个实例对象了。接着看看regitster()干了什么，源码如下所示：</p>
           <!--noindex-->
@@ -611,7 +611,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-21 15:58:58" itemprop="dateModified" datetime="2021-04-21T15:58:58+08:00">2021-04-21</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -699,7 +699,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-09 10:41:07" itemprop="dateModified" datetime="2021-03-09T10:41:07+08:00">2021-03-09</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -787,7 +787,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-13 16:43:07" itemprop="dateModified" datetime="2021-04-13T16:43:07+08:00">2021-04-13</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -874,7 +874,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-08 16:54:04" itemprop="dateModified" datetime="2021-04-08T16:54:04+08:00">2021-04-08</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -964,7 +964,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-06 17:42:03" itemprop="dateModified" datetime="2021-04-06T17:42:03+08:00">2021-04-06</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1050,7 +1050,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-01 17:24:14" itemprop="dateModified" datetime="2021-04-01T17:24:14+08:00">2021-04-01</time>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
