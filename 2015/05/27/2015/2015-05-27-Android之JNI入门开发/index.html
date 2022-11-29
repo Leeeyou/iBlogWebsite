@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="假设ndk和cygwin的开发环境都已搭建好。 下午开发android中jni的调用，出现了很多问题，在公司电脑javah 生成头文件老失败、同时利用cygwin编译c文件时配置好ndk，但是在cygwin中就是找不到ndk-build。下班后用自己的电脑再试了一遍，由于自己笔记本中ndk和cygwin的开发环境都已搭建好，于是很轻松的就搞定了jni的调用。 Android中的jni的调用步骤其实">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android之JNI入门开发">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2015/05/27/2015/2015-05-27-Android%E4%B9%8BJNI%E5%85%A5%E9%97%A8%E5%BC%80%E5%8F%91/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="假设ndk和cygwin的开发环境都已搭建好。 下午开发android中jni的调用，出现了很多问题，在公司电脑javah 生成头文件老失败、同时利用cygwin编译c文件时配置好ndk，但是在cygwin中就是找不到ndk-build。下班后用自己的电脑再试了一遍，由于自己笔记本中ndk和cygwin的开发环境都已搭建好，于是很轻松的就搞定了jni的调用。 Android中的jni的调用步骤其实">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step1%E7%BC%96%E5%86%99java%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step2javah%E7%94%9F%E5%91%BD%E7%94%9F%E6%88%90%E5%A4%B4%E6%96%87%E4%BB%B6.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step3%E7%BC%96%E5%86%99c%E4%BB%A3%E7%A0%81.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step4%E7%BC%96%E5%86%99mk%E6%96%87%E4%BB%B6.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step5%E7%BC%96%E5%86%99so%E6%96%87%E4%BB%B6.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step5-2%E7%BC%96%E5%86%99so%E6%96%87%E4%BB%B6.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step5-3%E7%BC%96%E5%86%99so%E6%96%87%E4%BB%B6.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step5-4%E7%BC%96%E5%86%99so%E6%96%87%E4%BB%B6.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step5-5%E7%BC%96%E5%86%99so%E6%96%87%E4%BB%B6.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step6loadLibrary.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step7%E6%B5%8B%E8%AF%95%E5%9B%BE.png">
+<meta property="article:published_time" content="2015-05-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-11-29T07:27:00.963Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="JNI">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeeyou.github.io/iBlogWebsite/2015/images/githubpages/JNI/step1%E7%BC%96%E5%86%99java%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95.png">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2015/05/27/2015/2015-05-27-Android%E4%B9%8BJNI%E5%85%A5%E9%97%A8%E5%BC%80%E5%8F%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Android之JNI入门开发 | Leeeyou123</title><meta name="robots" content="noindex">
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2015/05/27/2015/2015-05-27-Android%E4%B9%8BJNI%E5%85%A5%E9%97%A8%E5%BC%80%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android之JNI入门开发
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-05-27 00:00:00" itemprop="dateCreated datePublished" datetime="2015-05-27T00:00:00+08:00">2015-05-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-11-29 15:27:00" itemprop="dateModified" datetime="2021-11-29T15:27:00+08:00">2021-11-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>假设ndk和cygwin的开发环境都已搭建好。</p>
+<p>下午开发android中jni的调用，出现了很多问题，在公司电脑javah 生成头文件老失败、同时利用cygwin编译c文件时配置好ndk，但是在cygwin中就是找不到ndk-build。下班后用自己的电脑再试了一遍，由于自己笔记本中ndk和cygwin的开发环境都已搭建好，于是很轻松的就搞定了jni的调用。</p>
+<p>Android中的jni的调用步骤其实还是稍显复杂，为了自己以后能够快速实现基本的调用，写下这篇文档。</p>
+<h1 id="开发步骤整理"><a href="#开发步骤整理" class="headerlink" title="开发步骤整理"></a>开发步骤整理</h1><h2 id="在-java中编写本地方法"><a href="#在-java中编写本地方法" class="headerlink" title="在.java中编写本地方法"></a>在.java中编写本地方法</h2><p><img src="../../../../images/githubpages/JNI/step1%E7%BC%96%E5%86%99java%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95.png" alt="step1编写java本地方法"></p>
+<h2 id="通过javah生命生成c-c-头文件"><a href="#通过javah生命生成c-c-头文件" class="headerlink" title="通过javah生命生成c/c++头文件"></a>通过javah生命生成c/c++头文件</h2><p><img src="../../../../images/githubpages/JNI/step2javah%E7%94%9F%E5%91%BD%E7%94%9F%E6%88%90%E5%A4%B4%E6%96%87%E4%BB%B6.png" alt="step2javah生命生成头文件"></p>
+<h2 id="编写c代码"><a href="#编写c代码" class="headerlink" title="编写c代码"></a>编写c代码</h2><p><img src="../../../../images/githubpages/JNI/step3%E7%BC%96%E5%86%99c%E4%BB%A3%E7%A0%81.png" alt="step3编写c代码"></p>
+<h2 id="编写Android-mk文件"><a href="#编写Android-mk文件" class="headerlink" title="编写Android.mk文件"></a>编写Android.mk文件</h2><p><img src="../../../../images/githubpages/JNI/step4%E7%BC%96%E5%86%99mk%E6%96%87%E4%BB%B6.png" alt="step4编写mk文件"></p>
+<h2 id="编译成-so文件"><a href="#编译成-so文件" class="headerlink" title="编译成.so文件"></a>编译成.so文件</h2><p>这里使用Eclipse配置，进行自动编译</p>
+<p><img src="../../../../images/githubpages/JNI/step5%E7%BC%96%E5%86%99so%E6%96%87%E4%BB%B6.png" alt="step5编写so文件"></p>
+<p><img src="../../../../images/githubpages/JNI/step5-2%E7%BC%96%E5%86%99so%E6%96%87%E4%BB%B6.png" alt="step5-2编写so文件"></p>
+<p><img src="../../../../images/githubpages/JNI/step5-3%E7%BC%96%E5%86%99so%E6%96%87%E4%BB%B6.png" alt="step5-3编写so文件"></p>
+<p><img src="../../../../images/githubpages/JNI/step5-4%E7%BC%96%E5%86%99so%E6%96%87%E4%BB%B6.png" alt="step5-4编写so文件"></p>
+<p><img src="../../../../images/githubpages/JNI/step5-5%E7%BC%96%E5%86%99so%E6%96%87%E4%BB%B6.png" alt="step5-5编写so文件"></p>
+<h2 id="通过System-loadLibrary-“”-加载c文件，调用c代码"><a href="#通过System-loadLibrary-“”-加载c文件，调用c代码" class="headerlink" title="通过System.loadLibrary(“”)加载c文件，调用c代码"></a>通过System.loadLibrary(“”)加载c文件，调用c代码</h2><p><img src="../../../../images/githubpages/JNI/step6loadLibrary.png" alt="step6loadLibrary"></p>
+<h2 id="效果测试图"><a href="#效果测试图" class="headerlink" title="效果测试图"></a>效果测试图</h2><p><img src="../../../../images/githubpages/JNI/step7%E6%B5%8B%E8%AF%95%E5%9B%BE.png" alt="step7测试图"></p>
+<h1 id="关于JNI-NDK的扩展知识"><a href="#关于JNI-NDK的扩展知识" class="headerlink" title="关于JNI/NDK的扩展知识"></a>关于JNI/NDK的扩展知识</h1><h2 id="jni-ndk开发需要环境"><a href="#jni-ndk开发需要环境" class="headerlink" title="jni/ndk开发需要环境"></a>jni/ndk开发需要环境</h2><p>1.ndk环境</p>
+<p>2.cygwin环境</p>
+<h2 id="cygwin目录介绍"><a href="#cygwin目录介绍" class="headerlink" title="cygwin目录介绍"></a>cygwin目录介绍</h2><ul>
+<li>bin:存放的cygwin的可执行文件。</li>
+<li>dev:保存的cygwin（linux）下的一些驱动文件。</li>
+<li>etc:保存的是cygwin的配置文件（profile：配置ndk的环境，相当于我们在windows配置jdk环境）。</li>
+<li>home:就是当前linux的用户所在的目录，home目录下的用户名和你当前windows下的用户名是一致的。</li>
+<li>lib：存放的是linux下用到的一些提供好的库，jar，so …。</li>
+<li>其他目录：给linux安装程序的时候用的，具体安装到哪个目录，有应用程序决定。</li>
+<li>cygwin.bat:cygwin可执行文件，通过这个批处理来进行编译的操作。</li>
+</ul>
+<p>动态链接库：相当于windows程序的快捷方式，占用空间小 扩展名：.so</p>
+<p>静态链接库：占用空间大，包含了当前编译环境，和依赖的环境，和编译时需要机器环境。扩展名：.a</p>
+<h2 id="ndk-build"><a href="#ndk-build" class="headerlink" title="ndk-build"></a>ndk-build</h2><p>linux下执行，直接将c / c++ 代码编译成动态链接库 .so（linux），通过cygwin，编译过程中首先将c代码会编译成.o的中间文件会将.so给最终中间代码建立链接。</p>
+<p>nkd-build.cmd用途和ndk-build完全一样，区别在于：</p>
+<ul>
+<li>如果执行ndk-build需要cygwin交叉编译环境</li>
+<li>执行ndk-build.cmd就不需要cygwin交叉编译环境（r7版本之后，有了nkd-build.cmd）</li>
+</ul>
+<h2 id="cpu平台"><a href="#cpu平台" class="headerlink" title="cpu平台"></a>cpu平台</h2><p>ARM：用的精简指令集，主要移动设备，省资源，省电，但是相对x86性能要低一些</p>
+<p>X86：用的复杂指令集，性能非常强大，比ARM性能强大的多，但是功耗非常高，进军移动领域，最大问题就是要解决功耗问题。</p>
+<p>MIPS：也是一种cpu平台，不做介绍，中国自主知识产权，龙芯。</p>
+<h2 id="jni中导入头文件，-lt-gt-导入和””的区别？"><a href="#jni中导入头文件，-lt-gt-导入和””的区别？" class="headerlink" title="jni中导入头文件，&lt;&gt;导入和””的区别？"></a>jni中导入头文件，&lt;&gt;导入和””的区别？</h2><p>&lt;&gt;:导入系统的头文件</p>
+<p>“”:导入当前目录下自己写的头文件</p>
+<h2 id="通过jdk生成本地方法的头文件"><a href="#通过jdk生成本地方法的头文件" class="headerlink" title="通过jdk生成本地方法的头文件"></a>通过jdk生成本地方法的头文件</h2><p>JDK6：在当前工程的bin/classes/目录下执行 javah 包名+类名</p>
+<p>JDK7：在当前工程的src/目录下执行 javah 包名+类名</p>
+<h2 id="获得方法的签名"><a href="#获得方法的签名" class="headerlink" title="获得方法的签名"></a>获得方法的签名</h2><p>JDK6：在当前工程的bin/classes/ 执行 javap –s 包名+类名</p>
+<p>JDK7：在当前工程的src/目录下 执行 javap –s 包名+类名</p>
+<!-- flag of hidden posts -->
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Android/" rel="tag"># Android</a>
+              <a href="/iBlogWebsite/tags/JNI/" rel="tag"># JNI</a>
+          </div>
+
+        
+
+
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E6%AD%A5%E9%AA%A4%E6%95%B4%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">开发步骤整理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8-java%E4%B8%AD%E7%BC%96%E5%86%99%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">在.java中编写本地方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87javah%E7%94%9F%E5%91%BD%E7%94%9F%E6%88%90c-c-%E5%A4%B4%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">通过javah生命生成c&#x2F;c++头文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E5%86%99c%E4%BB%A3%E7%A0%81"><span class="nav-number">1.3.</span> <span class="nav-text">编写c代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E5%86%99Android-mk%E6%96%87%E4%BB%B6"><span class="nav-number">1.4.</span> <span class="nav-text">编写Android.mk文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%88%90-so%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.</span> <span class="nav-text">编译成.so文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87System-loadLibrary-%E2%80%9C%E2%80%9D-%E5%8A%A0%E8%BD%BDc%E6%96%87%E4%BB%B6%EF%BC%8C%E8%B0%83%E7%94%A8c%E4%BB%A3%E7%A0%81"><span class="nav-number">1.6.</span> <span class="nav-text">通过System.loadLibrary(“”)加载c文件，调用c代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%88%E6%9E%9C%E6%B5%8B%E8%AF%95%E5%9B%BE"><span class="nav-number">1.7.</span> <span class="nav-text">效果测试图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EJNI-NDK%E7%9A%84%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86"><span class="nav-number">2.</span> <span class="nav-text">关于JNI&#x2F;NDK的扩展知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#jni-ndk%E5%BC%80%E5%8F%91%E9%9C%80%E8%A6%81%E7%8E%AF%E5%A2%83"><span class="nav-number">2.1.</span> <span class="nav-text">jni&#x2F;ndk开发需要环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cygwin%E7%9B%AE%E5%BD%95%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.2.</span> <span class="nav-text">cygwin目录介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ndk-build"><span class="nav-number">2.3.</span> <span class="nav-text">ndk-build</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cpu%E5%B9%B3%E5%8F%B0"><span class="nav-number">2.4.</span> <span class="nav-text">cpu平台</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jni%E4%B8%AD%E5%AF%BC%E5%85%A5%E5%A4%B4%E6%96%87%E4%BB%B6%EF%BC%8C-lt-gt-%E5%AF%BC%E5%85%A5%E5%92%8C%E2%80%9D%E2%80%9D%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">2.5.</span> <span class="nav-text">jni中导入头文件，&lt;&gt;导入和””的区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87jdk%E7%94%9F%E6%88%90%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E7%9A%84%E5%A4%B4%E6%96%87%E4%BB%B6"><span class="nav-number">2.6.</span> <span class="nav-text">通过jdk生成本地方法的头文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%BE%97%E6%96%B9%E6%B3%95%E7%9A%84%E7%AD%BE%E5%90%8D"><span class="nav-number">2.7.</span> <span class="nav-text">获得方法的签名</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

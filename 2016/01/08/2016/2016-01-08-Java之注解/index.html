@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="注解相当于一种标记，在程序中加了注解就等于为程序打上了某种标记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java之注解">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2016/01/08/2016/2016-01-08-Java%E4%B9%8B%E6%B3%A8%E8%A7%A3/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="注解相当于一种标记，在程序中加了注解就等于为程序打上了某种标记">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/java_annotation.png">
+<meta property="article:published_time" content="2016-01-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.310Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="注解">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/java_annotation.png">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2016/01/08/2016/2016-01-08-Java%E4%B9%8B%E6%B3%A8%E8%A7%A3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Java之注解 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2016/01/08/2016/2016-01-08-Java%E4%B9%8B%E6%B3%A8%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java之注解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-01-08 00:00:00" itemprop="dateCreated datePublished" datetime="2016-01-08T00:00:00+08:00">2016-01-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">注解相当于一种标记，在程序中加了注解就等于为程序打上了某种标记</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>注解相当于一种标记，在程序中加了注解就等于为程序打上了某种标记，没加则等于没有某种标记，之后javac编译器、开发工具和其他程序可以用反射来了解你的类及各种元素上有无何种标记，看你有什么标记，就去干相应的事。要在源程序中应用某个注解，得先准备好了这个注解类，就像你要调用某个类，得先开发好这个类。</p>
+<p>标记可以加在包、类、字段、方法、方法的参数以及局部变量上。查看java.lang包可看到JDK中提供的最基本的<a target="_blank" rel="noopener" href="http://developer.android.com/reference/java/lang/annotation/Annotation.html">annotation</a><br><br><img src="../../../../images/githubpages/java_annotation.png" alt="java_annotation"></p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>JDK5.0中提供了注解的功能，允许开发者定义和使用自己的注解类型。该功能由一个定义注解类型的语法和描述一个注解声明的语法，读取注解的API，一个使用注解修饰的class文件和一个注解处理工具组成。</p>
+<p>Annotation并不直接影响代码的语义，但是它可以被看做是程序的工具或者类库，会反过来对正在运行的程序语义有所影响。</p>
+<p>Annotation可以通过 <strong>源文件、class文件或者在运行时</strong> 通过反射机制多种方式被读取。</p>
+<h2 id="Java中的基本注解"><a href="#Java中的基本注解" class="headerlink" title="Java中的基本注解"></a>Java中的基本注解</h2><h3 id="Override注解"><a href="#Override注解" class="headerlink" title="@Override注解"></a>@Override注解</h3><p>Indicates that a method declaration is intended to override a method declaration in a superclass. If a method is annotated with this annotation type but does not override a superclass method, compilers are required to generate an error message.<br>表示一个方法声明打算重写超类中的另一个方法声明。如果方法利用此注释类型进行注解但没有重写超类方法，则编译器会生成一条错误消息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(value=METHOD)</span></span><br><span class="line"><span class="meta">@Retention(value=SOURCE)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Override</span><br></pre></td></tr></table></figure>
+
+<h3 id="Deprecated注解"><a href="#Deprecated注解" class="headerlink" title="@Deprecated注解"></a>@Deprecated注解</h3><p>A program element annotated @Deprecated is one that programmers are discouraged from using, typically because it is dangerous, or because a better alternative exists. Compilers warn when a deprecated program element is used or overridden in non-deprecated code.<br>用@Deprecated注释的程序元素，不鼓励程序员使用这样的元素，通常是因为它很危险或存在更好的选择。在使用不被赞成的程序元素或在不被赞成的代码中执行重写时，编译器会发出警告。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Retention(value=RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Deprecated</span><br></pre></td></tr></table></figure>
+<h3 id="SuppressWarnings注解"><a href="#SuppressWarnings注解" class="headerlink" title="@SuppressWarnings注解"></a>@SuppressWarnings注解</h3><p>Indicates that the named compiler warnings should be suppressed in the annotated element (and in all program elements contained in the annotated element). Note that the set of warnings suppressed in a given element is a superset of the warnings suppressed in all containing elements. For example, if you annotate a class to suppress one warning and annotate a method to suppress another, both warnings will be suppressed in the method.<br>As a matter of style, programmers should always use this annotation on the most deeply nested element where it is effective. If you want to suppress a warning in a particular method, you should annotate that method rather than its class.<br>指示应该在注释元素（以及包含在该注释元素中的所有程序元素）中取消显示指定的编译器警告。注意，在给定元素中取消显示的警告集是所有包含元素中取消显示的警告的超集。例如，如果注释一个类来取消显示某个警告，同时注释一个方法来取消显示另一个警告，那么将在此方法中同时取消显示这两个警告。<br>根据风格不同，程序员应该始终在 <strong>最里层</strong> 的嵌套元素上使用此注释，在那里使用才有效。如果要在特定的方法中取消显示某个警告，则应该注释该方法而不是注释它的类。</p>
+<h2 id="自定义注解"><a href="#自定义注解" class="headerlink" title="自定义注解"></a>自定义注解</h2><h3 id="变量、默认值、数组"><a href="#变量、默认值、数组" class="headerlink" title="变量、默认值、数组"></a>变量、默认值、数组</h3><p>使用@interface自定义注解时，自动继承了java.lang.annotation.Annotation接口，由编译程序自动完成其他细节。<br>在定义注解时，不能继承其他的注解或接口。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(RetentionPolicy.CLASS)</span></span><br><span class="line"><span class="meta">@Target(&#123;ElementType.FIELD, ElementType.METHOD&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line"><span class="comment">//如果注解中有一个名为value的属性，且只想设置value属性(即其他属性都采用默认值或者你只有一个value属性），那么可以省略value=部分</span></span><br><span class="line"><span class="function">String <span class="title">value</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">String <span class="title">name</span><span class="params">()</span> <span class="keyword">default</span> &quot;Jack&quot;</span>;</span><br><span class="line">String[] favor() <span class="keyword">default</span> <span class="string">&quot;play&quot;</span>;</span><br><span class="line"><span class="function">MyEnum <span class="title">me</span><span class="params">()</span> <span class="keyword">default</span> MyEnum.shopping</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置注解的作用范围"><a href="#设置注解的作用范围" class="headerlink" title="设置注解的作用范围"></a>设置注解的作用范围</h3><p>指示注释类型的注释要保留多久。如果注释类型声明中不存在Retention注释，则保留策略默认为 RetentionPolicy.CLASS。<strong>只有元注释类型直接用于注释时，Target 元注释才有效。如果元注释类型用作另一种注释类型的成员，则无效。</strong></p>
+<p>注释保留策略。此枚举类型的常量描述保留注释的不同策略。它们与 Retention 元注释类型一起使用，以指定保留多长的注释。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(RetentionPolicy.CLASS)</span></span><br><span class="line"><span class="meta">@Target(&#123;ElementType.FIELD, ElementType.METHOD&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">  <span class="comment">//如果注解中有一个名为value的属性，且只想设置value属性(即其他属性都采用默认值或者你只有一个value属性），那么可以省略value=部分</span></span><br><span class="line">  <span class="function">String <span class="title">value</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="function">String <span class="title">name</span><span class="params">()</span> <span class="keyword">default</span> &quot;Jack&quot;</span>;</span><br><span class="line">  String[] favor() <span class="keyword">default</span> <span class="string">&quot;play&quot;</span>;</span><br><span class="line">  <span class="function">MyEnum <span class="title">me</span><span class="params">()</span> <span class="keyword">default</span> MyEnum.shopping</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Annotation的解析"><a href="#Annotation的解析" class="headerlink" title="Annotation的解析"></a>Annotation的解析</h2><h3 id="运行时Annotation解析"><a href="#运行时Annotation解析" class="headerlink" title="运行时Annotation解析"></a>运行时Annotation解析</h3><p>只有当@Retention(RetentionPolicy.RUNTIME)时，才能够利用反射获取到annotation的信息。<br>getAnnotation(AnnotationName.class) 表示得到该Target某个Annotation的信息，因为一个Target可以被多个Annotation修饰<br>getAnnotations() 则表示得到该Target所有Annotation<br>isAnnotationPresent(AnnotationName.class) 表示该Target是否被某个Annotation修饰  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.leeeyou.annotation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.leeeyou.annotation.cust.MyAnnotation;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Annotation;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationTargetException;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Created by kongbei on 2014/12/21.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestAnnotationByReflect</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> <span class="keyword">throws</span> NoSuchMethodException, InvocationTargetException, IllegalAccessException </span>&#123;</span><br><span class="line">        TestMyAnnotation tma = <span class="keyword">new</span> TestMyAnnotation();</span><br><span class="line">        Class&lt;TestMyAnnotation&gt; c = TestMyAnnotation.class;</span><br><span class="line">        Method method = c.getMethod(<span class="string">&quot;go&quot;</span>, <span class="keyword">new</span> Class[]&#123;&#125;);</span><br><span class="line">        <span class="keyword">if</span> (method.isAnnotationPresent(MyAnnotation.class)) &#123;</span><br><span class="line">            <span class="comment">//获取该方法的MyAnnotation注解实例</span></span><br><span class="line">            MyAnnotation myAnnotation = method.getAnnotation(MyAnnotation.class);</span><br><span class="line">            method.invoke(tma, <span class="keyword">new</span> Object[]&#123;&#125;);</span><br><span class="line">            System.out.println(myAnnotation.name());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Annotation[] annotations = method.getAnnotations();</span><br><span class="line">        <span class="keyword">for</span> (Annotation annotation : annotations) &#123;</span><br><span class="line">            System.out.println(annotation);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对应go方法的注解如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@MyAnnotation(value=&quot;Beijing&quot;,name=&quot;Rose&quot;,favor = &#123;&quot;travel&quot;,&quot;thinking&quot;&#125;,me= MyEnum.read)</span></span><br><span class="line"><span class="meta">@Deprecated</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">go</span><span class="params">()</span></span>&#123;</span><br><span class="line">    System.out.print(<span class="string">&quot;let&#x27;s go &quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="编译时Annotation解析"><a href="#编译时Annotation解析" class="headerlink" title="编译时Annotation解析"></a>编译时Annotation解析</h3><p>编译时Annotation指@Retention为CLASS的Annotation，由apt(Annotation Processing Tool)解析自动解析。需要做的​<br>a. 自定义类集成自AbstractProcessor<br>b. 重写其中的process函数<br>实际上apt(Annotation Processing Tool) 在编译时自动查找所有继承自 AbstractProcessor 的类，然后调用他们的 process 方法去处理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SupportedAnnotationTypes(&#123; &quot;com.leeeyou.annotation.MyAnnotation&quot; &#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestAnnotationByReflectCompile</span> <span class="keyword">extends</span> <span class="title">AbstractProcessor</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, String&gt; map = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">process</span><span class="params">(Set&lt;? extends TypeElement&gt; annotations,</span></span></span><br><span class="line"><span class="function"><span class="params">            RoundEnvironment roundEnv)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (TypeElement te : annotations) &#123;</span><br><span class="line">            <span class="keyword">for</span> (Element element : roundEnv.getElementsAnnotatedWith(te)) &#123;</span><br><span class="line">                MyAnnotation ma = element.getAnnotation(MyAnnotation.class);</span><br><span class="line">                map.put(element.getEnclosingElement().toString(), ma.value());</span><br><span class="line">                System.out.println(ma.value());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="限定注解的使用"><a href="#限定注解的使用" class="headerlink" title="限定注解的使用"></a>限定注解的使用</h3><p>限定注解使用@Target，指注释类型所适用的程序元素的种类。如果注释类型声明中不存在Target元注释，则声明的类型可以用在任一程序元素上。如果存在这样的元注释，则编译器强制实施指定的使用限制。例如，此元注释指示该声明类型是其自身，即元注释类型。它只能用在注释类型声明上。</p>
+<h2 id="几个Android开源库Annotation原理简析"><a href="#几个Android开源库Annotation原理简析" class="headerlink" title="几个Android开源库Annotation原理简析"></a>几个Android开源库Annotation原理简析</h2><h3 id="Butter-Knife"><a href="#Butter-Knife" class="headerlink" title="Butter Knife"></a>Butter Knife</h3><p>调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@InjectView(R.id.user)</span> EditText username;</span><br></pre></td></tr></table></figure>
+
+<p>定义</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(CLASS)</span></span><br><span class="line"><span class="meta">@Target(FIELD)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> InjectView &#123; <span class="function"><span class="keyword">int</span> <span class="title">value</span><span class="params">()</span></span>; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>可看出Butter Knife的InjectView Annotation是编译时Annotation，并且只能用于修饰属性</p>
+<p>原理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">process</span><span class="params">(Set&lt;? extends TypeElement&gt; elements, RoundEnvironment env)</span> </span>&#123;</span><br><span class="line">    Map&lt;TypeElement, ViewInjector&gt; targetClassMap = findAndParseTargets(env);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (Map.Entry&lt;TypeElement, ViewInjector&gt; entry : targetClassMap.entrySet()) &#123;</span><br><span class="line">        TypeElement typeElement = entry.getKey();</span><br><span class="line">        ViewInjector viewInjector = entry.getValue();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            JavaFileObject jfo = filer.createSourceFile(viewInjector.getFqcn(), typeElement);</span><br><span class="line">            Writer writer = jfo.openWriter();</span><br><span class="line">            writer.write(viewInjector.brewJava());</span><br><span class="line">            writer.flush();</span><br><span class="line">            writer.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            error(typeElement, <span class="string">&quot;Unable to write injector for type %s: %s&quot;</span>, typeElement, e.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ButterKnifeProcessor.java 的process方法如上，编译时，在此方法中过滤InjectView这个Annotation到targetClassMap后，会根据targetClassMap中元素生成不同的class文件到最终的APK中，然后在运行时调用ButterKnife.inject(x)函数时会到之前编译时生成的类中去找。</p>
+<h3 id="Retrofit"><a href="#Retrofit" class="headerlink" title="Retrofit"></a>Retrofit</h3><p>调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GET(&quot;/users/&#123;username&#125;&quot;)</span></span><br><span class="line"><span class="function">User <span class="title">getUser</span><span class="params">(<span class="meta">@Path(&quot;username&quot;)</span> String username)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>定义</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Target(METHOD)</span></span><br><span class="line"><span class="meta">@Retention(RUNTIME)</span></span><br><span class="line"><span class="meta">@RestMethod(&quot;GET&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> GET &#123; <span class="function">String <span class="title">value</span><span class="params">()</span></span>; &#125;</span><br></pre></td></tr></table></figure>
+<p>从定义可看出 Retrofit 的 Get Annotation 是运行时 Annotation，并且只能用于修饰 Method  </p>
+<p>原理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">parseMethodAnnotations</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (Annotation methodAnnotation : method.getAnnotations()) &#123;</span><br><span class="line">    Class&lt;? extends Annotation&gt; annotationType = methodAnnotation.annotationType();</span><br><span class="line">    RestMethod methodInfo = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (Annotation innerAnnotation : annotationType.getAnnotations()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (RestMethod.class == innerAnnotation.annotationType()) &#123;</span><br><span class="line">            methodInfo = (RestMethod) innerAnnotation;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ……</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RestMethodInfo.java 的parseMethodAnnotations方法如上，会检查每个方法的每个Annotation，看是否被RestMethod这个Annotation修饰的Annotation修饰，这个有点绕，就是是否被GET、DELETE、POST、PUT、HEAD、PATCH 这些Annotation修饰，然后得到Annotation信息，在对接口进行动态代理时会调用到这些Annotation信息从而完成调用。</p>
+<h2 id="练习Annotation的基本使用"><a href="#练习Annotation的基本使用" class="headerlink" title="练习Annotation的基本使用"></a>练习Annotation的基本使用</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ItcastAnnotation(value = &quot;abc&quot;,annotationAttr=@MetaAnnotation(&quot;MetaAnnotation&quot;))</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AnnotationTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@SuppressWarnings(&quot;deprecation&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.runFinalizersOnExit(<span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">if</span>(AnnotationTest.class.isAnnotationPresent(ItcastAnnotation.class))&#123;</span><br><span class="line">            <span class="comment">//用反射方式获得注解对应的实例对象后，再通过该对象调用属性对应的方法</span></span><br><span class="line">            ItcastAnnotation annotation = AnnotationTest.class.getAnnotation(ItcastAnnotation.class);</span><br><span class="line">            System.out.println(annotation.getClass().getName());</span><br><span class="line">            System.out.println(annotation.color());</span><br><span class="line">            System.out.println(annotation.value());</span><br><span class="line">            System.out.println(annotation.num().length);</span><br><span class="line">            System.out.println(annotation.lamp().nextLamp());</span><br><span class="line">            System.out.println(annotation.annotationAttr());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Deprecated</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">()</span></span>&#123;</span><br><span class="line">      System.out.println(<span class="string">&quot;HI&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="练习元注解"><a href="#练习元注解" class="headerlink" title="练习元注解"></a>练习元注解</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//@Retention元注解.RetetionPolicy.SOURCE、RetetionPolicy.CLASS、RetetionPolicy.RUNTIME;分别对应：java源文件--&gt;class文件--&gt;内存中的字节码。</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="comment">//@Target元注解默认值为任何元素，设置Target等于ElementType.METHOD，原来加在类上的注解就报错，改为用数组方式设置&#123;ElementType.METHOD,ElementType.TYPE&#125;</span></span><br><span class="line"><span class="meta">@Target(&#123;ElementType.METHOD,ElementType.TYPE&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> ItcastAnnotation &#123;</span><br><span class="line">  <span class="function">String <span class="title">color</span><span class="params">()</span> <span class="keyword">default</span> &quot;blue&quot;</span>; <span class="comment">//为属性指定缺省值</span></span><br><span class="line">  <span class="comment">//如果注解中有一个名为value的属性，且只想设置value属性(即其他属性都采用默认值或者你只有一个value属性），那么可以省略value=部分</span></span><br><span class="line">  <span class="function">String <span class="title">value</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="keyword">int</span> [] num () <span class="keyword">default</span> &#123;<span class="number">11</span>,<span class="number">22</span>,<span class="number">33</span>&#125;;<span class="comment">//数组类型的属性</span></span><br><span class="line">  EnumTest.<span class="function">TrrificLamp <span class="title">lamp</span><span class="params">()</span> <span class="keyword">default</span> EnumTest.TrrificLamp.RED</span>;<span class="comment">//枚举类型的属性</span></span><br><span class="line">  <span class="function">MetaAnnotation <span class="title">annotationAttr</span><span class="params">()</span> <span class="keyword">default</span> @<span class="title">MetaAnnotation</span><span class="params">(<span class="string">&quot;Meta&quot;</span>)</span></span>;<span class="comment">//注解类型的属性</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>参考文献：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://www.trinea.cn/android/java-annotation-android-open-source-analysis/">http://www.trinea.cn/android/java-annotation-android-open-source-analysis/</a>  </li>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/kongbeily/article/details/8005422">http://blog.csdn.net/kongbeily/article/details/8005422</a>  </li>
+<li><a target="_blank" rel="noopener" href="http://www.cnblogs.com/mandroid/archive/2011/07/18/2109829.html">http://www.cnblogs.com/mandroid/archive/2011/07/18/2109829.html</a>  </li>
+<li><a target="_blank" rel="noopener" href="http://www.itzhai.com/java-based-notebook-annotation-annotation-introduction-and-use-custom-annotations.html">http://www.itzhai.com/java-based-notebook-annotation-annotation-introduction-and-use-custom-annotations.html</a>  </li>
+<li><a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/6/docs/api/">http://docs.oracle.com/javase/6/docs/api/</a>  </li>
+<li>关于反射的影响：<a target="_blank" rel="noopener" href="http://stackoverflow.com/questions/435553/java-reflection-performance">http://stackoverflow.com/questions/435553/java-reflection-performance</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Java/" rel="tag"># Java</a>
+              <a href="/iBlogWebsite/tags/%E6%B3%A8%E8%A7%A3/" rel="tag"># 注解</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/01/06/2016/2016-01-06-Java%E4%B9%8B%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="prev" title="Java之多线程">
+      <i class="fa fa-chevron-left"></i> Java之多线程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/01/09/2016/2016-01-09-Java%E4%B9%8B%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" rel="next" title="Java之集合框架">
+      Java之集合框架 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java%E4%B8%AD%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">Java中的基本注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Override%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.1.</span> <span class="nav-text">@Override注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deprecated%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.2.</span> <span class="nav-text">@Deprecated注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SuppressWarnings%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.3.</span> <span class="nav-text">@SuppressWarnings注解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3"><span class="nav-number">4.</span> <span class="nav-text">自定义注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E3%80%81%E9%BB%98%E8%AE%A4%E5%80%BC%E3%80%81%E6%95%B0%E7%BB%84"><span class="nav-number">4.1.</span> <span class="nav-text">变量、默认值、数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E6%B3%A8%E8%A7%A3%E7%9A%84%E4%BD%9C%E7%94%A8%E8%8C%83%E5%9B%B4"><span class="nav-number">4.2.</span> <span class="nav-text">设置注解的作用范围</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Annotation%E7%9A%84%E8%A7%A3%E6%9E%90"><span class="nav-number">5.</span> <span class="nav-text">Annotation的解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6Annotation%E8%A7%A3%E6%9E%90"><span class="nav-number">5.1.</span> <span class="nav-text">运行时Annotation解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%97%B6Annotation%E8%A7%A3%E6%9E%90"><span class="nav-number">5.2.</span> <span class="nav-text">编译时Annotation解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%90%E5%AE%9A%E6%B3%A8%E8%A7%A3%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">5.3.</span> <span class="nav-text">限定注解的使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%A0%E4%B8%AAAndroid%E5%BC%80%E6%BA%90%E5%BA%93Annotation%E5%8E%9F%E7%90%86%E7%AE%80%E6%9E%90"><span class="nav-number">6.</span> <span class="nav-text">几个Android开源库Annotation原理简析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Butter-Knife"><span class="nav-number">6.1.</span> <span class="nav-text">Butter Knife</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Retrofit"><span class="nav-number">6.2.</span> <span class="nav-text">Retrofit</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0Annotation%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">7.</span> <span class="nav-text">练习Annotation的基本使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E5%85%83%E6%B3%A8%E8%A7%A3"><span class="nav-number">8.</span> <span class="nav-text">练习元注解</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

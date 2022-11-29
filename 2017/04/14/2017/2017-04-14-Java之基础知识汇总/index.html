@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. Java基本数据类型及其封装类   简单类型 字节数 封装器    void  void   boolean 1&#x2F;8 Boolean   byte 1 Byte   char 2 Character   short 2 Short   int 4 Integer   long 8 Long   float 4 Float   double 8 Double   2. Switch能否用str">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java之基础知识汇总">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2017/04/14/2017/2017-04-14-Java%E4%B9%8B%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="1. Java基本数据类型及其封装类   简单类型 字节数 封装器    void  void   boolean 1&#x2F;8 Boolean   byte 1 Byte   char 2 Character   short 2 Short   int 4 Integer   long 8 Long   float 4 Float   double 8 Double   2. Switch能否用str">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2017/images/githubpages/Java%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/Collection%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%E5%9B%BE.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2017/images/githubpages/Java%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/Map%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%E5%9B%BE.png">
+<meta property="og:image" content="https://github.com/LeeeYou/Img/blob/master/leeeyou/Excption.png?raw=true">
+<meta property="article:published_time" content="2017-04-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-12-16T07:45:49.582Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeeyou.github.io/iBlogWebsite/2017/images/githubpages/Java%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/Collection%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%E5%9B%BE.png">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2017/04/14/2017/2017-04-14-Java%E4%B9%8B%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Java之基础知识汇总 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2017/04/14/2017/2017-04-14-Java%E4%B9%8B%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java之基础知识汇总
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-04-14 00:00:00" itemprop="dateCreated datePublished" datetime="2017-04-14T00:00:00+08:00">2017-04-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-12-16 15:45:49" itemprop="dateModified" datetime="2021-12-16T15:45:49+08:00">2021-12-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-Java基本数据类型及其封装类"><a href="#1-Java基本数据类型及其封装类" class="headerlink" title="1. Java基本数据类型及其封装类"></a>1. Java基本数据类型及其封装类</h1><table>
+<thead>
+<tr>
+<th>简单类型</th>
+<th>字节数</th>
+<th>封装器</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>void</td>
+<td></td>
+<td>void</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>1/8</td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td>byte</td>
+<td>1</td>
+<td>Byte</td>
+</tr>
+<tr>
+<td>char</td>
+<td>2</td>
+<td>Character</td>
+</tr>
+<tr>
+<td>short</td>
+<td>2</td>
+<td>Short</td>
+</tr>
+<tr>
+<td>int</td>
+<td>4</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td>long</td>
+<td>8</td>
+<td>Long</td>
+</tr>
+<tr>
+<td>float</td>
+<td>4</td>
+<td>Float</td>
+</tr>
+<tr>
+<td>double</td>
+<td>8</td>
+<td>Double</td>
+</tr>
+</tbody></table>
+<h1 id="2-Switch能否用string做参数"><a href="#2-Switch能否用string做参数" class="headerlink" title="2. Switch能否用string做参数"></a>2. Switch能否用string做参数</h1><p>在switch(args)中，args只能是一个整数表达式或者枚举常量Enum，整数表达式可以是int基本类型或Integer包装类型，由于byte,short,char都可以隐含转换为int，所以这些类型及其包装类型也是可以的。显然long、float、double类型不符合switch的语法规定，并且不能被隐式转换成int类型，所以它们不能作用于swtich语句中。<strong>注意：String类型是Java7开始支持的。</strong></p>
+<h1 id="3-Object有哪些公用方法"><a href="#3-Object有哪些公用方法" class="headerlink" title="3. Object有哪些公用方法"></a>3. Object有哪些公用方法</h1><table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>equals()</td>
+<td>测试的是两个对象是否相等</td>
+</tr>
+<tr>
+<td>hashCode()</td>
+<td>返回当前对象的哈希值</td>
+</tr>
+<tr>
+<td>toString()</td>
+<td>返回对象的String代表串</td>
+</tr>
+<tr>
+<td>clone()</td>
+<td>进行对象拷贝</td>
+</tr>
+<tr>
+<td>getClass()</td>
+<td>返回和当前对象相关的Class对象</td>
+</tr>
+<tr>
+<td>notify()、notifyall()、wait()</td>
+<td>都是用来对给定对象进行线程同步的</td>
+</tr>
+<tr>
+<td>finalize()</td>
+<td>当GC检测到没有引用到此对象时调用</td>
+</tr>
+</tbody></table>
+<h1 id="4-equals-与-的区别"><a href="#4-equals-与-的区别" class="headerlink" title="4. equals 与 == 的区别"></a>4. equals 与 == 的区别</h1><p><strong><a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/java/lang/Object.html#equals(java.lang.Object)">Object类中的equals方法和 “==” 是一样的</a></strong> 没有区别，比较内存中存放的对象的堆内存地址，通俗一点说就是比较两个对象是否为同一对象；而String、Integer等一些类是重写了equals方法，加入了自己所需的 “逻辑比较”，才使得equals和 “==” 不同，一个呈现的是逻辑上是否相等，一个呈现的是是否为同一对象。所以当我们创建类时自动继承了Object的equals方法，要想实现不同的等于比较必须重写equals方法。以下是Object类中的equals源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">this</span> == obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试代码如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.leeeyou.test.basic;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by leeeyou on 2017/4/13.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestEquals</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// -128 ~ 127 之间</span></span><br><span class="line">        Integer i1 = -<span class="number">129</span>;</span><br><span class="line">        Integer i2 = -<span class="number">129</span>;</span><br><span class="line"></span><br><span class="line">        System.out.println(i1 == i2); <span class="comment">//false, 但在 -128 ~ 127 之间是true</span></span><br><span class="line">        System.out.println(i1.intValue());</span><br><span class="line">        System.out.println(i1.equals(i2));<span class="comment">//true</span></span><br><span class="line">        System.out.println(<span class="string">&quot;---&quot;</span>);</span><br><span class="line"></span><br><span class="line">        Float f1 = <span class="number">.5f</span>;</span><br><span class="line">        Float f2 = <span class="number">.5f</span>;</span><br><span class="line">        System.out.println(f1 == f2); <span class="comment">//false</span></span><br><span class="line">        System.out.println(Float.floatToIntBits(f1));</span><br><span class="line">        System.out.println(f1.equals(f2));<span class="comment">//true</span></span><br><span class="line">        System.out.println(<span class="string">&quot;---&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//Object类中的equals方法和&quot;==&quot;是一样的,比较内存中存放的对象的(堆)内存地址</span></span><br><span class="line">        Object o1 = <span class="keyword">new</span> Object();</span><br><span class="line">        Object o2 = <span class="keyword">new</span> Object();</span><br><span class="line">        Object o3 = o1;</span><br><span class="line">        System.out.println(o1.equals(o2));<span class="comment">//false</span></span><br><span class="line">        System.out.println(o1 == o2);<span class="comment">//false</span></span><br><span class="line">        System.out.println(o1 == o3);<span class="comment">//true</span></span><br><span class="line">        System.out.println(o1.equals(o3));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">false</span></span><br><span class="line">-<span class="number">129</span></span><br><span class="line"><span class="keyword">true</span></span><br><span class="line">---</span><br><span class="line"><span class="keyword">false</span></span><br><span class="line"><span class="number">1056964608</span></span><br><span class="line"><span class="keyword">true</span></span><br><span class="line">---</span><br><span class="line"><span class="keyword">false</span></span><br><span class="line"><span class="keyword">false</span></span><br><span class="line"><span class="keyword">true</span></span><br><span class="line"><span class="keyword">true</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="5-改写equals为什么要改写hashCode"><a href="#5-改写equals为什么要改写hashCode" class="headerlink" title="5. 改写equals为什么要改写hashCode"></a>5. 改写equals为什么要改写hashCode</h1><p>如果不这样的话，就会违反Object.hashCode的通用约定，从而导致该类无法结合所有基于散列的集合一起正常运作，这样的集合包括HashMap、HashSet和HashTable。</p>
+<p>下面是约定的内容，摘自Obejct规范[Java SE6]：</p>
+<ul>
+<li><p>在应用程序执行期间，只要对象的equals方法的比较操作所用到的信息没有被修改，那么对这同一个对象调用多次，hashCode方法都必须始终如一地返回同一个整数。在同一个应用程序的多次执行过程中，每次执行所返回的整数可以不一致。</p>
+</li>
+<li><p>如果两个对象根据equals(Object)方法比较是相等的，那么调用这两个对象中任意一个对象的hashCode方法都必须产生同样的整数结果。即保证在equals相同的情况下hashcode值必定相同。</p>
+</li>
+<li><p>如果两个对象根据equals(Object)方法比较是不相等的，那么调用这两个对象中任意一个对象的hashCode方法，则不一定要产生不同的整数结果。但是程序员应该知道，给不相等的对象产生截然不同的整数结果，有可能提高散列表的性能。</p>
+</li>
+</ul>
+<p>参考：<a target="_blank" rel="noopener" href="https://book.douban.com/subject/3360807/">Effective java 中文版（第2版）</a></p>
+<h1 id="6-Java的四种引用"><a href="#6-Java的四种引用" class="headerlink" title="6. Java的四种引用"></a>6. Java的四种引用</h1><h2 id="6-1-强引用（StrongReference）"><a href="#6-1-强引用（StrongReference）" class="headerlink" title="6.1. 强引用（StrongReference）"></a>6.1. 强引用（StrongReference）</h2><p>强引用是使用最普遍的引用。<strong>如果一个对象具有强引用那GC绝不会回收它。当内存空间不足，JVM宁愿抛出OutOfMemoryError使程序异常终止，也不会靠随意回收具有强引用的对象来解决内存不足的问题。</strong></p>
+<p>Tips：强引用其实也就是我们平时 A a = new A() 这个意思。</p>
+<h2 id="6-2-软引用（SoftReference）"><a href="#6-2-软引用（SoftReference）" class="headerlink" title="6.2. 软引用（SoftReference）"></a>6.2. 软引用（SoftReference）</h2><p>如果一个对象只具有软引用，则内存空间足够GC就不会回收它；如果内存空间不足了，就会回收这些对象的内存。软引用可用来实现内存敏感的高速缓存。</p>
+<p>软引用可以和一个引用队列（ReferenceQueue）联合使用，如果软引用所引用的对象被GC回收，JVM就会把这个软引用加入到与之关联的引用队列中。</p>
+<h2 id="6-3-弱引用（WeakReference）"><a href="#6-3-弱引用（WeakReference）" class="headerlink" title="6.3. 弱引用（WeakReference）"></a>6.3. 弱引用（WeakReference）</h2><p>弱引用与软引用的区别在于：<strong>只具有弱引用的对象拥有更短暂的生命周期。</strong> 在GC线程扫描它所管辖的内存区域时，一旦发现弱引用的对象，不管当前内存空间足够与否，都会回收它的内存。不过由于 <strong>GC是一个优先级很低的线程</strong>，因此不一定会很快发现那些只具有弱引用的对象。</p>
+<h2 id="6-4-虚引用（PhantomReference）"><a href="#6-4-虚引用（PhantomReference）" class="headerlink" title="6.4. 虚引用（PhantomReference）"></a>6.4. 虚引用（PhantomReference）</h2><p>与其他几种引用都不同，虚引用并不会决定对象的生命周期。如果一个对象仅持有虚引用，那么它就和没有任何引用一样，在任何时候都可能被GC回收。虚引用主要用来跟踪对象被GC回收。</p>
+<p>虚引用与软引用和弱引用的一个区别在于：<strong>虚引用必须和引用队列 （ReferenceQueue）联合使用。</strong> 当GC准备回收一个对象时，如果发现它还有虚引用，就会在回收对象的内存之前，把这个虚引用加入到与之关联的引用队列中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ReferenceQueue queue = <span class="keyword">new</span> ReferenceQueue ();</span><br><span class="line">PhantomReference pr = <span class="keyword">new</span> PhantomReference (object, queue);</span><br></pre></td></tr></table></figure>
+
+<p>程序员可以通过判断引用队列中是否已经加入了虚引用，来了解被引用的对象是否为将要被垃圾回收。如果发现某个虚引用已经被加入到引用队列，就可以在所引用对象的内存被回收之前采取必要的行动。</p>
+<p>Tips：利用软引用和弱引用解决OOM问题。<br>用一个HashMap来保存图片的路径和相应图片对象关联的软引用之间的映射关系，在内存不足时，JVM会自动回收这些缓存图片对象所占用的空间，从而有效地避免了OOM的问题</p>
+<p>Tips：更多关于对象引用的知识，参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-4-jiang-qiang-yin-yong-3001-ruan-yin-yong-3001-ruo-yin-yong-3001-huan-xiang-yin-yong-you-shi-yao-qu-bie-ff1f.md">第4讲 | 强引用、软引用、弱引用、幻象引用有什么区别？</a>。</p>
+<h1 id="7-ArrayList、LinkedList、Vector的区别"><a href="#7-ArrayList、LinkedList、Vector的区别" class="headerlink" title="7. ArrayList、LinkedList、Vector的区别"></a>7. ArrayList、LinkedList、Vector的区别</h1><p>下面这张是Collection框架图，主要包含List、Set和Queue集合。<br><img src="../../../../images/githubpages/Java%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/Collection%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%E5%9B%BE.png" alt="Collection框架图">  </p>
+<p>参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-8-jiang-dui-bi-vector-arraylist-linkedlist-you-he-qu-bie-ff1f.md">第8讲 | 对比Vector、ArrayList、LinkedList有何区别？</a></p>
+<h1 id="8-HashMap和ConcurrentHashMap的区别"><a href="#8-HashMap和ConcurrentHashMap的区别" class="headerlink" title="8. HashMap和ConcurrentHashMap的区别"></a>8. HashMap和ConcurrentHashMap的区别</h1><p>下面这张是Map集合框架图。<br><img src="../../../../images/githubpages/Java%E5%9F%BA%E7%A1%80%E6%B1%87%E6%80%BB/Map%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%E5%9B%BE.png" alt="Map集合框架图"><br>参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-9-jiang-dui-bi-hashtable-hashmap-treemap-you-shi-yao-bu-tong-ff1f.md">第9讲 | 对比Hashtable、HashMap、TreeMap有什么不同？</a><br>参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-10-jiang-ru-he-baozheng-ji-he-shi-xian-cheng-an-quan-76843f-concurrenthashmap-ru-he-shi-xian-gao-xiao-di-xian-cheng-an-quan-ff1f.md">第10讲 | 如何保证集合是线程安全的? ConcurrentHashMap如何实现高效地线程安全？</a></p>
+<h1 id="9-String、StringBuffer与StringBuilder的区别"><a href="#9-String、StringBuffer与StringBuilder的区别" class="headerlink" title="9. String、StringBuffer与StringBuilder的区别"></a>9. String、StringBuffer与StringBuilder的区别</h1><p>String 是 Java 语言非常基础和重要的类，提供了构造和管理字符串的各种基本逻辑。它是典型的 Immutable 类，被声明成为 final class，所有属性也都是 final 的。也由于它的不可变性，类似拼接、裁剪字符串等动作，都会产生新的 String 对象。由于字符串操作的普遍性，所以相关操作的效率往往对应用性能有明显影响。</p>
+<p>StringBuffer 是为解决上面提到拼接产生太多中间对象的问题而提供的一个类，它是 Java 1.5 中新增的，我们可以用 append 或者 add 方法，把字符串添加到已有序列的末尾或者指定位置。StringBuffer 本质是一个线程安全的可修改字符序列，它保证了线程安全，也随之带来了额外的性能开销，所以除非有线程安全的需要，不然还是推荐使用它的后继者，也就是 StringBuilder。</p>
+<p>StringBuilder 在能力上和 StringBuffer 没有本质区别，但是它去掉了线程安全的部分，有效减小了开销，是绝大部分情况下进行字符串拼接的首选。</p>
+<p>Tips：更多知识，参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-5-jiang-string-stringbuffer-stringbuilder-you-shi-yao-qu-bie-ff1f.md">第5讲 | String、StringBuffer、StringBuilder有什么区别？</a></p>
+<h1 id="10-try-catch-finally"><a href="#10-try-catch-finally" class="headerlink" title="10. try catch finally"></a>10. try catch finally</h1><p>在不抛出异常的情况下，程序执行完try里面的代码块之后，该方法并不会立即结束，而是继续试图去寻找该方法有没有finally的代码块。</p>
+<p>如果没有finally代码块，整个方法在执行完try代码块后返回相应的值来结束整个方法。<br>如果有finally代码块，此时程序执行到try代码块里的return语句之时并不会立即执行return，而是先去执行finally代码块里的代码。</p>
+<p>若finally代码块里没有return或没有能够终止程序的代码，程序将在执行完finally代码块代码之后再返回try代码块执行return语句来结束整个方法。<br>若finally代码块里有return或含有能够终止程序的代码，方法将在执行完finally之后被结束，不再跳回try代码块执行return。</p>
+<p>在抛出异常的情况下，原理也是和上面的一样的，你把上面说到的try换成catch去理解就OK了。</p>
+<h1 id="11-Excption与Error包结构"><a href="#11-Excption与Error包结构" class="headerlink" title="11. Excption与Error包结构"></a>11. Excption与Error包结构</h1><p><img src="https://github.com/LeeeYou/Img/blob/master/leeeyou/Excption.png?raw=true" alt="Throwable"></p>
+<p>参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-2-jiang-exception-he-error-you-shi-yao-qu-bie-ff1f.md">第2讲 | Exception和Error有什么区别？</a></p>
+<h1 id="12-锁的等级"><a href="#12-锁的等级" class="headerlink" title="12. 锁的等级"></a>12. 锁的等级</h1><h2 id="12-1-分类"><a href="#12-1-分类" class="headerlink" title="12.1. 分类"></a>12.1. 分类</h2><p>类锁：在代码中的方法上加了static和synchronized的锁，或者synchronized(xxx.class）的代码段。<br>对象锁：在代码中的方法上加上synchronized锁或者synchronized(this）的代码段，二者的加锁方法构成竞争关系，同一时刻只能有一个方法能执行。<br>私有锁：在类内部声明一个私有属性如private Object lock，在需要加锁的代码段synchronized(lock）。      </p>
+<p>类锁和对象锁不会产生竞争，二者的加锁方法不会相互影响。<br>私有锁和对象锁也不会产生竞争，二者的加锁方法不会相互影响。</p>
+<h2 id="12-2-synchronized和lock区别"><a href="#12-2-synchronized和lock区别" class="headerlink" title="12.2. synchronized和lock区别"></a>12.2. synchronized和lock区别</h2><p>Lock是Java SE5中新引入的用于提高性能的类，类似的还有Atomic类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Lock l = ...;</span><br><span class="line">l.lock();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line"><span class="comment">// access the resource protected by this lock</span></span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  l.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要考虑两个因素：1 互斥方法体的大小问题。<strong>只互斥那些绝对必须互斥的部分</strong> ，但实际情况中，被互斥部分可能非常大，相对于进入和退出互斥的时间比来说，Lock提升的互斥速度优势基本就湮灭了； 2 synchronized的可读性高，维护成本较低，通常是开发人员的惯用手法。建议以synchronized入手，只有在性能调优时或者 <strong>有明确的证据表明</strong> 在同步下synchronized遇到性能瓶颈才替换为Lock这种做法具有实际意义。</p>
+<p>Tips：更多知识，参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-15-jiang-synchronized-he-reentrantlock-you-shi-yao-qu-bie-ni-ff1f.md">第15讲 | synchronized和ReentrantLock有什么区别呢？</a></p>
+<h1 id="13-生产者消费者模式"><a href="#13-生产者消费者模式" class="headerlink" title="13. 生产者消费者模式"></a>13. 生产者消费者模式</h1><p>下面这段代码的实现方式比较复杂，需要人为控制轮询和条件判断。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.day12.proCus;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Condition;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Lock;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 解决了&quot;重复消费和未消费&quot;的问题(if改成while)，同时利用JDK5.0新特性Lock和Condition 处理了同步时上锁解锁和等待唤醒的的问题</span></span><br><span class="line"><span class="comment"> * Lock最大的一个特点是：&quot;可以支持多个相关的 Condition 对象&quot;，也就是说一把锁上可以绑定多个&quot;状态条件&quot;对象，详见API</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> kongbei</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProducerCustomerDemo2</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Res2 r = <span class="keyword">new</span> Res2();</span><br><span class="line"></span><br><span class="line">        Producer2 p = <span class="keyword">new</span> Producer2(r);</span><br><span class="line">        Customer2 c = <span class="keyword">new</span> Customer2(r);</span><br><span class="line"></span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(p);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(c);</span><br><span class="line">        Thread t3 = <span class="keyword">new</span> Thread(p);</span><br><span class="line">        Thread t4 = <span class="keyword">new</span> Thread(c);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t3.start();</span><br><span class="line">        t4.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Producer2</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Res2 r;</span><br><span class="line"></span><br><span class="line">    Producer2(Res2 r) &#123;</span><br><span class="line">        <span class="keyword">this</span>.r = r;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        r.set(<span class="string">&quot;iPhone5s&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Customer2</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Res2 r;</span><br><span class="line"></span><br><span class="line">    Customer2(Res2 r) &#123;</span><br><span class="line">        <span class="keyword">this</span>.r = r;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        r.print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Res2</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> count = <span class="number">5588</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;<span class="comment">//当前仓库是不是满的</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">    <span class="keyword">private</span> Condition conditon_pro = lock.newCondition();</span><br><span class="line">    <span class="keyword">private</span> Condition condition_cus = lock.newCondition();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            lock.lock(); <span class="comment">//上锁</span></span><br><span class="line">            <span class="keyword">while</span> (flag) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    conditon_pro.await(); <span class="comment">//让生产线程等待</span></span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">this</span>.name = name + <span class="string">&quot;..编号&quot;</span> + count++;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot;- 生产 -&quot;</span> + <span class="keyword">this</span>.name);</span><br><span class="line">            flag = <span class="keyword">true</span>;</span><br><span class="line">            condition_cus.signal(); <span class="comment">//唤醒消费线程</span></span><br><span class="line">            lock.unlock();<span class="comment">//解锁</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            lock.lock(); <span class="comment">//上锁</span></span><br><span class="line">            <span class="keyword">while</span> (!flag) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    condition_cus.await();<span class="comment">//让消费线程等待</span></span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;	&quot;</span> + Thread.currentThread().getName() + <span class="string">&quot;-消费-&quot;</span> + name);</span><br><span class="line">            flag = <span class="keyword">false</span>;</span><br><span class="line">            conditon_pro.signal();<span class="comment">//唤醒生成线程</span></span><br><span class="line">            lock.unlock();<span class="comment">//解锁</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面利用 BlockingQueue 来实现，由于其提供的等待机制，我们可以少操心很多协调工作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.ArrayBlockingQueue;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.BlockingQueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConsumerProducer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String EXIT_MSG = <span class="string">&quot;Good bye!&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 使用较小的队列，以更好地在输出中展示其影响</span></span><br><span class="line">        BlockingQueue&lt;String&gt; queue = <span class="keyword">new</span> ArrayBlockingQueue&lt;&gt;(<span class="number">3</span>);</span><br><span class="line">        Producer producer = <span class="keyword">new</span> Producer(queue);</span><br><span class="line">        Consumer consumer = <span class="keyword">new</span> Consumer(queue);</span><br><span class="line">        <span class="keyword">new</span> Thread(producer).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(consumer).start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> BlockingQueue&lt;String&gt; queue;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Producer</span><span class="params">(BlockingQueue&lt;String&gt; q)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.queue = q;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">5L</span>);</span><br><span class="line">                    String msg = <span class="string">&quot;Message&quot;</span> + i;</span><br><span class="line">                    System.out.println(<span class="string">&quot;Produced new item: &quot;</span> + msg);</span><br><span class="line">                    queue.put(msg);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;Time to say good bye!&quot;</span>);</span><br><span class="line">                queue.put(EXIT_MSG);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> BlockingQueue&lt;String&gt; queue;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Consumer</span><span class="params">(BlockingQueue&lt;String&gt; q)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.queue = q;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                String msg;</span><br><span class="line">                <span class="keyword">while</span> (!EXIT_MSG.equalsIgnoreCase((msg = queue.take()))) &#123;</span><br><span class="line">                    System.out.println(<span class="string">&quot;    Consumed item: &quot;</span> + msg);</span><br><span class="line">                    Thread.sleep(<span class="number">10L</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(<span class="string">&quot;Got exit message, bye!&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Tips：更多知识，参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-20-jiang-bing-fa-bao-zhong-de-concurrentlinkedqueue-he-linkedblockingqueue-you-shi-yao-qu-bie-ff1f.md#%E9%98%9F%E5%88%97%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF%E4%B8%8E%E5%85%B8%E5%9E%8B%E7%94%A8%E4%BE%8B">第20讲 | 并发包中的ConcurrentLinkedQueue和LinkedBlockingQueue有什么区别？</a></p>
+<h1 id="14-写一个死锁程序"><a href="#14-写一个死锁程序" class="headerlink" title="14. 写一个死锁程序"></a>14. 写一个死锁程序</h1><p>出现原因：同步中嵌套同步</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.day11.deadLock;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DeadLock</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    Thread t1 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> DeadLock2(<span class="keyword">false</span>));</span><br><span class="line">    Thread t2 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> DeadLock2(<span class="keyword">true</span>));</span><br><span class="line">    t1.start();</span><br><span class="line">    t2.start();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DeadLock2</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">  <span class="keyword">boolean</span> flag = <span class="keyword">true</span>;</span><br><span class="line">  DeadLock2(<span class="keyword">boolean</span> flag)&#123;</span><br><span class="line">    <span class="keyword">this</span>.flag = flag;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(flag)&#123;</span><br><span class="line">     <span class="keyword">synchronized</span> (LockObject.lo1) &#123;</span><br><span class="line">       System.out.println(<span class="string">&quot;if lo1&quot;</span>);</span><br><span class="line">       <span class="keyword">synchronized</span> (LockObject.lo2) &#123;</span><br><span class="line">         System.out.println(<span class="string">&quot;if lo2&quot;</span>);</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">     <span class="keyword">synchronized</span> (LockObject.lo2) &#123;</span><br><span class="line">       System.out.println(<span class="string">&quot;else lo2&quot;</span>);</span><br><span class="line">       <span class="keyword">synchronized</span> (LockObject.lo1) &#123;</span><br><span class="line">         System.out.println(<span class="string">&quot;else lo1&quot;</span>);</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LockObject</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> LockObject lo1 = <span class="keyword">new</span> LockObject();</span><br><span class="line">  <span class="keyword">static</span> LockObject lo2 = <span class="keyword">new</span> LockObject();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Tips：更多知识，参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-18-jiang-shi-yao-qing-kuang-xia-java-cheng-xu-hui-chan-sheng-si-suo-ff1f-ru-he-ding-wei-3001-xiu-fu-ff1f.md">第18讲 | 什么情况下Java程序会产生死锁？如何定位、修复？</a></p>
+<h1 id="15-ThreadLocal"><a href="#15-ThreadLocal" class="headerlink" title="15. ThreadLocal"></a>15. ThreadLocal</h1><p><strong>ThreadLocal是一个数据结构，用于隔离其他线程，提供线程内的局部变量；这种变量在线程的生命周期内起作用，能减少同一个线程内多个函数或者组件之间一些公共变量传递的复杂度。</strong></p>
+<p>先看看JDK8的ThreadLocal-set/get方法的源码：</p>
+<p><a target="_blank" rel="noopener" href="https://cs.android.com/android/platform/superproject/+/master:libcore/ojluni/src/main/java/java/lang/ThreadLocal.java;l=455;drc=master?q=ThreadLocalMap&ss=android/platform/superproject"><strong>libcore/ojluni/src/main/java/java/lang/ThreadLocal.java</strong></a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//获取当前线程</span></span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    <span class="comment">//拿到当前线程的ThreadLocalMap，实际上就是Thread类的threadLocals属性</span></span><br><span class="line">    ThreadLocalMap map = <span class="keyword">this</span>.getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        <span class="comment">//key是ThreadLocal本身</span></span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">//在ThreadLocalMap中找到对应的Entry</span></span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">            <span class="comment">//得到Entry的value</span></span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ThreadLocal.<span class="function">ThreadLocalMap <span class="title">getMap</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以发现，每个线程中都有一个ThreadLocalMap数据结构。当执行set方法时，其值是保存在当前线程的threadLocals变量中；而执行get方法中是从当前线程的threadLocals变量获取。通过下面的例子可以更好的理解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ThreadLocal&lt;String&gt; cityName = <span class="keyword">new</span> ThreadLocal();</span><br><span class="line"></span><br><span class="line">在Thread1中cityName.set(<span class="string">&quot;深圳&quot;</span>);</span><br><span class="line">在Thread2中cityName.set(<span class="string">&quot;北京&quot;</span>);</span><br><span class="line"></span><br><span class="line">Thread1 - ThreadLocalMap1(key,value) - key就是ThreadLocal实例，value就是深圳</span><br><span class="line">Thread2 - ThreadLocalMap2(key,value) - key就是ThreadLocal实例，value就是北京</span><br></pre></td></tr></table></figure>
+
+<p>总结一下ThreadLocal的设计思路：每个Thread维护一个ThreadLocalMap映射表，这个映射表的key是ThreadLocal实例本身，value是真正需要存储的Object。所以在Thread1中set的值，对Thread2来说是摸不到的，而且在Thread2中重新set的话，也不会影响到Thread1中的值，保证了线程之间不会相互干扰。</p>
+<h2 id="15-1-Android中ThreadLocal唯一性验证"><a href="#15-1-Android中ThreadLocal唯一性验证" class="headerlink" title="15.1 Android中ThreadLocal唯一性验证"></a>15.1 <a target="_blank" rel="noopener" href="https://github.com/Leeeyou/SampleHandler/blob/master/app/src/main/java/com/leeeyou123/samplehandler/MainActivity.kt">Android中ThreadLocal唯一性验证</a></h2><p>结合Android中的Handler机制中的Looper是如何保证线程唯一性的，下面代码分别在主线程和子线程中反射获取sThreadLocal和mQueue，然后观察它们是否一致。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 验证ThreadLocal全局唯一性，分别在主线程和子线程中反射获取sThreadLocal和mQueue，然后观察它们是否一致</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* 期望：sThreadLocal一致，完全是同一个实例对象，因为它是static final的，隶属于类</span></span><br><span class="line"><span class="comment">*      而mQueue是final的，是跟线程实例对象对应的，不同线程是不同的实例对象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">verifyThreadLocal</span><span class="params">()</span></span> &#123;</span><br><span class="line">    Toast.makeText(<span class="keyword">this</span>, <span class="string">&quot;请查看logcat&quot;</span>, Toast.LENGTH_SHORT).show()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> looperClazz = Class.forName(<span class="string">&quot;android.os.Looper&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 在主线程中反射获取sThreadLocal和mQueue对象</span></span><br><span class="line">    Looper.getMainLooper()?.also &#123;</span><br><span class="line">        Handler(it).post &#123;</span><br><span class="line">            <span class="keyword">val</span> threadLocalField = looperClazz.getDeclaredField(<span class="string">&quot;sThreadLocal&quot;</span>)</span><br><span class="line">            <span class="keyword">val</span> mqField = looperClazz.getDeclaredField(<span class="string">&quot;mQueue&quot;</span>)</span><br><span class="line">            threadLocalField.isAccessible = <span class="literal">true</span></span><br><span class="line">            mqField.isAccessible = <span class="literal">true</span></span><br><span class="line">            <span class="keyword">val</span> threadLocalObj = threadLocalField.<span class="keyword">get</span>(<span class="literal">null</span>) <span class="comment">// 获取静态类型的实例对象</span></span><br><span class="line">            <span class="keyword">val</span> mqObj = mqField.<span class="keyword">get</span>(it)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">val</span> msg =</span><br><span class="line">                <span class="string">&quot;ThreadName [<span class="subst">$&#123;Thread.currentThread().name&#125;</span>], sThreadLocal is [<span class="subst">$&#123;threadLocalObj&#125;</span>], mQueue is [<span class="subst">$&#123;mqObj&#125;</span>]&quot;</span></span><br><span class="line">            Log.e(TAG, msg)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 在子线程中反射获取sThreadLocal和mQueue对象</span></span><br><span class="line">    Thread &#123;</span><br><span class="line">        Looper.prepare() <span class="comment">// 子线程中prepare looper</span></span><br><span class="line">        Looper.myLooper()?.also &#123;</span><br><span class="line">            Handler(it).post &#123; <span class="comment">// 在子线程中创建Handler并post msg</span></span><br><span class="line">                <span class="keyword">val</span> threadLocalField = looperClazz.getDeclaredField(<span class="string">&quot;sThreadLocal&quot;</span>)</span><br><span class="line">                <span class="keyword">val</span> mqField = looperClazz.getDeclaredField(<span class="string">&quot;mQueue&quot;</span>)</span><br><span class="line">                threadLocalField.isAccessible = <span class="literal">true</span></span><br><span class="line">                mqField.isAccessible = <span class="literal">true</span></span><br><span class="line">                <span class="keyword">val</span> threadLocalObj = threadLocalField.<span class="keyword">get</span>(<span class="literal">null</span>) <span class="comment">// 获取静态类型的实例对象</span></span><br><span class="line">                <span class="keyword">val</span> mqObj = mqField.<span class="keyword">get</span>(it)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">val</span> msg =</span><br><span class="line">                    <span class="string">&quot;ThreadName [<span class="subst">$&#123;Thread.currentThread().name&#125;</span>], sThreadLocal is [<span class="subst">$&#123;threadLocalObj&#125;</span>], mQueue is [<span class="subst">$&#123;mqObj&#125;</span>]&quot;</span></span><br><span class="line">                Log.e(TAG, msg)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        Looper.loop() <span class="comment">// 开启子线程的loop循环</span></span><br><span class="line">    &#125;.start()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出的日志如下所示，可以看到不管是主线程还是子线程，sThreadLocal是同一个实例对象，而mQueue是跟线程实例对象对应的，不同线程是不同的实例对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2021</span>-<span class="number">12</span>-<span class="number">16</span> <span class="number">15</span>:<span class="number">12</span>:<span class="number">38.550</span> <span class="number">8100</span>-<span class="number">8100</span>/com.leeeyou123.samplehandler E/MainActivity: ThreadName [main], sThreadLocal is [java.lang.ThreadLocal@8a18755], mQueue is [android.os.MessageQueue@74fba5b]</span><br><span class="line"><span class="number">2021</span>-<span class="number">12</span>-<span class="number">16</span> <span class="number">15</span>:<span class="number">12</span>:<span class="number">38.550</span> <span class="number">8100</span>-<span class="number">11638</span>/com.leeeyou123.samplehandler E/MainActivity: ThreadName [Thread-<span class="number">12</span>], sThreadLocal is [java.lang.ThreadLocal@8a18755], mQueue is [android.os.MessageQueue@51c42f8]</span><br></pre></td></tr></table></figure>
+
+<h2 id="15-2-ThreadLocalMap"><a href="#15-2-ThreadLocalMap" class="headerlink" title="15.2. ThreadLocalMap"></a>15.2. <a target="_blank" rel="noopener" href="https://cs.android.com/android/platform/superproject/+/master:libcore/ojluni/src/main/java/java/lang/ThreadLocal.java;drc=master;bpv=1;bpt=1;l=298?q=ThreadLocalMap&ss=android/platform/superproject">ThreadLocalMap</a></h2><p>从名字上看可以猜到它也是一个类似HashMap的数据结构，但是在ThreadLocal中并没实现Map接口。在ThreadLoalMap中初始化一个大小16的Entry数组，Entry对象用来保存每一个key-value键值对，只不过这里的key永远都是ThreadLocal对象，是不是很神奇，通过ThreadLocal对象的set方法，结果把ThreadLocal对象自己当做key，放进了ThreadLoalMap中。</p>
+<p>ThreadLoalMap的Entry继承了WeakReference，和HashMap很大的区别是，Entry中没有next字段，所以就不存在链表的情况了。</p>
+<p>ThreadLocalMap是使用ThreadLocal的弱引用作为Key的，源码如下所示：</p>
+<p><strong>libcore/ojluni/src/main/java/java/lang/ThreadLocal.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocalMap</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span> <span class="keyword">extends</span> <span class="title">WeakReference</span>&lt;<span class="title">ThreadLocal</span>&lt;?&gt;&gt; </span>&#123;</span><br><span class="line">        <span class="comment">/** The value associated with this ThreadLocal. */</span></span><br><span class="line">        Object value;</span><br><span class="line"></span><br><span class="line">        Entry(ThreadLocal&lt;?&gt; k, Object v) &#123;</span><br><span class="line">            <span class="keyword">super</span>(k);</span><br><span class="line">            value = v;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="hash冲突"><a href="#hash冲突" class="headerlink" title="hash冲突"></a><a target="_blank" rel="noopener" href="https://cs.android.com/android/platform/superproject/+/master:libcore/ojluni/src/main/java/java/lang/ThreadLocal.java;drc=master;bpv=1;bpt=1;l=455?q=ThreadLocalMap&ss=android/platform/superproject">hash冲突</a></h3><p>没有链表结构，那发生hash冲突了怎么办？先看看ThreadLoalMap中插入一个key-value的实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(ThreadLocal&lt;?&gt; key, Object value)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//拿到Entry数组</span></span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line">    <span class="comment">//通过ThreadLocal对象的hash值计算出下标</span></span><br><span class="line">    <span class="keyword">int</span> i = key.threadLocalHashCode &amp; (len-<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//循环数组，起点是i所在的位置</span></span><br><span class="line">    <span class="keyword">for</span> (Entry e = tab[i];</span><br><span class="line">            e != <span class="keyword">null</span>;</span><br><span class="line">            e = tab[i = nextIndex(i, len)]) &#123;</span><br><span class="line">        ThreadLocal&lt;?&gt; k = e.get();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//位置i已经有Entry对象了，如果这个Entry对象的key正好是即将设置的key，那么重新设置Entry中的value</span></span><br><span class="line">        <span class="keyword">if</span> (k == key) &#123;</span><br><span class="line">            e.value = value;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//位置i的key是null，则替换掉陈旧的Entry</span></span><br><span class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span>) &#123;</span><br><span class="line">            replaceStaleEntry(key, value, i);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//当前i的位置是null，正在就初始化一个Entry放在i位置上</span></span><br><span class="line">    tab[i] = <span class="keyword">new</span> Entry(key, value);</span><br><span class="line">    <span class="keyword">int</span> sz = ++size;</span><br><span class="line">    <span class="keyword">if</span> (!cleanSomeSlots(i, sz) &amp;&amp; sz &gt;= threshold)</span><br><span class="line">        rehash();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每个ThreadLocal对象都有一个hash值threadLocalHashCode，每初始化一个ThreadLocal对象，hash值就增加一个固定的大小0x61c88647(即十进制1640531527)。上面的set代码展示了插入过程中的定位逻辑，在get的时候，也会根据ThreadLocal对象的hash值，定位到table中的位置，然后判断该位置Entry对象中的key是否和get的key一致，如果不一致，就判断下一个位置。</p>
+<h2 id="15-3-ThreadLocal和Synchronized"><a href="#15-3-ThreadLocal和Synchronized" class="headerlink" title="15.3. ThreadLocal和Synchronized"></a>15.3. ThreadLocal和Synchronized</h2><p>一个是锁机制进行时间换空间，一个是存储拷贝进行空间换时间。</p>
+<h1 id="16-守护线程和非守护线程的区别以及用法"><a href="#16-守护线程和非守护线程的区别以及用法" class="headerlink" title="16. 守护线程和非守护线程的区别以及用法"></a>16. 守护线程和非守护线程的区别以及用法</h1><p>调用时机：在启动线程前调用。<br>特点一：开启后，和前台线程共同抢夺CPU执行权并运行。<br>特点二：结束时，当所有前台线程都结束后，后台线程会自动结束（JAVA VM退出）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.day12.deamonThread;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DeamonThreadDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        DeamonThread dt = <span class="keyword">new</span> DeamonThread();</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(dt);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(dt);</span><br><span class="line"></span><br><span class="line">        t1.setDaemon(<span class="keyword">true</span>);<span class="comment">//设置为后台线程</span></span><br><span class="line">        t2.setDaemon(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot;..&quot;</span> + i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DeamonThread</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">&quot;..&quot;</span> + i);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="17-ThreadPool用法与优势"><a href="#17-ThreadPool用法与优势" class="headerlink" title="17. ThreadPool用法与优势"></a>17. ThreadPool用法与优势</h1><h2 id="17-1-优势"><a href="#17-1-优势" class="headerlink" title="17.1. 优势"></a>17.1. 优势</h2><p>降低资源消耗：通过重复利用已创建的线程降低线程创建和销毁造成的消耗。<br>提高响应速度：当任务到达时，任务可以不需要等到线程创建就能立即执行。<br>提高线程的可管理性：线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。</p>
+<h2 id="17-2-newCachedThreadPool"><a href="#17-2-newCachedThreadPool" class="headerlink" title="17.2. newCachedThreadPool"></a>17.2. newCachedThreadPool</h2><p>创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。<br>只有非核心线程；线程数量不固定的线程池；有超时机制，超过60s，闲置线程就会被回收；适合执行大量的耗时较少的任务。</p>
+<h2 id="17-3-newFixedThreadPool"><a href="#17-3-newFixedThreadPool" class="headerlink" title="17.3. newFixedThreadPool"></a>17.3. newFixedThreadPool</h2><p>创建一个定长线程池，可控制线程最大并发数，超出的线程会在队列中等待。<br>只有核心线程；线程数量固定的线程池；线程处于空闲状态，不会被回收。</p>
+<h2 id="17-4-newScheduledThreadPool"><a href="#17-4-newScheduledThreadPool" class="headerlink" title="17.4. newScheduledThreadPool"></a>17.4. newScheduledThreadPool</h2><p>创建一个定长线程池，支持定时及周期性任务执行。<br>核心线程有固定数，非核心线程没有限制的线程池；非核心线程闲置时会被回收；主要用于执行定时任务和具有固定周期的重复任务。</p>
+<h2 id="17-5-newSingleThreadExecutor"><a href="#17-5-newSingleThreadExecutor" class="headerlink" title="17.5. newSingleThreadExecutor"></a>17.5. newSingleThreadExecutor</h2><p>创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。<br>只有一个核心线程；确保所有的任务都在同一个线程中按顺序执行；其意义在于统一外界任务到一个线程中，使得这些任务之间不需要处理线程同步问题。</p>
+<p>Tips：更多知识，参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-21-jiang-java-bing-fa-lei-ku-ti-gong-de-xian-cheng-chi-you-na-ji-zhong-ff1f-fen-bie-you-shi-yao-te-dian-ff1f.md">第21讲 | Java并发类库提供的线程池有哪几种？ 分别有什么特点？</a></p>
+<h1 id="18-Java-IO与NIO"><a href="#18-Java-IO与NIO" class="headerlink" title="18. Java IO与NIO"></a>18. Java IO与NIO</h1><table>
+<thead>
+<tr>
+<th>IO</th>
+<th>NIO</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>面向流</td>
+<td>面向缓冲</td>
+</tr>
+<tr>
+<td>阻塞IO</td>
+<td>非阻塞IO</td>
+</tr>
+<tr>
+<td>无</td>
+<td>选择器</td>
+</tr>
+</tbody></table>
+<h2 id="18-1-面向流-vs-面向缓冲"><a href="#18-1-面向流-vs-面向缓冲" class="headerlink" title="18.1. 面向流 vs 面向缓冲"></a>18.1. 面向流 vs 面向缓冲</h2><p>Java NIO和IO之间第一个最大的区别是，IO是面向流的，NIO是面向缓冲区的。</p>
+<p>Java IO面向流意味着每次从流中读一个或多个字节，直至读取所有字节，它们没有被缓存在任何地方。此外它不能前后移动流中的数据，如果需要前后移动从流中读取的数据，需要先将它缓存到一个缓冲区。</p>
+<p>Java NIO的缓冲导向方法略有不同，数据读取到一个它稍后处理的缓冲区，需要时可在缓冲区中前后移动。这就增加了处理过程中的灵活性，但还需要检查是否该缓冲区中包含所有您需要处理的数据，而且需确保当更多的数据读入缓冲区时，不要覆盖缓冲区里尚未处理的数据。</p>
+<h2 id="18-2-阻塞-vs-非阻塞"><a href="#18-2-阻塞-vs-非阻塞" class="headerlink" title="18.2. 阻塞 vs 非阻塞"></a>18.2. 阻塞 vs 非阻塞</h2><p>Java IO的各种流是阻塞的。这意味着当一个线程调用read()或write()时，该线程被阻塞直到有一些数据被读取或数据完全写入。该线程在此期间不能再干任何事情了。</p>
+<p>Java NIO的非阻塞模式，一个线程从某通道发送请求读取数据，但是它仅能得到目前可用的数据，如果目前没有数据可用时，就什么都不会获取，而不是保持线程阻塞，所以直至数据变的可以读取之前，该线程可以继续做其他的事情。非阻塞写也是如此，一个线程请求写入一些数据到某通道，但不需要等待它完全写入，这个线程同时可以去做别的事情。线程通常将非阻塞IO的空闲时间用于在其它通道上执行IO操作，所以一个单独的线程现在可以管理多个输入和输出通道（channel）。</p>
+<h2 id="18-3-事件监听器"><a href="#18-3-事件监听器" class="headerlink" title="18.3. 事件监听器"></a>18.3. 事件监听器</h2><p>Java NIO的选择器(Selector)允许一个单独的线程来监视多个输入通道(Channel)，我们在Selector上声明我们关心哪一个Channel的什么事件， Selector会监控这些Channels，并在事件发生时通知我们。</p>
+<p>Tips：更多知识，参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-11-jiang-java-ti-gong-le-na-xie-io-fang-shi-ff1f-nio-ru-he-shi-xian-duo-lu-fu-yong-ff1f.md">第11讲 | Java提供了哪些IO方式？ NIO如何实现多路复用？</a></p>
+<h1 id="19-接口和抽象类的区别"><a href="#19-接口和抽象类的区别" class="headerlink" title="19. 接口和抽象类的区别"></a>19. 接口和抽象类的区别</h1><p>Tips：更多知识，参考 <a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-13-jiang-tan-tan-jie-kou-he-chou-xiang-lei-you-shi-yao-qu-bie-ff1f.md">第13讲 | 谈谈接口和抽象类有什么区别？</a></p>
+<h1 id="20-静态类和非静态类的区别"><a href="#20-静态类和非静态类的区别" class="headerlink" title="20. 静态类和非静态类的区别"></a>20. 静态类和非静态类的区别</h1><p>静态类不能实例化，非静态类在使用时必须要实例化。</p>
+<p>静态类中不能创建非静态的方法，即静态类中只能创建静态方法，但在非静态类中可以调用静态方法。</p>
+<p>静态内部类可以有静态成员(方法，属性)，而非静态内部类则不能有静态成员(方法，属性)。</p>
+<p>静态内部类只能够访问外部类的静态成员,而非静态内部类则可以访问外部类的所有成员(方法，属性)。</p>
+<p>实例化一个非静态的内部类的方法 :</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a.先生成一个外部类对象实例</span><br><span class="line">OutClassTest oc1 = <span class="keyword">new</span> OutClassTest();</span><br><span class="line"></span><br><span class="line">b.通过外部类的对象实例生成内部类对象</span><br><span class="line">OutClassTest.InnerClass no_static_inner = oc1.n<span class="function">ew <span class="title">InnerClass</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>实例化一个静态内部类的方法 :</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">a.不依赖于外部类的实例,直接实例化内部类对象</span><br><span class="line">OutClassTest.InnerStaticClass inner = <span class="keyword">new</span> OutClassTest.InnerStaticClass();</span><br><span class="line"></span><br><span class="line">b.调用内部静态类的方法或静态变量,通过类名直接调用</span><br><span class="line">OutClassTest.InnerStaticClass.static_value</span><br><span class="line">OutClassTest.InnerStaticClass.getMessage()</span><br></pre></td></tr></table></figure>
+
+<h1 id="21-父类、子类实例化顺序"><a href="#21-父类、子类实例化顺序" class="headerlink" title="21. 父类、子类实例化顺序"></a>21. 父类、子类实例化顺序</h1><p>当实例化子类对象时，首先要加载父类的class文件进内存，静态代码块是随着类的创建而执行，所以父类静态代码块最先被执行，子类class文件再被加载，同理静态代码块被先执行；实例化子类对象要先调用父类的构造方法，而调用父类构造方法前会先执行父类的非静态代码块。</p>
+<p>例如：子类Sub继承父类Parent，Parent a = new Sub(); 则父类B构造函数、父类B静态代码块、父类B非静态代码块、子类A构造函数、子类A静态代码块、子类A非静态代码块 执行的先后顺序是？</p>
+<p>父类静态代码块-&gt;子类静态代码块-&gt;父类非静态代码块-&gt;父类构造函数-&gt;子类非静态代码块-&gt;子类构造函数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ParentCodeBlock 静态代码块</span><br><span class="line">SubBlockParent 静态代码块</span><br><span class="line">ParentCodeBlock 非静态代码块</span><br><span class="line">ParentCodeBlock 构造函数</span><br><span class="line">SubBlockParent 非静态代码块</span><br><span class="line">SubBlockParent 构造函数</span><br></pre></td></tr></table></figure>
+
+<h1 id="22-OOP和AOP的区别"><a href="#22-OOP和AOP的区别" class="headerlink" title="22. OOP和AOP的区别"></a>22. OOP和AOP的区别</h1><p>OOP(面向对象编程)针对业务处理过程的实体及其属性和行为进行封装，以获得更加清晰的逻辑单元划分。</p>
+<p>AOP则是针对业务处理过程中的切面进行提取，它所面对的是处理过程中的某个步骤或阶段，以获得逻辑过程中各部分之间低耦合性的隔离效果。AOP可以通过 <strong>预编译方式和运行期动态代理</strong> 实现在不修改源代码的情况下给程序动态统一添加功能的一种技术，把散落在程序中的公共部分提取出来做成切面类，这样的好处在于代码的可重用，一旦涉及到该功能的需求发生变化，只要修改该代码就行，否则你要到处修改，如果只要修改1、2处那还可以接受，万一有1000处呢？</p>
+<h1 id="23-依赖注入和控制反转的区别"><a href="#23-依赖注入和控制反转的区别" class="headerlink" title="23. 依赖注入和控制反转的区别"></a>23. 依赖注入和控制反转的区别</h1><p>依赖注入，就其广义而言即是通过 “注入” 的方式来获得依赖。我们知道，A对象依赖于B对象，等价于A对象内部存在对B对象的 “调用”，而前提是A对象内部拿到了B对象的引用。B对象的引用的来源无非有以下几种：A对象内部创建（无论是作为字段还是作为临时变量）、构造器注入、属性注入、方法注入。后面三种方式统称为“依赖注入”，而第一种方式我也生造了一个名词，称为 “依赖内生” 。二者根本的差异即在于：我所依赖的对象的创建工作是否由我自己来完成。</p>
+<p>控制反转跟依赖倒置都是一种编程思想，依赖倒置着眼于调用的形式，而控制反转则着眼于程序流程的控制权。一般来说，程序的控制权属于Client，而一旦控制权交到server，就叫控制反转。比如你去下馆子，你是Client餐馆是server。你点菜，餐馆负责做菜，程序流程的控制权属于Client；而如果你去自助餐厅，程序流程的控制权就转到server了，也就是控制反转。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2017/04/01/2017/2017-04-01-Android%E4%B9%8B%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6%E6%95%B4%E7%90%86/" rel="prev" title="Android之自定义控件整理">
+      <i class="fa fa-chevron-left"></i> Android之自定义控件整理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2017/04/20/2017/2017-04-20-Android%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AAActivity%E5%BC%95%E5%8F%91%E7%9A%84%E6%80%9D%E8%80%83/" rel="next" title="Android之启动一个Activity引发的思考">
+      Android之启动一个Activity引发的思考 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Java%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%8F%8A%E5%85%B6%E5%B0%81%E8%A3%85%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">1. Java基本数据类型及其封装类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Switch%E8%83%BD%E5%90%A6%E7%94%A8string%E5%81%9A%E5%8F%82%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">2. Switch能否用string做参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Object%E6%9C%89%E5%93%AA%E4%BA%9B%E5%85%AC%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">3. Object有哪些公用方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-equals-%E4%B8%8E-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">4.</span> <span class="nav-text">4. equals 与 &#x3D;&#x3D; 的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E6%94%B9%E5%86%99equals%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%94%B9%E5%86%99hashCode"><span class="nav-number">5.</span> <span class="nav-text">5. 改写equals为什么要改写hashCode</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-Java%E7%9A%84%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">6. Java的四种引用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-%E5%BC%BA%E5%BC%95%E7%94%A8%EF%BC%88StrongReference%EF%BC%89"><span class="nav-number">6.1.</span> <span class="nav-text">6.1. 强引用（StrongReference）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-%E8%BD%AF%E5%BC%95%E7%94%A8%EF%BC%88SoftReference%EF%BC%89"><span class="nav-number">6.2.</span> <span class="nav-text">6.2. 软引用（SoftReference）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-%E5%BC%B1%E5%BC%95%E7%94%A8%EF%BC%88WeakReference%EF%BC%89"><span class="nav-number">6.3.</span> <span class="nav-text">6.3. 弱引用（WeakReference）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-4-%E8%99%9A%E5%BC%95%E7%94%A8%EF%BC%88PhantomReference%EF%BC%89"><span class="nav-number">6.4.</span> <span class="nav-text">6.4. 虚引用（PhantomReference）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-ArrayList%E3%80%81LinkedList%E3%80%81Vector%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">7.</span> <span class="nav-text">7. ArrayList、LinkedList、Vector的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-HashMap%E5%92%8CConcurrentHashMap%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">8.</span> <span class="nav-text">8. HashMap和ConcurrentHashMap的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-String%E3%80%81StringBuffer%E4%B8%8EStringBuilder%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">9.</span> <span class="nav-text">9. String、StringBuffer与StringBuilder的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-try-catch-finally"><span class="nav-number">10.</span> <span class="nav-text">10. try catch finally</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-Excption%E4%B8%8EError%E5%8C%85%E7%BB%93%E6%9E%84"><span class="nav-number">11.</span> <span class="nav-text">11. Excption与Error包结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-%E9%94%81%E7%9A%84%E7%AD%89%E7%BA%A7"><span class="nav-number">12.</span> <span class="nav-text">12. 锁的等级</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#12-1-%E5%88%86%E7%B1%BB"><span class="nav-number">12.1.</span> <span class="nav-text">12.1. 分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-2-synchronized%E5%92%8Clock%E5%8C%BA%E5%88%AB"><span class="nav-number">12.2.</span> <span class="nav-text">12.2. synchronized和lock区别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">13.</span> <span class="nav-text">13. 生产者消费者模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#14-%E5%86%99%E4%B8%80%E4%B8%AA%E6%AD%BB%E9%94%81%E7%A8%8B%E5%BA%8F"><span class="nav-number">14.</span> <span class="nav-text">14. 写一个死锁程序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#15-ThreadLocal"><span class="nav-number">15.</span> <span class="nav-text">15. ThreadLocal</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#15-1-Android%E4%B8%ADThreadLocal%E5%94%AF%E4%B8%80%E6%80%A7%E9%AA%8C%E8%AF%81"><span class="nav-number">15.1.</span> <span class="nav-text">15.1 Android中ThreadLocal唯一性验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#15-2-ThreadLocalMap"><span class="nav-number">15.2.</span> <span class="nav-text">15.2. ThreadLocalMap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#hash%E5%86%B2%E7%AA%81"><span class="nav-number">15.2.1.</span> <span class="nav-text">hash冲突</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#15-3-ThreadLocal%E5%92%8CSynchronized"><span class="nav-number">15.3.</span> <span class="nav-text">15.3. ThreadLocal和Synchronized</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#16-%E5%AE%88%E6%8A%A4%E7%BA%BF%E7%A8%8B%E5%92%8C%E9%9D%9E%E5%AE%88%E6%8A%A4%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%8C%BA%E5%88%AB%E4%BB%A5%E5%8F%8A%E7%94%A8%E6%B3%95"><span class="nav-number">16.</span> <span class="nav-text">16. 守护线程和非守护线程的区别以及用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#17-ThreadPool%E7%94%A8%E6%B3%95%E4%B8%8E%E4%BC%98%E5%8A%BF"><span class="nav-number">17.</span> <span class="nav-text">17. ThreadPool用法与优势</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#17-1-%E4%BC%98%E5%8A%BF"><span class="nav-number">17.1.</span> <span class="nav-text">17.1. 优势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#17-2-newCachedThreadPool"><span class="nav-number">17.2.</span> <span class="nav-text">17.2. newCachedThreadPool</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#17-3-newFixedThreadPool"><span class="nav-number">17.3.</span> <span class="nav-text">17.3. newFixedThreadPool</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#17-4-newScheduledThreadPool"><span class="nav-number">17.4.</span> <span class="nav-text">17.4. newScheduledThreadPool</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#17-5-newSingleThreadExecutor"><span class="nav-number">17.5.</span> <span class="nav-text">17.5. newSingleThreadExecutor</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#18-Java-IO%E4%B8%8ENIO"><span class="nav-number">18.</span> <span class="nav-text">18. Java IO与NIO</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#18-1-%E9%9D%A2%E5%90%91%E6%B5%81-vs-%E9%9D%A2%E5%90%91%E7%BC%93%E5%86%B2"><span class="nav-number">18.1.</span> <span class="nav-text">18.1. 面向流 vs 面向缓冲</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#18-2-%E9%98%BB%E5%A1%9E-vs-%E9%9D%9E%E9%98%BB%E5%A1%9E"><span class="nav-number">18.2.</span> <span class="nav-text">18.2. 阻塞 vs 非阻塞</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#18-3-%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E5%99%A8"><span class="nav-number">18.3.</span> <span class="nav-text">18.3. 事件监听器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#19-%E6%8E%A5%E5%8F%A3%E5%92%8C%E6%8A%BD%E8%B1%A1%E7%B1%BB%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">19.</span> <span class="nav-text">19. 接口和抽象类的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#20-%E9%9D%99%E6%80%81%E7%B1%BB%E5%92%8C%E9%9D%9E%E9%9D%99%E6%80%81%E7%B1%BB%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">20.</span> <span class="nav-text">20. 静态类和非静态类的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#21-%E7%88%B6%E7%B1%BB%E3%80%81%E5%AD%90%E7%B1%BB%E5%AE%9E%E4%BE%8B%E5%8C%96%E9%A1%BA%E5%BA%8F"><span class="nav-number">21.</span> <span class="nav-text">21. 父类、子类实例化顺序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#22-OOP%E5%92%8CAOP%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">22.</span> <span class="nav-text">22. OOP和AOP的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#23-%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5%E5%92%8C%E6%8E%A7%E5%88%B6%E5%8F%8D%E8%BD%AC%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">23.</span> <span class="nav-text">23. 依赖注入和控制反转的区别</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

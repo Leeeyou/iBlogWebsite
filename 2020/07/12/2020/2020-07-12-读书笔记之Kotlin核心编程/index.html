@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 重点理解val的使用规则1.1 引用1 如果说var代表了varible（变量），那么val可看成value（值）的缩写。但也有人觉得这样并不直观或准确，而是把val解释成varible+final，即通过val声明的变量具有Java中的final关键字的效果，也就是引用不可变。 val声明的变量是只读变量，它的引用不可更改，但并不代表其引用对象也不可变。事实上，我们依然可以修改引用对象的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读书笔记之《Kotlin核心编程》">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2020/07/12/2020/2020-07-12-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8BKotlin%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="1. 重点理解val的使用规则1.1 引用1 如果说var代表了varible（变量），那么val可看成value（值）的缩写。但也有人觉得这样并不直观或准确，而是把val解释成varible+final，即通过val声明的变量具有Java中的final关键字的效果，也就是引用不可变。 val声明的变量是只读变量，它的引用不可更改，但并不代表其引用对象也不可变。事实上，我们依然可以修改引用对象的">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/readnote-kotlin-core-programming-cover.webp?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/readnote-kotlin-core-programming-6-visibility-modifier.png?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/readnote-kotlin-core-programming-11-comparison-of-kotlin-and-java-type-changes.jpeg?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/readnote-kotlin-core-programming-16-easter-eggs.jpeg?raw=true">
+<meta property="article:published_time" content="2020-07-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.419Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="读书笔记">
+<meta property="article:tag" content="Kotlin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/readnote-kotlin-core-programming-cover.webp?raw=true">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2020/07/12/2020/2020-07-12-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8BKotlin%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>读书笔记之《Kotlin核心编程》 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2020/07/12/2020/2020-07-12-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8BKotlin%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          读书笔记之《Kotlin核心编程》
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-12 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-12T00:00:00+08:00">2020-07-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/readnote-kotlin-core-programming-cover.webp?raw=true" alt="readnote-kotlin-core-programming-cover"></p>
+<h1 id="1-重点理解val的使用规则"><a href="#1-重点理解val的使用规则" class="headerlink" title="1. 重点理解val的使用规则"></a>1. 重点理解val的使用规则</h1><h2 id="1-1-引用1"><a href="#1-1-引用1" class="headerlink" title="1.1 引用1"></a>1.1 引用1</h2><ul>
+<li>如果说var代表了varible（变量），那么val可看成value（值）的缩写。但也有人觉得这样并不直观或准确，而是把val解释成varible+final，即通过val声明的变量具有Java中的final关键字的效果，也就是引用不可变。</li>
+<li>val声明的变量是只读变量，它的引用不可更改，但并不代表其引用对象也不可变。事实上，我们依然可以修改引用对象的可变成员。</li>
+</ul>
+<h2 id="1-2-引用2"><a href="#1-2-引用2" class="headerlink" title="1.2 引用2"></a>1.2 引用2</h2><ul>
+<li>优先使用val来避免副作用</li>
+<li>在很多Kotlin的学习资料中，都会传递一个原则：优先使用val来声明变量。这相当正确，但更好的理解可以是：<strong>尽可能采用val、不可变对象及纯函数(其实就是没有副作用的函数，具备引用透明性)来设计程序</strong>。</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="1-3-引用3"><a href="#1-3-引用3" class="headerlink" title="1.3 引用3"></a>1.3 引用3</h2><ul>
+<li>然而，在Kotlin编程中，我们推荐优先使用val来声明一个本身不可变的变量，这在大部分情况下更具有优势：<ul>
+<li>这是一种<strong>防御性的编码思维模式</strong>，更加安全和可靠，因为变量的值永远不会在其他地方被修改（一些框架采用反射技术的情况除外）；</li>
+<li>不可变的变量意味着更加容易推理，越是复杂的业务逻辑，它的优势就越大。</li>
+</ul>
+</li>
+</ul>
+<h2 id="1-4-点评"><a href="#1-4-点评" class="headerlink" title="1.4 点评"></a>1.4 点评</h2><p>上面说的其实非常明确了，val声明的变量具有Java中的final关键字的效果，也就是引用不可变，但其引用的内容是可变的。其实这里扯出了两个概念对我来说更重要，一个是变量或函数的副作用，一个是防御性编程思维。</p>
+<p>在后续编程中，会注意到变量副作用这块，尽量避免。而防御性思维其实一直都有，对于外部输入的参数，总是站在不可靠的角度上对待，从而写出可靠的代码。</p>
+<h1 id="2-关于函数和Lambda"><a href="#2-关于函数和Lambda" class="headerlink" title="2. 关于函数和Lambda"></a>2. 关于函数和Lambda</h1><h2 id="2-1-引用1"><a href="#2-1-引用1" class="headerlink" title="2.1 引用1"></a>2.1 引用1</h2><ul>
+<li>Kotlin天然支持了部分函数式特性。函数式语言一个典型的特征就在于<strong>函数是头等公民</strong>——我们不仅可以像类一样在顶层直接定义一个函数，也可以在一个函数内部定义一个局部函数。</li>
+</ul>
+<h2 id="2-2-引用2"><a href="#2-2-引用2" class="headerlink" title="2.2 引用2"></a>2.2 引用2</h2><p>所谓的高阶函数，你可以把它理解成“以其他函数作为参数或返回值的函数”。高阶函数是一种更加高级的抽象机制，它极大地增强了语言的表达能力。</p>
+<h2 id="2-3-引用3"><a href="#2-3-引用3" class="headerlink" title="2.3 引用3"></a>2.3 引用3</h2><ul>
+<li>Kotlin存在一种特殊的语法，通过两个冒号来实现对于某个类的方法进行引用。</li>
+<li>为什么使用双冒号的语法？<ul>
+<li>如果你了解C#，会知道它也有类似的方法引用特性，只是语法上不同，是通过点号来实现的。然而，C#的这种方式存在二义性，容易让人混淆方法引用表达式与成员表达式，所以Kotlin采用::（沿袭了Java 8的习惯），能够让我们更加清晰地认识这种语法。</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-4-Lambda表达式，你可以把它理解成简化表达后的匿名函数，实质上它就是一种语法糖。"><a href="#2-4-Lambda表达式，你可以把它理解成简化表达后的匿名函数，实质上它就是一种语法糖。" class="headerlink" title="2.4 Lambda表达式，你可以把它理解成简化表达后的匿名函数，实质上它就是一种语法糖。"></a>2.4 Lambda表达式，你可以把它理解成简化表达后的匿名函数，实质上它就是一种语法糖。</h2><ul>
+<li>一个Lambda表达式必须通过{}来包裹；</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> sum: (<span class="built_in">Int</span>, <span class="built_in">Int</span>) -<span class="built_in">Int</span> = &#123; x: <span class="built_in">Int</span>, y: <span class="built_in">Int</span> -x + y &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果Lambda声明了参数部分的类型，且返回值类型支持类型推导，那么Lambda变量就可以省略函数类型声明；</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> sum = &#123; x: <span class="built_in">Int</span>, y: <span class="built_in">Int</span> -x + y &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果Lambda变量声明了函数类型，那么Lambda的参数部分的类型就可以省略。</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> sum: (<span class="built_in">Int</span>, <span class="built_in">Int</span>) -<span class="built_in">Int</span> = &#123; x, y -x + y &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-5-区分函数、Lambda"><a href="#2-5-区分函数、Lambda" class="headerlink" title="2.5 区分函数、Lambda"></a>2.5 区分函数、Lambda</h2><ul>
+<li>fun在没有等号、只有花括号的情况下，是我们最常见的代码块函数体，如果返回非Unit值，必须带return。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fun <span class="title">foo</span><span class="params">(x: Int)</span> </span>&#123; print(x) &#125;</span><br><span class="line"><span class="function">fun <span class="title">foo</span><span class="params">(x: Int, y: Int)</span>: Int </span>&#123; <span class="keyword">return</span> x ＊ y &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>fun带有等号，是单表达式函数体。该情况下可以省略return。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fun <span class="title">foo</span><span class="params">(x: Int, y: Int)</span> </span>= x + y</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>不管是用val还是fun，如果是等号加花括号的语法，那么构建的就是一个Lambda表达式</strong>，Lambda的参数在花括号内部声明。所以，如果左侧是fun，那么就是Lambda表达式函数体，也必须通过()或invoke来调用Lambda。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val foo = &#123; x: Int, y: Int -x + y &#125; <span class="comment">// foo.invoke(1, 2)或foo(1, 2)</span></span><br><span class="line"><span class="function">fun <span class="title">foo</span><span class="params">(x: Int)</span> </span>= &#123; y: Int -x + y &#125; <span class="comment">// foo(1).invoke(2)或foo(1)(2)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-6-点评"><a href="#2-6-点评" class="headerlink" title="2.6 点评"></a>2.6 点评</h2><p>这部分内容对我个人而言，是区分函数和lambda。之前没有仔细思考扩这个问题，一直是凭着感觉来。这次算是理清楚了：如果是等号加花括号的语法，那么构建的就是一个Lambda表达式。那么调用时就必须通过()或invoke来实现。</p>
+<p>还有一点是对<strong>函数是头等公民</strong>的理解，之前也听过这句话，但是具体体现在哪不得而知。你见过在Java中，函数里面在定义一个函数吗？你见过在Java类外部定义一个函数吗？没有吧，因为Java中对象是头等公民。而Kt中你可以在函数中再定义函数，再类顶层定义函数，这就是区别。</p>
+<h1 id="3-表达式"><a href="#3-表达式" class="headerlink" title="3. 表达式"></a>3. 表达式</h1><h2 id="3-1-闭区间和半开区间"><a href="#3-1-闭区间和半开区间" class="headerlink" title="3.1 闭区间和半开区间"></a>3.1 闭区间和半开区间</h2><ul>
+<li>.. 表示闭区间</li>
+<li>until 表示半开区间</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i in <span class="number">1</span> until <span class="number">10</span>)&#123;</span><br><span class="line">    print(i) <span class="comment">// 123456789</span></span><br><span class="line">&#125;</span><br><span class="line">println()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(i in <span class="number">1.</span><span class="number">.10</span>)&#123;</span><br><span class="line">    print(i) <span class="comment">// 12345678910</span></span><br><span class="line">&#125;</span><br><span class="line">println()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(i in <span class="number">0.</span><span class="number">.0</span>)&#123;</span><br><span class="line">    print(i) <span class="comment">// output 0</span></span><br><span class="line">&#125;</span><br><span class="line">println()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span>(i in <span class="number">0</span> until <span class="number">0</span>)&#123;</span><br><span class="line">    print(i) <span class="comment">// nothing </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-2-点评"><a href="#3-2-点评" class="headerlink" title="3.2 点评"></a>3.2 点评</h2><p>关于until半开区间的特性，自己还在工作过程中犯过一个错误，需求其实很简单，就是在一个范围内获取一个随机数，但是当你写出这句时 *(0 until 0).random()*，就有bug在等着你了。</p>
+<p>上面实例代码中其实做了实验，打印 <em>0 until 0</em> 是没有任何内容输出的，再去向无任何输出内容的表达式要一个随机数，编译器不报错能干嘛呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">print((<span class="number">0</span> until <span class="number">0</span>).random()) <span class="comment">// Exception in thread &quot;main&quot; java.util.NoSuchElementException: Cannot get random in empty range: 0..-1</span></span><br><span class="line">print((<span class="number">0.</span><span class="number">.0</span>).random()) <span class="comment">// 0 </span></span><br></pre></td></tr></table></figure>
+
+<h1 id="4-init语句块"><a href="#4-init语句块" class="headerlink" title="4. init语句块"></a>4. init语句块</h1><h2 id="4-1-语句块中没有val、var"><a href="#4-1-语句块中没有val、var" class="headerlink" title="4.1 语句块中没有val、var"></a>4.1 语句块中没有val、var</h2><p>Kotlin引入了一种叫作init语句块的语法，它属于构造方法的一部分，两者在表现形式上却是分离的。Bird类的构造方法在类的外部，它只能对参数进行赋值。如果我们需要在初始化时进行其他的额外操作，那么我们就可以使用init语句块来执行。</p>
+<p>当没有val或var的时候，构造方法的参数可以在init语句块被直接调用。其实它们还可以用于初始化类内部的属性成员的情况。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bird</span></span>(weight: <span class="built_in">Double</span> = <span class="number">0.00</span>, age: <span class="built_in">Int</span> = <span class="number">0</span>,color: String = <span class="string">&quot;blue&quot;</span>) &#123;</span><br><span class="line">    <span class="keyword">val</span> weight: <span class="built_in">Double</span> = weight <span class="comment">//在初始化属性成员时调用weight</span></span><br><span class="line">    <span class="keyword">val</span> age: <span class="built_in">Int</span> = age</span><br><span class="line">    <span class="keyword">val</span> color: String = color</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>除此之外，我们并不能在其他地方使用。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bird</span></span>(weight: <span class="built_in">Double</span>, age: <span class="built_in">Int</span>, color: String) &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">printWeight</span><span class="params">()</span></span> &#123;</span><br><span class="line">        print(weight) <span class="comment">// Unresolved reference: weight</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>事实上，我们的构造方法还可以拥有多个init，它们会在对象被创建时按照类中从上到下的顺序先后执行。多个init语句块有利于我们进一步对初始化的操作进行职能分离，这在复杂的业务开发（如Android）中显得特别有用。</p>
+<h2 id="4-2-语句块中有val、var"><a href="#4-2-语句块中有val、var" class="headerlink" title="4.2 语句块中有val、var"></a>4.2 语句块中有val、var</h2><p>我们在Bird类中可以用val或者var来声明构造方法的参数。这一方面代表了参数的引用可变性，另一方面它也使得我们在构造类的语法上得到了简化。</p>
+<p>为什么这么说呢？事实上，构造方法的参数名前当然可以没有val和var，然而带上它们之后就等价于在Bird类内部声明了一个同名的属性，我们可以用this来进行调用。比如我们前面定义的Bird类就类似于以下的实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class Bird(weight: Double = 0.00, // 参数名前没有val</span><br><span class="line">        age: Int = <span class="number">0</span>,</span><br><span class="line">        color: String = <span class="string">&quot;blue&quot;</span>) &#123;</span><br><span class="line">    val weight: Double</span><br><span class="line">    val age: Int</span><br><span class="line">    val color: String</span><br><span class="line">    init &#123;</span><br><span class="line">        <span class="keyword">this</span>.weight = weight <span class="comment">// 构造方法参数可以在init语句块被调用</span></span><br><span class="line">        <span class="keyword">this</span>.age = age</span><br><span class="line">        <span class="keyword">this</span>.color = color</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-3-点评"><a href="#4-3-点评" class="headerlink" title="4.3 点评"></a>4.3 点评</h2><p>这一部分的内容对我个人而言是知识盲区，这次算是补上了。用val或var修饰的构造方法参数，实际上等价于在类内部声明了一个同名属性，可以用this进行调用。</p>
+<h1 id="5-关于延迟初始化"><a href="#5-关于延迟初始化" class="headerlink" title="5. 关于延迟初始化"></a>5. 关于延迟初始化</h1><h2 id="5-1-总结by-lazy语法的特点如下"><a href="#5-1-总结by-lazy语法的特点如下" class="headerlink" title="5.1 总结by lazy语法的特点如下"></a>5.1 总结by lazy语法的特点如下</h2><ul>
+<li>该变量必须是引用不可变的，而不能通过var来声明。</li>
+<li>在被首次调用时，才会进行赋值操作。一旦被赋值，后续它将不能被更改。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class Bird(val weight: Double, val age: Int, val color: String) &#123;</span><br><span class="line">    val sex: String by lazy &#123;</span><br><span class="line">        <span class="keyword">if</span> (color == <span class="string">&quot;yellow&quot;</span>) <span class="string">&quot;male&quot;</span> <span class="keyword">else</span> <span class="string">&quot;female&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另外系统会给lazy属性默认加上同步锁，也就是LazyThreadSafetyMode.SYNCHRONIZED，它在同一时刻只允许一个线程对lazy属性进行初始化，所以它是线程安全的。但若你能确认该属性可以并行执行，没有线程安全问题，那么可以给lazy传递LazyThreadSafetyMode.PUBLICATION参数。你还可以给lazy传递LazyThreadSafetyMode. NONE参数，这将不会有任何线程方面的开销，当然也不会有任何线程安全的保证。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">val sex: <span class="function">String by <span class="title">lazy</span><span class="params">(LazyThreadSafetyMode.PUBLICATION)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//并行模式</span></span><br><span class="line">    <span class="keyword">if</span> (color == <span class="string">&quot;yellow&quot;</span>) <span class="string">&quot;male&quot;</span> <span class="keyword">else</span> <span class="string">&quot;female&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">val sex: <span class="function">String by <span class="title">lazy</span><span class="params">(LazyThreadSafetyMode.NONE)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//不做任何线程保证也不会有任何线程开销</span></span><br><span class="line">    <span class="keyword">if</span> (color == <span class="string">&quot;yellow&quot;</span>) <span class="string">&quot;male&quot;</span> <span class="keyword">else</span> <span class="string">&quot;female&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-2-总结lateinit语法特点如下"><a href="#5-2-总结lateinit语法特点如下" class="headerlink" title="5.2 总结lateinit语法特点如下"></a>5.2 总结lateinit语法特点如下</h2><ul>
+<li>主要用于var声明的变量，然而它不能用于基本数据类型，如Int、Long等，我们需要用Integer这种包装类作为替代。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class Bird(val weight: Double, val age: Int, val color: String) &#123;</span><br><span class="line">    lateinit <span class="keyword">var</span> sex: String <span class="comment">// sex可以延迟初始化</span></span><br><span class="line">    <span class="function">fun <span class="title">printSex</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.sex = <span class="keyword">if</span> (<span class="keyword">this</span>.color == <span class="string">&quot;yellow&quot;</span>) <span class="string">&quot;male&quot;</span> <span class="keyword">else</span> <span class="string">&quot;female&quot;</span></span><br><span class="line">        println(<span class="keyword">this</span>.sex)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">fun <span class="title">main</span><span class="params">(args: Array&lt;String&gt;)</span> </span>&#123;</span><br><span class="line">    val bird = Bird(<span class="number">1000.0</span>, <span class="number">2</span>, <span class="string">&quot;bule&quot;</span>)</span><br><span class="line">    bird.printSex()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">female</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-3-var基本数据类型也具有延迟初始化的效果"><a href="#5-3-var基本数据类型也具有延迟初始化的效果" class="headerlink" title="5.3 var基本数据类型也具有延迟初始化的效果"></a>5.3 var基本数据类型也具有延迟初始化的效果</h2><p>你可能比较好奇，如何让用var声明的基本数据类型变量也具有延迟初始化的效果，一种可参考的解决方案是通过Delegates.notNull<T>，这是利用Kotlin中委托的语法来实现的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> test by Delegates.notNull&lt;Int&gt;()</span><br><span class="line"><span class="function">fun <span class="title">doSomething</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    test = <span class="number">1</span></span><br><span class="line">    println(<span class="string">&quot;test value is $&#123;test&#125;&quot;</span>)</span><br><span class="line">    test = <span class="number">2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-4-点评"><a href="#5-4-点评" class="headerlink" title="5.4 点评"></a>5.4 点评</h2><p>这块主要是总结by lazy和lateinit的区别，根据两者的区别选择合适的延迟方案很重要。简单粗暴一点就是by lazy对应val，lateint对应var。</p>
+<h1 id="6-可见性修饰符"><a href="#6-可见性修饰符" class="headerlink" title="6. 可见性修饰符"></a>6. 可见性修饰符</h1><h2 id="6-1-4种可见行修饰符"><a href="#6-1-4种可见行修饰符" class="headerlink" title="6.1 4种可见行修饰符"></a>6.1 4种可见行修饰符</h2><p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/readnote-kotlin-core-programming-6-visibility-modifier.png?raw=true" alt="readnote-kotlin-core-programming-6-visibility-modifier"></p>
+<p>Kotlin中的可见性修饰符也与Java中的很类似。但也有不一样的地方，主要有以下几点：</p>
+<ul>
+<li>Kotlin与Java的默认修饰符不同，Kotlin中是public，而Java中是default，它只允许包内访问。</li>
+<li>Kotlin中有一个独特的修饰符internal。</li>
+<li>Kotlin可以在一个文件内单独声明方法及常量，同样支持可见性修饰符。</li>
+<li>Java中除了内部类可以用private修饰以外，其他类都不允许private修饰，而Kotlin可以。</li>
+<li>Kotlin和Java中的protected的访问范围不同，Java中是包、类及子类可访问，而Kotlin只允许类及子类。</li>
+</ul>
+<h3 id="关于internal"><a href="#关于internal" class="headerlink" title="关于internal"></a><strong>关于internal</strong></h3><p>Kotlin中有一个独特的修饰符internal，和default有点像但也有所区别。internal在Kotlin中的作用域可以被称作“模块内访问”。那么到底什么算是模块呢？以下几种情况可以算作一个模块</p>
+<ul>
+<li>一个Eclipse项目</li>
+<li>一个Intellij IDEA项目</li>
+<li>一个Maven项目</li>
+<li>一个Grandle项目</li>
+<li>一组由一次Ant任务执行编译的代码</li>
+</ul>
+<p>总的来说，一个模块可以看作一起编译的Kotlin文件组成的集合。那么，Kotlin中为什么要诞生这么一种新的修饰符呢？Java的包内访问不好吗？</p>
+<p>Java的包内访问中确实存在一些问题。举个例子，假如你在Java项目中定义了一个类，使用了默认修饰符，那么现在这个类是包私有，其他地方将无法访问它。然后，你把它打包成一个类库，并提供给其他项目使用，这时候如果有个开发者想使用这个类，<strong>除了copy源代码以外，还有一个方式就是在程序中创建一个与该类相同名字的包</strong>，那么这个包下面的其他类就可以直接使用我们前面的定义的类。这样我们便可以直接访问该类了。</p>
+<p>而Kotlin默认并没有采用这种包内可见的作用域，而是使用了模块内可见，<strong>模块内可见指的是该类只对一起编译的其他Kotlin文件可见。开发工程与第三方类库不属于同一个模块，这时如果还想使用该类的话只有复制源码一种方式了</strong>。这便是Kotlin中internal修饰符的一个作用体现。</p>
+<h3 id="关于private"><a href="#关于private" class="headerlink" title="关于private"></a><strong>关于private</strong></h3><p>在Java程序中，我们很少见到用private修饰的类，因为Java中的类或方法没有单独属于某个文件的概念。比如，我们创建了Rectangle.java这个文件，那么它里面的类要么是public，要么是包私有，而没有只属于这个文件的概念。若要用private修饰，那么这个只能是其他类的内部类。而Kotlin中则可以用private给单独的类修饰，它的作用域就是当前这个Kotlin文件。</p>
+<h3 id="关于protected"><a href="#关于protected" class="headerlink" title="关于protected"></a><strong>关于protected</strong></h3><p>Java中的protected修饰的内容作用域是包内、类及子类可访问，而在Kotlin中，由于没有包作用域的概念，所以protected修饰符在Kotlin中的作用域只有类及子类。</p>
+<p>在了解了Kotlin中的可见修饰符后，我们来思考一个问题：前面已经讲解了为什么要诞生internal这个修饰符，那么为什么Kotlin中默认的可见性修饰符是public，而不是internal呢？</p>
+<p>关于这一点，Kotlin的开发人员在官方论坛进行了说明，这里我做一个总结：Kotlin通过分析以往的大众开发的代码，发现使用public修饰的内容比其他修饰符的内容多得多，所以Kotlin为了保持语言的简洁性，考虑多数情况，最终决定将public当作默认修饰符。</p>
+<h2 id="6-2-点评"><a href="#6-2-点评" class="headerlink" title="6.2 点评"></a>6.2 点评</h2><p>Kotlin与Java的可见性修饰符比较这一部分是我强烈推荐仔细阅读的部分，可见性修饰符虽然简单但却非常重要，kotlin的internal、private、protected修饰符都有自身独特的特点，跟你原本掌握的Java有很大的不同。</p>
+<p>对比学习可能会让我们对两门语言的理解层次更深。</p>
+<p>Kotlin中没有包内可见这种作用域，转而代之的是模块内可见，这种方式对比Java中的包内可见在某种意义上可能会更加“安全”。</p>
+<p>另一边Java中某个类或方法没有单独属于某个文件的概念，而Kotlin中则可以用private单独修饰某个类，它的作用域就是当前这个kotlin文件，这种设计在我看来可能会让你更加能精准控制某个类的访问权限。</p>
+<h1 id="7-getter和setter"><a href="#7-getter和setter" class="headerlink" title="7. getter和setter"></a>7. getter和setter</h1><ul>
+<li>用val声明的属性将只有getter方法，因为它不可修改；而用var修饰的属性将同时拥有getter和setter方法。</li>
+<li>用private修饰的属性编译器将会省略getter和setter方法，因为在类外部已经无法访问它了，这两个方法的存在也就没有意义了。</li>
+</ul>
+<h1 id="8-内部类vs嵌套类"><a href="#8-内部类vs嵌套类" class="headerlink" title="8. 内部类vs嵌套类"></a>8. 内部类vs嵌套类</h1><p>众所周知，在Java中，我们通过在内部类的语法上增加一个static关键词，把它变成一个嵌套类。然而，Kotlin则是相反的思路，默认是一个嵌套类，必须加上inner关键字才是一个内部类，也就是说可以把静态的内部类看成嵌套类。</p>
+<p>内部类和嵌套类有明显的差别，具体体现在：内部类包含着对其外部类实例的引用，在内部类中我们可以使用外部类中的属性；而嵌套类不包含对其外部类实例的引用，所以它无法调用其外部类的属性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">open <span class="class"><span class="keyword">class</span> <span class="title">Horse</span> </span>&#123; <span class="comment">//马</span></span><br><span class="line">    <span class="function">fun <span class="title">runFast</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        println(<span class="string">&quot;I can run fast&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">open <span class="class"><span class="keyword">class</span> <span class="title">Donkey</span> </span>&#123; <span class="comment">//驴</span></span><br><span class="line">    <span class="function">fun <span class="title">doLongTimeThing</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        println(<span class="string">&quot;I can do some thing long time&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Mule</span> </span>&#123;  <span class="comment">//骡子</span></span><br><span class="line">    <span class="function">fun <span class="title">runFast</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        HorseC().runFast()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function">fun <span class="title">doLongTimeThing</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        DonkeyC().doLongTimeThing()</span><br><span class="line">    &#125;</span><br><span class="line">    private inner class HorseC : Horse()</span><br><span class="line">    private inner class DonkeyC : Donkey()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="9-数据类的约定与使用"><a href="#9-数据类的约定与使用" class="headerlink" title="9. 数据类的约定与使用"></a>9. 数据类的约定与使用</h1><p>如果你要在Kotlin声明一个数据类，必须满足以下几点条件：</p>
+<ul>
+<li>数据类必须拥有一个构造方法，该方法至少包含一个参数，一个没有数据的数据类是没有任何用处的；</li>
+<li>与普通的类不同，数据类构造方法的参数强制使用var或者val进行声明；</li>
+<li><strong>data class之前不能用abstract、open、sealed或者inner进行修饰；</strong></li>
+<li>在Kotlin1.1版本前数据类只允许实现接口，之后的版本既可以实现接口也可以继承类。</li>
+</ul>
+<h1 id="10-何谓伴生"><a href="#10-何谓伴生" class="headerlink" title="10. 何谓伴生"></a>10. 何谓伴生</h1><p>顾名思义，“伴生”是相较于一个类而言的，意为伴随某个类的对象，它属于这个类所有，因此伴生对象跟Java中static修饰效果性质一样，全局只有一个单例。它需要声明在类的内部，在类被装载时会被初始化。</p>
+<h1 id="11-关于泛型"><a href="#11-关于泛型" class="headerlink" title="11. 关于泛型"></a>11. 关于泛型</h1><h2 id="11-1-关于协变"><a href="#11-1-关于协变" class="headerlink" title="11.1 关于协变"></a>11.1 <strong>关于协变</strong></h2><p>普通方式定义的泛型是不变的，简单来说就是不管类型A和类型B是什么关系，Generic&lt;A&gt;与Generic&lt;B&gt;（其中Generic代表泛型类）都没有任何关系。比如，在Java中String是Oject的子类型，但List&lt;String&gt;并不是List&lt;Object&gt;的子类型，在Kotlin中泛型的原理也是一样的。但是，Kotlin的List为什么允许List&lt;String&gt;赋值给List&lt;Any&gt;呢？</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">List</span>&lt;<span class="type">Eextends Collection&lt;E</span>&gt;</span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">List</span>&lt;<span class="type">out E: Collection&lt;E</span>&gt;</span>&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关键在于这两个List并不是同一种类型。<strong>如果在定义的泛型类和泛型方法的泛型参数前面加上out关键词，说明这个泛型类及泛型方法是协变，简单来说类型A是类型B的子类型，那么Generic&lt;A&gt;也是Generic&lt;B&gt;的子类型</strong>，比如在Kotlin中String是Any的子类型，那么List&lt;String&gt;也是List&lt;Any&gt;的子类型，所以List&lt;String&gt;可以赋值给List&lt;Any&gt;。</p>
+<p>List协变的特点是它将无法添加元素，只能从里面读取内容。假如支持协变的List允许插入新对象，那么它就不再是类型安全的了，也就违背了泛型的初衷。</p>
+<p>所以我们可以得出结论：支持协变的List只可以读取，而不可以添加。其实从out这个关键词也可以看出，out就是出的意思，可以理解为List是一个只读列表。在Java中也可以声明泛型协变，用通配符及泛型上界来实现协变：&lt;? extends Object&gt;，其中Object可以是任意类。</p>
+<h2 id="11-2-关于逆变"><a href="#11-2-关于逆变" class="headerlink" title="11.2 关于逆变"></a>11.2 <strong>关于逆变</strong></h2><p><strong>简单来说，假若类型A是类型B的子类型，那么Generic&lt;B&gt;反过来是Generic&lt;A&gt;的子类型。</strong></p>
+<p>前面我们说过，用out关键字声明的泛型参数类型将不能作为方法的参数类型，但可以作为方法的返回值类型，而in刚好相反。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">WirteableList</span>&lt;<span class="title">in</span> <span class="title">T</span>&gt;</span>&#123;</span><br><span class="line">    <span class="function">fun <span class="title">get</span><span class="params">(index: Int)</span>: T    <span class="comment">//Type parameter T is declared as &#x27;in&#x27; but occurs in &#x27;out&#x27; position in type T</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    fun <span class="title">get</span><span class="params">(index: Int)</span>: Any   <span class="comment">//允许</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    fun <span class="title">add</span><span class="params">(t: T)</span>: Int <span class="comment">//允许</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们不能将泛型参数类型当作方法返回值的类型，但是作为方法的参数类型没有任何限制，其实从in这个关键词也可以看出，in就是入的意思，可以理解为消费内容，所以我们可以将这个列表看作一个可写、可读功能受限的列表，获取的值只能为Any类型。在Java中使用&lt;? super T&gt;可以达到相同效果。</p>
+<p>Kotlin与Java的型变比较<br><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/readnote-kotlin-core-programming-11-comparison-of-kotlin-and-java-type-changes.jpeg?raw=true" alt="readnote-kotlin-core-programming-11-comparison-of-kotlin-and-java-type-changes"></p>
+<h2 id="11-3-关于通配符"><a href="#11-3-关于通配符" class="headerlink" title="11.3 关于通配符"></a>11.3 <strong>关于通配符</strong></h2><p>MutableList&lt;*&gt;与MutableList&lt;Any?&gt;不是同一种列表，后者可以添加任意元素，而前者只是通配某一种类型，但是编译器却不知道这是一种什么类型，所以它不允许向这个列表中添加元素，因为这样会导致类型不安全。</p>
+<p>不过细心的读者应该发现前面所说的协变也是不能添加元素，那么它们两者之间有什么关系呢？其实通配符只是一种语法糖，背后上也是用协变来实现的。所以MutableList&lt;*&gt;本质上就是MutableList&lt;out Any?&gt;，使用通配符与协变有着一样的特性。</p>
+<h2 id="11-4-点评"><a href="#11-4-点评" class="headerlink" title="11.4 点评"></a>11.4 点评</h2><p>这一小节对于理解泛型的型变有很大的帮助，不过前提是你需要先理解Java中的PECS原则（Producer Extends Consumer Super），再阅读下面的协变和逆变就会轻松不少，其中的示例代码好评。</p>
+<p>协变和逆变描述的就是在集合中，子类与父类之间的转换关系。协变即子类集合可赋值给父类集合，逆变即父类集合可赋值给子类集合，这是他们最大的特点。只是由于Java本身泛型的擦除特性，整出了一些副作用，如：协变不可添加元素，逆变读取元素不安全；协变不可作为入参，逆变不可作为返回值等副作用。</p>
+<p>Java泛型是高阶知识，对于开发框架有很大的帮助，属于进阶必备技能。泛型的详细知识可参考 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/716e941b3128">https://www.jianshu.com/p/716e941b3128</a> 里面的2.12小节。</p>
+<h1 id="12-关于惰性求值"><a href="#12-关于惰性求值" class="headerlink" title="12. 关于惰性求值"></a>12. 关于惰性求值</h1><h2 id="12-1-概念"><a href="#12-1-概念" class="headerlink" title="12.1 概念"></a>12.1 概念</h2><p>在编程语言理论中，惰性求值（Lazy Evaluation）表示一种在需要时才进行求值的计算方式。在使用惰性求值的时候，表达式不在它被绑定到变量之后就立即求值，而是在该值被取用时才去求值。通过这种方式，不仅能得到性能上的提升，还有一个最重要的好处就是它可以构造出一个无限的数据类型。</p>
+<p>通过上面的定义我们可以简单归纳出惰性求值的两个好处，一个是优化性能，另一个就是能够构造出无限的数据类型。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list.asSequence().filter &#123;it <span class="number">2</span>&#125;.map &#123;it ＊ <span class="number">2</span>&#125;.toList()</span><br></pre></td></tr></table></figure>
+
+<p>其实，Kotlin中序列的操作就分为两类，一类是中间操作，另一类则为末端操作。</p>
+<h2 id="12-2-中间操作"><a href="#12-2-中间操作" class="headerlink" title="12.2 中间操作"></a>12.2 中间操作</h2><p>在对普通集合进行链式操作的时候，有些操作会产生中间集合，当用这类操作来对序列进行求值的时候，它们就被称为中间操作，比如上面的filter和map。每一次中间操作返回的都是一个序列，产生的新序列内部知道如何去变换原来序列中的元素。中间操作都是采用惰性求值的</p>
+<h2 id="12-3-末端操作"><a href="#12-3-末端操作" class="headerlink" title="12.3 末端操作"></a>12.3 末端操作</h2><p>在对集合进行操作的时候，大部分情况下，我们在意的只是结果，而不是中间过程。末端操作就是一个返回结果的操作，它的返回值不能是序列，必须是一个明确的结果，比如列表、数字、对象等表意明确的结果。末端操作一般都放在链式操作的末尾，在执行末端操作的时候，会去触发中间操作的延迟计算，也就是将“被需要”这个状态打开了。</p>
+<p><strong>普通集合在进行链式操作的时候会先在list上调用filter，然后产生一个结果列表，接下来map就在这个结果列表上进行操作。而序列则不一样，序列在执行链式操作的时候，会将所有的操作都应用在一个元素上，也就是说，第1个元素执行完所有的操作之后，第2个元素再去执行所有的操作，以此类推。</strong></p>
+<h1 id="13-内联函数简化抽象工厂"><a href="#13-内联函数简化抽象工厂" class="headerlink" title="13. 内联函数简化抽象工厂"></a>13. 内联函数简化抽象工厂</h1><h2 id="13-1-抽象工厂示例"><a href="#13-1-抽象工厂示例" class="headerlink" title="13.1 抽象工厂示例"></a>13.1 抽象工厂示例</h2><p>何为抽象工厂模式？即为创建一组相关或相互依赖的对象提供一个接口，而且无须指定它们的具体类。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> factory</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Computer</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dell</span> : <span class="type">Computer</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Asus</span> : <span class="type">Computer</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Acer</span> : <span class="type">Computer</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractFactory</span> </span>&#123;</span><br><span class="line">    <span class="keyword">abstract</span> <span class="function"><span class="keyword">fun</span> <span class="title">produce</span><span class="params">()</span></span>: Computer</span><br><span class="line"></span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">        <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">invoke</span><span class="params">(factory: <span class="type">AbstractFactory</span>)</span></span>: AbstractFactory &#123;</span><br><span class="line">            <span class="keyword">return</span> factory</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DellFactory</span> : <span class="type">AbstractFactory</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">produce</span><span class="params">()</span></span> = Dell()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AsusFactory</span> : <span class="type">AbstractFactory</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">produce</span><span class="params">()</span></span> = Asus()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AcerFactory</span> : <span class="type">AbstractFactory</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">produce</span><span class="params">()</span></span> = Acer()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractFactory2</span> </span>&#123;</span><br><span class="line">    <span class="keyword">abstract</span> <span class="function"><span class="keyword">fun</span> <span class="title">produce</span><span class="params">()</span></span>: Computer</span><br><span class="line"></span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">        <span class="keyword">inline</span> <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;<span class="keyword">reified</span> T&gt;</span>: <span class="title">Computerinvoke</span><span class="params">()</span></span>: AbstractFactory2 =</span><br><span class="line">                <span class="keyword">when</span> (T::<span class="class"><span class="keyword">class</span>) </span>&#123;</span><br><span class="line">                    Dell::<span class="class"><span class="keyword">class</span> -<span class="title">DellFactory2</span></span>()</span><br><span class="line">                    Asus::<span class="class"><span class="keyword">class</span> -<span class="title">AsusFactory2</span></span>()</span><br><span class="line">                    Acer::<span class="class"><span class="keyword">class</span> -<span class="title">AcerFactory2</span></span>()</span><br><span class="line">                    <span class="keyword">else</span> -<span class="keyword">throw</span> IllegalArgumentException()</span><br><span class="line">                &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DellFactory2</span> : <span class="type">AbstractFactory2</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">produce</span><span class="params">()</span></span> = Dell()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AsusFactory2</span> : <span class="type">AbstractFactory2</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">produce</span><span class="params">()</span></span> = Asus()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AcerFactory2</span> : <span class="type">AbstractFactory2</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">produce</span><span class="params">()</span></span> = Acer()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    testAbsFactory()</span><br><span class="line">    testAbsFactory2()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">testAbsFactory2</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// Kotlin中的内联函数来改善每次都要传入工厂类对象的做法</span></span><br><span class="line">    <span class="keyword">val</span> dellFactory = AbstractFactory2&lt;Dell&gt;()</span><br><span class="line">    <span class="keyword">val</span> dell = dellFactory.produce()</span><br><span class="line">    println(dell)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">testAbsFactory</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// 当你每次创建具体的工厂类时，都需要传入一个具体的工厂类对象作为参数进行构造，这个在语法上显然不是很优雅</span></span><br><span class="line">    <span class="keyword">val</span> dellFactory = AbstractFactory(DellFactory())</span><br><span class="line">    <span class="keyword">val</span> dell = dellFactory.produce()</span><br><span class="line">    println(dell)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于Kotlin语法的简洁，以上例子的抽象工厂类的设计也比较直观。然而，当你每次创建具体的工厂类时(AbstractFactory)，都需要传入一个具体的工厂类对象作为参数进行构造，这个在语法上显然不是很优雅。而AbstractFactory2就是利用Kotlin中的内联函数来改善这一情况。我们所需要做的，就是用inline+reified重新实现AbstractFactory2类中的invoke方法。</p>
+<p>这下我们的AbstractFactory2类中的invoke方法定义的前缀变长了很多，但是不要害怕，如果你已经掌握了内联函数的具体应用，应该会很容易理解它。我们来分析下这段代码：</p>
+<ol>
+<li>通过将invoke方法用inline定义为内联函数，我们就可以引入reified关键字，使用具体化参数类型的语法特性；</li>
+<li>要具体化的参数类型为Computer，在invoke方法中我们通过判断它的具体类型，来返回对应的工厂类对象。</li>
+</ol>
+<p>现在我们终于可以用类似创建一个泛型类对象的方式，来构建一个抽象工厂具体对象了。不管是工厂方法还是抽象工厂，利用Kotlin的语言特性，我们在一定程度上改进、简化了Java中设计模式的实现。</p>
+<h2 id="13-2-点评"><a href="#13-2-点评" class="headerlink" title="13.2 点评"></a>13.2 点评</h2><p>这一节的知识点在实际工作中有很大的用处，inline结合reified，实现具体化类型参数。对比Java，kt在这块确实抗打，代码写出来又进一步优雅了呢。</p>
+<h1 id="14-构建者模式的不足"><a href="#14-构建者模式的不足" class="headerlink" title="14. 构建者模式的不足"></a>14. 构建者模式的不足</h1><ul>
+<li>如果业务需求的参数很多，代码依然会显得比较冗长；</li>
+<li>你可能会在使用Builder的时候忘记在最后调用build方法；</li>
+<li>由于在创建对象的时候，必须先创建它的构造器，因此额外增加了多余的开销，在某些十分注重性能的情况下，可能就存在一定的问题。</li>
+</ul>
+<h1 id="15-by关键字简化装饰者模式"><a href="#15-by关键字简化装饰者模式" class="headerlink" title="15. by关键字简化装饰者模式"></a>15. by关键字简化装饰者模式</h1><h2 id="15-1-装饰者模式概念"><a href="#15-1-装饰者模式概念" class="headerlink" title="15.1 装饰者模式概念"></a>15.1 装饰者模式概念</h2><p>装饰者模式，在不必改变原类文件和使用继承的情况下，动态地扩展一个对象的功能。该模式通过创建一个包装对象，来包裹真实的对象。</p>
+<p>总结来说，装饰者模式做的是以下几件事情：</p>
+<ul>
+<li>创建一个装饰类，包含一个需要被装饰类的实例；</li>
+<li>装饰类重写所有被装饰类的方法；</li>
+<li>在装饰类中对需要增强的功能进行扩展。</li>
+</ul>
+<p>可以发现，装饰者模式很大的优势在于符合“组合优于继承”的设计原则，规避了某些场景下继承所带来的问题。然而，它有时候也会显得比较啰唆，因为要重写所有的装饰对象方法，所以可能存在大量的样板代码。</p>
+<p>在Kotlin中，我们可以让装饰者模式的实现变得更加优雅。猜想你已经想到了它的类委托特性，我们可以利用by关键字，将装饰类的所有方法委托给一个被装饰的类对象，然后只需覆写需要装饰的方法即可。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">MacBook</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getCost</span><span class="params">()</span></span>: <span class="built_in">Int</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getDesc</span><span class="params">()</span></span>: String</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getProdDate</span><span class="params">()</span></span>: String</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MacBookPro</span> : <span class="type">MacBook &#123;</span></span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getCost</span><span class="params">()</span></span> = <span class="number">10000</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getDesc</span><span class="params">()</span></span> = <span class="string">&quot;Macbook Pro&quot;</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getProdDate</span><span class="params">()</span></span> = <span class="string">&quot;Late 2019&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProcessorUpgradeMacBookPro</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> macBook: MacBook) : MacBook <span class="keyword">by</span> macBook &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getCost</span><span class="params">()</span></span> = macBook.getCost() + <span class="number">219</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getDesc</span><span class="params">()</span></span> = macBook.getDesc() + <span class="string">&quot;, +1G Memory&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> macBookPro = MacBookPro()</span><br><span class="line">    <span class="keyword">val</span> processorUpgradeMacBookPro = ProcessorUpgradeMacBookPro(macBookPro)</span><br><span class="line">    println(processorUpgradeMacBookPro.getCost())</span><br><span class="line">    println(processorUpgradeMacBookPro.getDesc())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如代码所示，我们创建一个代表MacBook Pro的类，它实现了MacBook的接口的3个方法，分别表示它的预算、机型信息，以及生产的年份。当你觉得原装MacBook的内存配置不够的时候，希望再加入一条1G的内存，这时候配置信息和预算方法都会受到影响。</p>
+<p>所以通过Kotlin的类委托语法，我们实现了一个ProcessorUpgradeMacbookPro类，该类会把MacBook接口所有的方法都委托给构造参数对象macbook。因此，我们只需通过覆写的语法来重写需要变更的cost和getDesc方法。由于生产年份是不会改变的，所以不需重写，ProcessorUpgradeMacbookPro类会自动调用装饰对象的getProdDate方法。</p>
+<p>总的来说，Kotlin通过类委托的方式减少了装饰者模式中的样板代码，否则在不继承Macbook类的前提下，我们得创建一个装饰类和被装饰类的公共父抽象类。</p>
+<h2 id="15-2"><a href="#15-2" class="headerlink" title="15.2"></a>15.2</h2><p>装饰者模式问题所在：要重写所有的装饰对象的方法。这也就极大的限制了其使用场景，有时候还不如继承来的实在。但kt中，通过by关键字委托给一个对象，完全化解了这波尴尬，只能说kt语法实在是高。</p>
+<h1 id="彩蛋"><a href="#彩蛋" class="headerlink" title="彩蛋"></a>彩蛋</h1><p>看完书以后整理的笔记大纲</p>
+<p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/readnote-kotlin-core-programming-16-easter-eggs.jpeg?raw=true" alt="readnote-kotlin-core-programming-16-easter-eggs"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Android/" rel="tag"># Android</a>
+              <a href="/iBlogWebsite/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag"># 读书笔记</a>
+              <a href="/iBlogWebsite/tags/Kotlin/" rel="tag"># Kotlin</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2020/07/10/2020/2020-07-10-%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E8%AE%B0%E5%BD%953%EF%BC%9A%E5%B9%BF%E5%91%8A%E6%A8%A1%E5%9D%97%E4%BB%A5%E5%8F%8A%E4%B8%89%E6%96%B9sdk%E5%90%8C%E6%AD%A5%E5%8D%87%E7%BA%A7androidx%E9%97%AE%E9%A2%98/" rel="prev" title="疑难杂症记录3：广告模块以及三方sdk同步升级androidx问题">
+      <i class="fa fa-chevron-left"></i> 疑难杂症记录3：广告模块以及三方sdk同步升级androidx问题
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2021/03/19/2021/2021-03-19-%E5%B8%B8%E7%94%A8git%E5%91%BD%E4%BB%A4%E6%B1%87%E6%80%BB/" rel="next" title="常用git命令汇总">
+      常用git命令汇总 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E9%87%8D%E7%82%B9%E7%90%86%E8%A7%A3val%E7%9A%84%E4%BD%BF%E7%94%A8%E8%A7%84%E5%88%99"><span class="nav-number">1.</span> <span class="nav-text">1. 重点理解val的使用规则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E5%BC%95%E7%94%A81"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 引用1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E5%BC%95%E7%94%A82"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 引用2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E5%BC%95%E7%94%A83"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 引用3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-%E7%82%B9%E8%AF%84"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 点评</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0%E5%92%8CLambda"><span class="nav-number">2.</span> <span class="nav-text">2. 关于函数和Lambda</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E5%BC%95%E7%94%A81"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 引用1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E5%BC%95%E7%94%A82"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 引用2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E5%BC%95%E7%94%A83"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 引用3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-Lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%8C%E4%BD%A0%E5%8F%AF%E4%BB%A5%E6%8A%8A%E5%AE%83%E7%90%86%E8%A7%A3%E6%88%90%E7%AE%80%E5%8C%96%E8%A1%A8%E8%BE%BE%E5%90%8E%E7%9A%84%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0%EF%BC%8C%E5%AE%9E%E8%B4%A8%E4%B8%8A%E5%AE%83%E5%B0%B1%E6%98%AF%E4%B8%80%E7%A7%8D%E8%AF%AD%E6%B3%95%E7%B3%96%E3%80%82"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 Lambda表达式，你可以把它理解成简化表达后的匿名函数，实质上它就是一种语法糖。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-%E5%8C%BA%E5%88%86%E5%87%BD%E6%95%B0%E3%80%81Lambda"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 区分函数、Lambda</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-%E7%82%B9%E8%AF%84"><span class="nav-number">2.6.</span> <span class="nav-text">2.6 点评</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">3. 表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E9%97%AD%E5%8C%BA%E9%97%B4%E5%92%8C%E5%8D%8A%E5%BC%80%E5%8C%BA%E9%97%B4"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 闭区间和半开区间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E7%82%B9%E8%AF%84"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 点评</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-init%E8%AF%AD%E5%8F%A5%E5%9D%97"><span class="nav-number">4.</span> <span class="nav-text">4. init语句块</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E8%AF%AD%E5%8F%A5%E5%9D%97%E4%B8%AD%E6%B2%A1%E6%9C%89val%E3%80%81var"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 语句块中没有val、var</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E8%AF%AD%E5%8F%A5%E5%9D%97%E4%B8%AD%E6%9C%89val%E3%80%81var"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 语句块中有val、var</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E7%82%B9%E8%AF%84"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 点评</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%85%B3%E4%BA%8E%E5%BB%B6%E8%BF%9F%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">5. 关于延迟初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E6%80%BB%E7%BB%93by-lazy%E8%AF%AD%E6%B3%95%E7%9A%84%E7%89%B9%E7%82%B9%E5%A6%82%E4%B8%8B"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 总结by lazy语法的特点如下</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-%E6%80%BB%E7%BB%93lateinit%E8%AF%AD%E6%B3%95%E7%89%B9%E7%82%B9%E5%A6%82%E4%B8%8B"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 总结lateinit语法特点如下</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-var%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%B9%9F%E5%85%B7%E6%9C%89%E5%BB%B6%E8%BF%9F%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 var基本数据类型也具有延迟初始化的效果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-%E7%82%B9%E8%AF%84"><span class="nav-number">5.4.</span> <span class="nav-text">5.4 点评</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E5%8F%AF%E8%A7%81%E6%80%A7%E4%BF%AE%E9%A5%B0%E7%AC%A6"><span class="nav-number">6.</span> <span class="nav-text">6. 可见性修饰符</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-4%E7%A7%8D%E5%8F%AF%E8%A7%81%E8%A1%8C%E4%BF%AE%E9%A5%B0%E7%AC%A6"><span class="nav-number">6.1.</span> <span class="nav-text">6.1 4种可见行修饰符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Einternal"><span class="nav-number">6.1.1.</span> <span class="nav-text">关于internal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Eprivate"><span class="nav-number">6.1.2.</span> <span class="nav-text">关于private</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Eprotected"><span class="nav-number">6.1.3.</span> <span class="nav-text">关于protected</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-%E7%82%B9%E8%AF%84"><span class="nav-number">6.2.</span> <span class="nav-text">6.2 点评</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-getter%E5%92%8Csetter"><span class="nav-number">7.</span> <span class="nav-text">7. getter和setter</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-%E5%86%85%E9%83%A8%E7%B1%BBvs%E5%B5%8C%E5%A5%97%E7%B1%BB"><span class="nav-number">8.</span> <span class="nav-text">8. 内部类vs嵌套类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-%E6%95%B0%E6%8D%AE%E7%B1%BB%E7%9A%84%E7%BA%A6%E5%AE%9A%E4%B8%8E%E4%BD%BF%E7%94%A8"><span class="nav-number">9.</span> <span class="nav-text">9. 数据类的约定与使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-%E4%BD%95%E8%B0%93%E4%BC%B4%E7%94%9F"><span class="nav-number">10.</span> <span class="nav-text">10. 何谓伴生</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-%E5%85%B3%E4%BA%8E%E6%B3%9B%E5%9E%8B"><span class="nav-number">11.</span> <span class="nav-text">11. 关于泛型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#11-1-%E5%85%B3%E4%BA%8E%E5%8D%8F%E5%8F%98"><span class="nav-number">11.1.</span> <span class="nav-text">11.1 关于协变</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-2-%E5%85%B3%E4%BA%8E%E9%80%86%E5%8F%98"><span class="nav-number">11.2.</span> <span class="nav-text">11.2 关于逆变</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-3-%E5%85%B3%E4%BA%8E%E9%80%9A%E9%85%8D%E7%AC%A6"><span class="nav-number">11.3.</span> <span class="nav-text">11.3 关于通配符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-4-%E7%82%B9%E8%AF%84"><span class="nav-number">11.4.</span> <span class="nav-text">11.4 点评</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-%E5%85%B3%E4%BA%8E%E6%83%B0%E6%80%A7%E6%B1%82%E5%80%BC"><span class="nav-number">12.</span> <span class="nav-text">12. 关于惰性求值</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#12-1-%E6%A6%82%E5%BF%B5"><span class="nav-number">12.1.</span> <span class="nav-text">12.1 概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-2-%E4%B8%AD%E9%97%B4%E6%93%8D%E4%BD%9C"><span class="nav-number">12.2.</span> <span class="nav-text">12.2 中间操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-3-%E6%9C%AB%E7%AB%AF%E6%93%8D%E4%BD%9C"><span class="nav-number">12.3.</span> <span class="nav-text">12.3 末端操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E7%AE%80%E5%8C%96%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82"><span class="nav-number">13.</span> <span class="nav-text">13. 内联函数简化抽象工厂</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#13-1-%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E7%A4%BA%E4%BE%8B"><span class="nav-number">13.1.</span> <span class="nav-text">13.1 抽象工厂示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#13-2-%E7%82%B9%E8%AF%84"><span class="nav-number">13.2.</span> <span class="nav-text">13.2 点评</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#14-%E6%9E%84%E5%BB%BA%E8%80%85%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%B8%8D%E8%B6%B3"><span class="nav-number">14.</span> <span class="nav-text">14. 构建者模式的不足</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#15-by%E5%85%B3%E9%94%AE%E5%AD%97%E7%AE%80%E5%8C%96%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">15.</span> <span class="nav-text">15. by关键字简化装饰者模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#15-1-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F%E6%A6%82%E5%BF%B5"><span class="nav-number">15.1.</span> <span class="nav-text">15.1 装饰者模式概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#15-2"><span class="nav-number">15.2.</span> <span class="nav-text">15.2</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BD%A9%E8%9B%8B"><span class="nav-number">16.</span> <span class="nav-text">彩蛋</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

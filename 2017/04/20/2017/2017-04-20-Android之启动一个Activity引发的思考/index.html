@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="在Android中Activity和Service是应用程序的核心组件，它们以松藕合的方式组合在一起构成了一个完整的应用程序，首先这得益于framework层提供了一套完整的机制来协助应用程序启动这些Activity和Service，其次得益于系统提供Binder机制实现进程间通信。这篇日志目的主要是梳理启动一个Activity的核心流程，涉及到哪些进程等。阅读之前需要先了解ActivityMan">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android之启动一个Activity引发的思考">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2017/04/20/2017/2017-04-20-Android%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AAActivity%E5%BC%95%E5%8F%91%E7%9A%84%E6%80%9D%E8%80%83/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="在Android中Activity和Service是应用程序的核心组件，它们以松藕合的方式组合在一起构成了一个完整的应用程序，首先这得益于framework层提供了一套完整的机制来协助应用程序启动这些Activity和Service，其次得益于系统提供Binder机制实现进程间通信。这篇日志目的主要是梳理启动一个Activity的核心流程，涉及到哪些进程等。阅读之前需要先了解ActivityMan">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/LeeeYou/Img/blob/master/leeeyou/%E6%A0%B9Activity%E7%9A%84%E5%AE%8C%E6%95%B4%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%9B%BE.gif?raw=true">
+<meta property="og:image" content="https://github.com/LeeeYou/Img/blob/master/leeeyou/Android%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%A1%86%E6%9E%B6%E5%B1%82%E4%B8%AD%E7%9A%84ActivityManagerService%E5%90%AF%E5%8A%A8Activity%E7%9A%84%E8%BF%87%E7%A8%8B.gif?raw=true">
+<meta property="article:published_time" content="2017-04-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.377Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="源码解析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/LeeeYou/Img/blob/master/leeeyou/%E6%A0%B9Activity%E7%9A%84%E5%AE%8C%E6%95%B4%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%9B%BE.gif?raw=true">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2017/04/20/2017/2017-04-20-Android%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AAActivity%E5%BC%95%E5%8F%91%E7%9A%84%E6%80%9D%E8%80%83/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Android之启动一个Activity引发的思考 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2017/04/20/2017/2017-04-20-Android%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AAActivity%E5%BC%95%E5%8F%91%E7%9A%84%E6%80%9D%E8%80%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android之启动一个Activity引发的思考
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-04-20 00:00:00" itemprop="dateCreated datePublished" datetime="2017-04-20T00:00:00+08:00">2017-04-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在Android中Activity和Service是应用程序的核心组件，它们以松藕合的方式组合在一起构成了一个完整的应用程序，首先这得益于framework层提供了一套完整的机制来协助应用程序启动这些Activity和Service，其次得益于系统提供Binder机制实现进程间通信。这篇日志目的主要是梳理启动一个Activity的核心流程，涉及到哪些进程等。阅读之前需要先了解ActivityManagerServic、ActivityStack、ApplicationThread、ActivityThread以及Binder等概念才不至于一头雾水。</p>
+<blockquote>
+<p>ActivityRecord：描述了一个Activity所需要的全部信息。<br>TaskRecord：用来记录Activity的任务栈。<br>ActivityStack：用于管理一系列的TaskRecord。<br>ActivityManagerServic：Android系统中最核心的系统服务，主要负责四大组件的启动、切换和调度，以及应用进程的管理和调度工作。<br>ActivityThread：应用程序的主线程，负责主线程Handler的启动以及四大组件的调度和管理。<br>ApplicationThread：ActivityThread的内部类，继承自IApplicationThread.Stub，用于其它进程与它所属应用进程的交互。<br>Binder：Android平台上用于实现IPC的一种机制。</p>
+</blockquote>
+<h2 id="Activity启动过程的大致步骤"><a href="#Activity启动过程的大致步骤" class="headerlink" title="Activity启动过程的大致步骤"></a>Activity启动过程的大致步骤</h2><ol>
+<li><p>无论是通过Launcher来启动Activity，还是通过Activity内部调用startActivity接口来启动新的Activity，<strong>都通过Binder进程间通信进入到ActivityManagerService进程中，并且调用ActivityManagerService.startActivity接口；</strong></p>
+</li>
+<li><p>ActivityManagerService调用ActivityStack.startActivityMayWait来做准备要启动的Activity的相关信息；</p>
+</li>
+<li><p>ActivityStack通知ApplicationThread要进行Activity启动调度了，<strong>这里的ApplicationThread代表的是调用ActivityManagerService.startActivity接口的进程，对于通过点击应用程序图标的情景来说，这个进程就是Launcher了，而对于通过在Activity内部调用startActivity的情景来说，这个进程就是这个Activity所在的进程了；</strong></p>
+</li>
+<li><p>ApplicationThread不执行真正的启动操作，它通过调用ActivityManagerService.activityPaused接口进入到ActivityManagerService进程中，看看是否需要创建新的进程来启动Activity；</p>
+</li>
+<li><p>对于通过点击应用程序图标来启动Activity的情景来说，ActivityManagerService在这一步中，会调用startProcessLocked来创建一个新的进程，而对于通过在Activity内部调用startActivity来启动新的Activity来说，这一步是不需要执行的，因为新的Activity就在原来的Activity所在的进程中进行启动；</p>
+</li>
+<li><p>ActivityManagerService调用ApplicationThread.scheduleLaunchActivity接口，通知相应的进程执行启动Activity的操作；</p>
+</li>
+<li><p>ApplicationThread把这个启动Activity的操作转发给ActivityThread，ActivityThread通过ClassLoader导入相应的Activity类，然后把它启动起来。</p>
+</li>
+</ol>
+<h2 id="7-0系统上AMS启动Activity的核心流程"><a href="#7-0系统上AMS启动Activity的核心流程" class="headerlink" title="7.0系统上AMS启动Activity的核心流程"></a>7.0系统上AMS启动Activity的核心流程</h2><h2 id="8-0系统上AMS启动Activity的核心流程"><a href="#8-0系统上AMS启动Activity的核心流程" class="headerlink" title="8.0系统上AMS启动Activity的核心流程"></a>8.0系统上AMS启动Activity的核心流程</h2><h2 id="从Launcher启动一个应用程序"><a href="#从Launcher启动一个应用程序" class="headerlink" title="从Launcher启动一个应用程序"></a>从Launcher启动一个应用程序</h2><p>下面以启动MainActivity为例来说明Android应用程序的启动过程。从Launcher启动一个应用程序的时序图如下：<br><img src="https://github.com/LeeeYou/Img/blob/master/leeeyou/%E6%A0%B9Activity%E7%9A%84%E5%AE%8C%E6%95%B4%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E5%9B%BE.gif?raw=true" alt="从Launcher启动一个应用程序"></p>
+<p>整个应用程序的启动过程要执行很多步骤，但是整体来看，主要分为以下五个阶段：<br>1、Step1 - Step 11：<a target="_blank" rel="noopener" href="http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android-apps/5.1.1_r1/com/android/launcher2/Launcher.java#Launcher.onClick%28android.view.View%29">Launcher</a>通过Binder进程间通信机制通知<a target="_blank" rel="noopener" href="http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android/5.1.1_r1/com/android/server/am/ActivityManagerService.java#ActivityManagerService">ActivityManagerService</a>，它要启动一个<a target="_blank" rel="noopener" href="http://grepcode.com/file/repository.grepcode.com/java/ext/com.google.android/android/5.1.1_r1/android/app/Activity.java#Activity">Activity</a>；</p>
+<p>2、Step 12 - Step 16：ActivityManagerService通过Binder进程间通信机制通知Launcher进入Paused状态；</p>
+<p>3、Step 17 - Step 24：Launcher通过Binder进程间通信机制通知ActivityManagerService，它已经准备就绪进入Paused状态，<strong>于是ActivityManagerService就创建一个新的进程，用来启动一个ActivityThread实例，即将要启动的Activity就是在这个ActivityThread实例中运行；</strong></p>
+<p>4、Step 25 - Step 27：ActivityThread通过Binder进程间通信机制将一个ApplicationThread类型的Binder对象传递给ActivityManagerService，以便以后ActivityManagerService能够通过这个Binder对象和它进行通信；</p>
+<p>5、Step 28 - Step 35：ActivityManagerService通过Binder进程间通信机制通知ActivityThread，现在一切准备就绪，它可以真正执行Activity的启动操作了。</p>
+<p>具体的Step步骤详情可参考：<a target="_blank" rel="noopener" href="http://blog.csdn.net/luoshengyang/article/details/6689748">http://blog.csdn.net/luoshengyang/article/details/6689748</a></p>
+<p>ActivityManagerService启动Activity的大致过程</p>
+<p><img src="https://github.com/LeeeYou/Img/blob/master/leeeyou/Android%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%A1%86%E6%9E%B6%E5%B1%82%E4%B8%AD%E7%9A%84ActivityManagerService%E5%90%AF%E5%8A%A8Activity%E7%9A%84%E8%BF%87%E7%A8%8B.gif?raw=true" alt="Android应用程序框架层中的ActivityManagerService启动Activity的过程"></p>
+<p><strong>在上面图中，ActivityManagerService和ActivityStack位于同一个进程（SystemServer进程），而ApplicationThread和ActivityThread位于另一个进程中（应用进程）。其中ActivityManagerService负责管理Activity的生命周期，它还借助ActivityStack把所有的Activity按照后进先出的顺序放在一个堆栈中；对每一个应用程序而言都有一个ActivityThread表示应用程序的主线程，而每一个ActivityThread都包含有一个ApplicationThread实例，它是一个Binder对象，负责和其它进程（如SystemServer进程）进行通信。</strong></p>
+<h2 id="一点感想"><a href="#一点感想" class="headerlink" title="一点感想"></a>一点感想</h2><hr>
+<p>参考：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/luoshengyang/article/details/6685853">Android应用程序的Activity启动过程简要介绍和学习计划</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/luoshengyang/article/details/6689748">Android应用程序启动过程源代码分析</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/luoshengyang/article/details/6703247">Android应用程序内部启动Activity过程（startActivity）的源代码分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.android.com/guide/components/tasks-and-back-stack.html">任务与后退栈</a>  </li>
+<li><a target="_blank" rel="noopener" href="https://developer.android.com/guide/topics/manifest/activity-element.html">activity</a>  </li>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/luoshengyang/article/details/8923485">那两年炼就的Android内功修养</a>  </li>
+<li><a href="https://leeeyou.github.io/2016/03/05/blog-2016-03-05-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%AC9%E7%AB%A0-%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E7%9A%84%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B/">Android艺术探索 第9章 四大组件的工作过程</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/35519585">写给 Android 应用工程师的 Binder 原理剖析</a></li>
+</ol>
+<p>最后感谢大神中的大神<a target="_blank" rel="noopener" href="http://blog.csdn.net/luoshengyang">罗升阳的博客</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Android/" rel="tag"># Android</a>
+              <a href="/iBlogWebsite/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="tag"># 源码解析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2017/04/14/2017/2017-04-14-Java%E4%B9%8B%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" rel="prev" title="Java之基础知识汇总">
+      <i class="fa fa-chevron-left"></i> Java之基础知识汇总
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2017/05/11/2017/2017-05-11-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%80%E4%B8%87%E5%B0%8F%E6%97%B6%E5%A4%A9%E6%89%8D%E7%90%86%E8%AE%BA/" rel="next" title="读书笔记之一万小时天才理论">
+      读书笔记之一万小时天才理论 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Activity%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E7%9A%84%E5%A4%A7%E8%87%B4%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.</span> <span class="nav-text">Activity启动过程的大致步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-0%E7%B3%BB%E7%BB%9F%E4%B8%8AAMS%E5%90%AF%E5%8A%A8Activity%E7%9A%84%E6%A0%B8%E5%BF%83%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">7.0系统上AMS启动Activity的核心流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-0%E7%B3%BB%E7%BB%9F%E4%B8%8AAMS%E5%90%AF%E5%8A%A8Activity%E7%9A%84%E6%A0%B8%E5%BF%83%E6%B5%81%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">8.0系统上AMS启动Activity的核心流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8ELauncher%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AA%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F"><span class="nav-number">4.</span> <span class="nav-text">从Launcher启动一个应用程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E7%82%B9%E6%84%9F%E6%83%B3"><span class="nav-number">5.</span> <span class="nav-text">一点感想</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

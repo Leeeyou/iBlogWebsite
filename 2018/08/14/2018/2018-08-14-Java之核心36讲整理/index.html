@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这里是将极客时间上杨晓峰老师的专栏文章，在这里整理出来方便自己后续复习用。文章分为5大模块：  Java 基础：我会围绕 Java 语言基本特性和机制，由点带面，让你构建牢固的 Java 技术工底。   Java 进阶：将围绕并发编程、Java 虚拟机等领域展开，助你攻坚大厂 Java 面试的核心阵地。   Java 应用开发扩展：从数据库编程、主流开源框架、分布式开发等，帮你掌握 Java 开发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java之核心36讲整理">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2018/08/14/2018/2018-08-14-Java%E4%B9%8B%E6%A0%B8%E5%BF%8336%E8%AE%B2%E6%95%B4%E7%90%86/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="这里是将极客时间上杨晓峰老师的专栏文章，在这里整理出来方便自己后续复习用。文章分为5大模块：  Java 基础：我会围绕 Java 语言基本特性和机制，由点带面，让你构建牢固的 Java 技术工底。   Java 进阶：将围绕并发编程、Java 虚拟机等领域展开，助你攻坚大厂 Java 面试的核心阵地。   Java 应用开发扩展：从数据库编程、主流开源框架、分布式开发等，帮你掌握 Java 开发">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-08-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.382Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="知识汇总">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2018/08/14/2018/2018-08-14-Java%E4%B9%8B%E6%A0%B8%E5%BF%8336%E8%AE%B2%E6%95%B4%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Java之核心36讲整理 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2018/08/14/2018/2018-08-14-Java%E4%B9%8B%E6%A0%B8%E5%BF%8336%E8%AE%B2%E6%95%B4%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java之核心36讲整理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-08-14 00:00:00" itemprop="dateCreated datePublished" datetime="2018-08-14T00:00:00+08:00">2018-08-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这里是将极客时间上杨晓峰老师的专栏文章，在这里整理出来方便自己后续复习用。文章分为5大模块：</p>
+<ul>
+<li>Java 基础：我会围绕 Java 语言基本特性和机制，由点带面，让你构建牢固的 Java 技术工底。  </li>
+<li>Java 进阶：将围绕并发编程、Java 虚拟机等领域展开，助你攻坚大厂 Java 面试的核心阵地。  </li>
+<li>Java 应用开发扩展：从数据库编程、主流开源框架、分布式开发等，帮你掌握 Java 开发的十八般兵器。  </li>
+<li>Java 安全基础：让你理解常见的应用安全问题和处理方法，掌握如何写出符合大厂规范的安全代码。  </li>
+<li>Java 性能基础：你将掌握相关工具、方法论与基础实践。  </li>
+</ul>
+<p>对于Android开发人员来说，后面章节内容更多偏向后端开发，对于这部分内容，我自己是量力而行。很多知识点以前只是听说或是了解不透彻，比如CAS、AQS、内存模型、多线程并发等，这次在专栏中，收获满满；只要用心读，保持清晰的头脑，应该还会有进一步的提升。</p>
+<p>技术之外，杨老师在文章中有意的提到了许多思想层面的内容，个人觉得对于意识的提升非常有帮助。比如说“你需要尽量表现出自己的思维深入并系统化”、“知其然并知其所以然，明白基本组成和机制”、“应用场景是我们在选择哪个API前需要考虑的，不能一概而论的说A比B绝对好”等等。当然意识层面的提高也绝非说说而已，还需结合实践和自己的思考不断摸索和总结。</p>
+<p>在某些文章中，我添加了一些自己不太熟悉的内容补充，在相应的章节里面做好记录，也算是查漏补缺，消除自己的疑虑吧。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/kai-pian-ci-yi-mian-shi-ti-wei-qie-ru-dian-ff0c-you-xiao-ti-sheng-ni-de-java-nei-gong.md">开篇词 | 以面试题为切入点，有效提升你的Java内功</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-1-jiang-tan-tan-ni-dui-java-ping-tai-de-li-jie-ff1f.md">第1讲 | 谈谈你对Java平台的理解？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-2-jiang-exception-he-error-you-shi-yao-qu-bie-ff1f.md">第2讲 | Exception和Error有什么区别？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-3-jiang-tan-tan-final-finally-finalize-you-shi-yao-bu-tong-ff1f.md">第3讲 | 谈谈final、finally、 finalize有什么不同？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-4-jiang-qiang-yin-yong-3001-ruan-yin-yong-3001-ruo-yin-yong-3001-huan-xiang-yin-yong-you-shi-yao-qu-bie-ff1f.md">第4讲 | 强引用、软引用、弱引用、幻象引用有什么区别？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-5-jiang-string-stringbuffer-stringbuilder-you-shi-yao-qu-bie-ff1f.md">第5讲 | String、StringBuffer、StringBuilder有什么区别？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-6-jiang-dong-tai-dai-li-shi-ji-yu-shi-yao-yuan-li-ff1f.md">第6讲 | 动态代理是基于什么原理？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-7-jiang-int-he-integer-you-shi-yao-qu-bie-ff1f.md">第7讲 | int和Integer有什么区别？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-8-jiang-dui-bi-vector-arraylist-linkedlist-you-he-qu-bie-ff1f.md">第8讲 | 对比Vector、ArrayList、LinkedList有何区别？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-9-jiang-dui-bi-hashtable-hashmap-treemap-you-shi-yao-bu-tong-ff1f.md">第9讲 | 对比Hashtable、HashMap、TreeMap有什么不同？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-10-jiang-ru-he-baozheng-ji-he-shi-xian-cheng-an-quan-76843f-concurrenthashmap-ru-he-shi-xian-gao-xiao-di-xian-cheng-an-quan-ff1f.md">第10讲 | 如何保证集合是线程安全的? ConcurrentHashMap如何实现高效地线程安全？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-11-jiang-java-ti-gong-le-na-xie-io-fang-shi-ff1f-nio-ru-he-shi-xian-duo-lu-fu-yong-ff1f.md">第11讲 | Java提供了哪些IO方式？ NIO如何实现多路复用？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-12-jiang-java-you-ji-zhong-wen-jian-kao-bei-fang-shi-ff1f-na-yi-zhong-zui-gao-xiao-ff1f.md">第12讲 | Java有几种文件拷贝方式？哪一种最高效？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-13-jiang-tan-tan-jie-kou-he-chou-xiang-lei-you-shi-yao-qu-bie-ff1f.md">第13讲 | 谈谈接口和抽象类有什么区别？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-14-jiang-tan-tan-ni-zhi-dao-de-she-ji-mo-shi-ff1f.md">第14讲 | 谈谈你知道的设计模式？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-15-jiang-synchronized-he-reentrantlock-you-shi-yao-qu-bie-ni-ff1f.md">第15讲 | synchronized和ReentrantLock有什么区别呢？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/zhou-mo-fu-li-tan-tan-wo-dui-java-xue-xi-he-mian-shi-de-kan-fa.md">周末福利 | 谈谈我对Java学习和面试的看法</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-16-jiang-synchronized-di-ceng-ru-he-shi-xian-ff1f-shi-yao-shi-suo-de-sheng-ji-3001-jiang-ji-ff1f.md">第16讲 | synchronized底层如何实现？什么是锁的升级、降级？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-17-jiang-yi-ge-xian-cheng-liang-ci-diao-yong-start-fang-fa-hui-chu-xian-shi-yao-qing-kuang-ff1f.md">第17讲 | 一个线程两次调用start()方法会出现什么情况？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-18-jiang-shi-yao-qing-kuang-xia-java-cheng-xu-hui-chan-sheng-si-suo-ff1f-ru-he-ding-wei-3001-xiu-fu-ff1f.md">第18讲 | 什么情况下Java程序会产生死锁？如何定位、修复？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-19-jiang-java-bing-fa-bao-ti-gong-le-na-xie-bing-fa-gong-ju-lei-ff1f.md">第19讲 | Java并发包提供了哪些并发工具类？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-20-jiang-bing-fa-bao-zhong-de-concurrentlinkedqueue-he-linkedblockingqueue-you-shi-yao-qu-bie-ff1f.md">第20讲 | 并发包中的ConcurrentLinkedQueue和LinkedBlockingQueue有什么区别？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-21-jiang-java-bing-fa-lei-ku-ti-gong-de-xian-cheng-chi-you-na-ji-zhong-ff1f-fen-bie-you-shi-yao-te-dian-ff1f.md">第21讲 | Java并发类库提供的线程池有哪几种？ 分别有什么特点？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-22-jiang-atomicinteger-di-ceng-shi-xian-yuan-li-shi-shi-yao-ff1f-ru-he-zai-zi-ji-de-chan-pin-dai-ma-zhong-ying-yong-cas-cao-zuo-ff1f.md">第22讲 | AtomicInteger底层实现原理是什么？如何在自己的产品代码中应用CAS操作？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-23-jiang-qing-jie-shao-lei-jia-zai-guo-cheng-ff0c-shi-yao-shi-shuang-qin-wei-pai-mo-xing-ff1f.md">第23讲 | 请介绍类加载过程，什么是双亲委派模型？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-24-jiang-you-na-xie-fang-fa-ke-yi-zai-yun-xing-shi-dong-tai-sheng-cheng-yi-ge-java-lei-ff1f.md">第24讲 | 有哪些方法可以在运行时动态生成一个Java类？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-25-jiang-tan-tan-jvm-nei-cun-qu-yu-de-hua-fen-ff0c-na-xie-qu-yu-ke-neng-fa-sheng-outofmemoryerror.md">第25讲 | 谈谈JVM内存区域的划分，哪些区域可能发生OutOfMemoryError?</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-26-jiang-ru-he-jian-kong-he-zhen-duan-jvm-dui-nei-he-dui-wai-nei-cun-shi-yong-ff1f.md">第26讲 | 如何监控和诊断JVM堆内和堆外内存使用？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-27-jiang-java-chang-jian-de-la-ji-shou-ji-qi-you-na-xie-ff1f.md">第27讲 | Java常见的垃圾收集器有哪些？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-28-jiang-tan-tan-ni-de-gc-diao-you-si-8def3f.md">第28讲 | 谈谈你的GC调优思路?</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-29-jiang-java-nei-cun-mo-xing-zhong-de-happen-before-shi-shi-yao-ff1f.md">第29讲 | Java内存模型中的happen-before是什么？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-30-jiang-java-cheng-xu-yun-xing-zai-docker-deng-rong-qi-huan-jing-you-na-xie-xin-wen-ti-ff1f.md">第30讲 | Java程序运行在Docker等容器环境有哪些新问题？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-31-jiang-ni-le-jie-java-ying-yong-kai-fa-zhong-de-zhu-ru-gong-ji-ma-ff1f.md">第31讲 | 你了解Java应用开发中的注入攻击吗？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-32-jiang-ru-he-xie-chu-an-quan-de-java-dai-ma-ff1f.md">第32讲 | 如何写出安全的Java代码？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-33-jiang-hou-tai-fu-wu-chu-xian-ming-xian-201c-bian-man-201d-ff0c-tan-tan-ni-de-zhen-duan-si-lu-ff1f.md">第33讲 | 后台服务出现明显“变慢”，谈谈你的诊断思路？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-34-jiang-you-ren-shuo-201c-lambda-neng-rang-java-cheng-xu-man-30-bei-201d-ff0c-ni-zen-yao-kan-ff1f.md">第34讲 | 有人说“Lambda能让Java程序慢30倍”，你怎么看？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-35-jiang-jvm-you-hua-java-dai-ma-shi-du-zuo-le-shi-yao-ff1f.md">第35讲 | JVM优化Java代码时都做了什么？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-36-jiang-tan-tan-mysql-zhi-chi-de-shi-wu-ge-li-ji-bie-ff0c-yi-ji-bei-guan-suo-he-le-guan-suo-de-yuan-li-he-ying-yong-chang-jing-ff1f.md">第36讲 | 谈谈MySQL支持的事务隔离级别，以及悲观锁和乐观锁的原理和应用场景？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-37-jiang-tan-tan-spring-bean-de-sheng-ming-zhou-qi-he-zuo-yong-yu-ff1f.md">第37讲 | 谈谈Spring Bean的生命周期和作用域？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-38-jiang-duibi-java-biao-zhun-nio-lei-ku-ff0c-ni-zhi-dao-netty-shi-ru-he-shi-xian-geng-gao-xing-neng-de-ma-ff1f.md">第38讲 | 对比Java标准NIO类库，你知道Netty是如何实现更高性能的吗？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/di-39-jiang-tan-tan-chang-yong-de-fen-bu-shi-id-de-she-ji-fang-an-ff1f-snowflake-shi-fou-shou-dong-ling-shi-qie-huan-ying-xiang-ff1f.md">第39讲 | 谈谈常用的分布式ID的设计方案？Snowflake是否受冬令时切换影响？</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/LeeeYou/The-core-of-Java-36/blob/master/jie-shu-yu-ji-zhu-mei-you-zhong-dian.md">结束语 | 技术没有终点</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" rel="tag"># 知识汇总</a>
+              <a href="/iBlogWebsite/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2018/08/09/2018/2018-08-09-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E8%B4%A2%E5%8A%A1%E8%87%AA%E7%94%B1%E4%B9%8B%E8%B7%AF/" rel="prev" title="读书笔记之财务自由之路">
+      <i class="fa fa-chevron-left"></i> 读书笔记之财务自由之路
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2018/08/17/2018/2018-08-17-Android%E4%B9%8B%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="next" title="Android之多线程">
+      Android之多线程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

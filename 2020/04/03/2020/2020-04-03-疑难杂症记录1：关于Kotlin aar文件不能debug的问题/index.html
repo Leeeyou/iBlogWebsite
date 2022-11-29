@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="现在有个这样的场景，需要你编写一个基础库sdk供上层业务调用，同时考虑引入kotlin，于是你花了3分钟很快就把所有的代码写完了，然后assembleRelease输出aar，再引入aar到主工程中。此时你想在主工程中结合业务调试下刚写完的kt代码，发现没法debug，效果如下所示：  由于项目时间关系，在我遇到这个问题时由于代码量不大，立马就将kt编写改成java了。但java语法在某些场景下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="疑难杂症记录1：关于Kotlin aar文件不能debug的问题">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2020/04/03/2020/2020-04-03-%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E8%AE%B0%E5%BD%951%EF%BC%9A%E5%85%B3%E4%BA%8EKotlin%20aar%E6%96%87%E4%BB%B6%E4%B8%8D%E8%83%BDdebug%E7%9A%84%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="现在有个这样的场景，需要你编写一个基础库sdk供上层业务调用，同时考虑引入kotlin，于是你花了3分钟很快就把所有的代码写完了，然后assembleRelease输出aar，再引入aar到主工程中。此时你想在主工程中结合业务调试下刚写完的kt代码，发现没法debug，效果如下所示：  由于项目时间关系，在我遇到这个问题时由于代码量不大，立马就将kt编写改成java了。但java语法在某些场景下">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/wallpaper/2020-04-03.jpg?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-decomplie-example.png?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-submodule.png?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-startup-maven.png?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-startup-maven-success.png?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-config-maven.png?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-upload-archive.png?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-upload-archive-success.png?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-debug-success.png?raw=true">
+<meta property="article:published_time" content="2020-04-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.418Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="疑难杂症">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/wallpaper/2020-04-03.jpg?raw=true">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2020/04/03/2020/2020-04-03-%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E8%AE%B0%E5%BD%951%EF%BC%9A%E5%85%B3%E4%BA%8EKotlin%20aar%E6%96%87%E4%BB%B6%E4%B8%8D%E8%83%BDdebug%E7%9A%84%E9%97%AE%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>疑难杂症记录1：关于Kotlin aar文件不能debug的问题 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2020/04/03/2020/2020-04-03-%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E8%AE%B0%E5%BD%951%EF%BC%9A%E5%85%B3%E4%BA%8EKotlin%20aar%E6%96%87%E4%BB%B6%E4%B8%8D%E8%83%BDdebug%E7%9A%84%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          疑难杂症记录1：关于Kotlin aar文件不能debug的问题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-03 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-03T00:00:00+08:00">2020-04-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/wallpaper/2020-04-03.jpg?raw=true" alt="2020-04-03"></p>
+<p>现在有个这样的场景，需要你编写一个基础库sdk供上层业务调用，同时考虑引入kotlin，于是你花了3分钟很快就把所有的代码写完了，然后assembleRelease输出aar，再引入aar到主工程中。此时你想在主工程中结合业务调试下刚写完的kt代码，发现没法debug，效果如下所示：</p>
+<p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-decomplie-example.png?raw=true" alt="record-kt-aar-source-code-decomplie-example"></p>
+<p>由于项目时间关系，在我遇到这个问题时由于代码量不大，立马就将kt编写改成java了。但java语法在某些场景下实在太罗嗦，同时为了引入kt的协程特性，如果我要继续在基础库中使用kt，前提条件是需要解决kt的aar包不能debug的问题。</p>
+<p>解决问题的过程总是那么曲折不顺，解决问题后的感受总是那么神清气爽。先说结论，这个问题有两种解决方式：</p>
+<ol>
+<li>通过引入子模块的方式，配置一个开关，在你需要调试代码时引入子模块中的源代码，而发布时依赖aar</li>
+<li>通过maven库的方式，不管是本地还是远程maven，在发布代码时附带源码</li>
+</ol>
+<h2 id="子模块方式"><a href="#子模块方式" class="headerlink" title="子模块方式"></a>子模块方式</h2><p>这种方式在操作上依赖一个开关变量，而我根本不想再多维护一个开关值，所以不推荐。下面还是简单说明下怎么操作，原本是aar方式依赖，现在改成子模块方式，如下图所示：</p>
+<p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-submodule.png?raw=true" alt="record-kt-aar-source-code-submodule"></p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span> <span class="string">&#x27;basic-net&#x27;</span></span><br><span class="line"><span class="keyword">project</span>(<span class="string">&#x27;:basic-net&#x27;</span>).projectDir = <span class="keyword">new</span> <span class="keyword">File</span>(settingsDir, <span class="string">&#x27;../TestKtAarLib/basic-net&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这种方式明目张胆把源码依赖进来了，实在找不到借口不能debug了。说了这么多不好，其实还是有优点的，你可以及时修改源码来佐证自己的想法，但仅仅是佐证而已，如果这套基础库代码不是你维护的，或者你们有明确分工，不建议你修改后commit。</p>
+<span id="more"></span>
+
+<h2 id="maven库方式"><a href="#maven库方式" class="headerlink" title="maven库方式"></a>maven库方式</h2><p>推荐采用这种方式，原因很简单，发布完后不用管事了，上层业务使用的同学权限也仅仅是debug级别，不会由于一些莫名其妙的原因修改了你的代码而不自知。</p>
+<p>下面我以线上maven库的方式为例，首先要弄个maven服务，去 <a href="%E9%93%BE%E6%8E%A5%EF%BC%9Ahttps://pan.baidu.com/s/1-t0SVQ865SSzBwO_jhbzlQ">这里下载，提取码：hcxu </a>，完事之后解压，cmd 进入到这个目录：**nexus-3.22.0-02-win64\nexus-3.22.0-02\bin&gt;**，windows系统下运行命令 <strong>nexus.exe /run</strong>，别着急等待一下，看到 <strong>Started Sonatype Nexus OSS 3.22.0-02</strong> 这句话就代表服务起好了，然后你就打开 <a target="_blank" rel="noopener" href="http://localhost:8081/">http://localhost:8081/</a> </p>
+<p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-startup-maven.png?raw=true" alt="record-kt-aar-source-code-startup-maven"></p>
+<p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-startup-maven-success.png?raw=true" alt="record-kt-aar-source-code-startup-maven-success"></p>
+<p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-config-maven.png?raw=true" alt="record-kt-aar-source-code-config-maven"></p>
+<p>接着登录进去(admin/admin123)，然后拷贝maven-releases和maven-snapshots这两个仓库的地址：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://localhost:8081/repository/maven-releases/">http://localhost:8081/repository/maven-releases/</a></li>
+<li><a target="_blank" rel="noopener" href="http://localhost:8081/repository/maven-snapshots/">http://localhost:8081/repository/maven-snapshots/</a></li>
+</ul>
+<p>maven服务这部分算是完事了，下面来看工程中怎么配置，在gradle.properties中配置maven的pom属性以及maven仓库地址和账密。maven的pom属性配置你也可以不写到gradle.properties中，而是放到每个module下分类管理更好。</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#MAVEN需要的配置</span></span><br><span class="line"><span class="attr">PROJ_GROUP_ID</span> = <span class="string">com.leeeyou.testktaar.basic.net</span></span><br><span class="line"><span class="attr">PROJ_ARTIFACTID</span> = <span class="string">basic-net</span></span><br><span class="line"><span class="attr">PROJ_VERSION</span> = <span class="string">1.1.0</span></span><br><span class="line"><span class="attr">PROJ_DESCRIPTION</span> =<span class="string">test kt aar debug</span></span><br><span class="line"><span class="attr">PROJ_TYPE</span> = <span class="string">aar</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#这里是maven地址和账密</span></span><br><span class="line"><span class="attr">MAVEN_REPO_RELEASE_URL</span>=<span class="string">http://localhost:8081/repository/maven-releases/</span></span><br><span class="line"><span class="attr">MAVEN_REPO_SNAPSHOT_URL</span>=<span class="string">http://localhost:8081/repository/maven-snapshots/</span></span><br><span class="line"><span class="attr">NEXUS_USERNAME</span>=<span class="string">admin</span></span><br><span class="line"><span class="attr">NEXUS_PASSWORD</span>=<span class="string">oooo9999</span></span><br></pre></td></tr></table></figure>
+
+<p>现在准备一个maven_push.gradle用于发布aar和源码到maven仓库中，同时在build.gradle中引入该文件：<strong>apply from: ‘maven_push.gradle’</strong></p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">&#x27;maven&#x27;</span></span><br><span class="line">apply plugin: <span class="string">&#x27;signing&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">configurations</span> &#123;</span><br><span class="line">    deployerJars</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">repositories</span> &#123;</span><br><span class="line">    mavenCentral()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断版本是Release or Snapshots</span></span><br><span class="line"><span class="keyword">def</span> isReleaseBuild() &#123;</span><br><span class="line">    <span class="keyword">return</span> !PROJ_VERSION.contains(<span class="string">&quot;SNAPSHOT&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取仓库url</span></span><br><span class="line"><span class="keyword">def</span> getRepositoryUrl() &#123;</span><br><span class="line">    <span class="keyword">return</span> isReleaseBuild() ? MAVEN_REPO_RELEASE_URL : MAVEN_REPO_SNAPSHOT_URL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">uploadArchives &#123;</span><br><span class="line">    <span class="keyword">repositories</span> &#123;</span><br><span class="line">        mavenDeployer &#123;</span><br><span class="line">            beforeDeployment &#123;</span><br><span class="line">                MavenDeployment deployment -&gt; signing.signPom(deployment)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            pom.version = PROJ_VERSION</span><br><span class="line">            pom.artifactId = PROJ_ARTIFACTID</span><br><span class="line">            pom.groupId = PROJ_GROUP_ID</span><br><span class="line"></span><br><span class="line">            repository(url: getRepositoryUrl()) &#123;</span><br><span class="line">                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD) <span class="comment">// maven授权信息</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 进行数字签名</span></span><br><span class="line">signing &#123;</span><br><span class="line">    <span class="comment">// 当 发布版本 &amp; 存在&quot;uploadArchives&quot;任务时，才执行</span></span><br><span class="line">    required &#123; isReleaseBuild() &amp;&amp; gradle.taskGraph.hasTask(<span class="string">&quot;uploadArchives&quot;</span>) &#125;</span><br><span class="line">    sign <span class="keyword">configurations</span>.archives</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//上传源码</span></span><br><span class="line"><span class="keyword">task</span> androidSourcesJar(type: Jar) &#123;</span><br><span class="line">    classifier = <span class="string">&#x27;sources&#x27;</span></span><br><span class="line">    <span class="keyword">from</span> android.<span class="keyword">sourceSets</span>.main.java.srcDirs</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">artifacts</span> &#123;</span><br><span class="line">    archives androidSourcesJar</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后执行uploadArchives任务后，发现aar以及源码成功发布到了仓库中</p>
+<p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-upload-archive.png?raw=true" alt="record-kt-aar-source-code-upload-archive"></p>
+<p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-upload-archive-success.png?raw=true" alt="record-kt-aar-source-code-upload-archive-success"></p>
+<p>工程配置和发布到maven仓库这部分算是完事了，接下来就是使用刚发布的aar。首先在根build.gradle中配置仓库地址，然后在具体的module中引入basic-net依赖库，同步一下，正常情况下能成功拉下代码。</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//根build.gradle</span></span><br><span class="line">maven &#123;</span><br><span class="line">    url <span class="string">&#x27;http://localhost:8081/repository/maven-releases/&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//module的build.gradle</span></span><br><span class="line">implementation <span class="string">&#x27;com.leeeyou.testktaar.basic.net:basic-net:1.1.0&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>此时我已成功拉下了1.1.0版本的代码，测试是包含源码的，所以我可以随意debug NetRequest的post和get函数。久违的debug界面，真香</p>
+<p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-kt-aar-source-code-debug-success.png?raw=true" alt="record-kt-aar-source-code-debug-success"></p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>我这套示例程序的环境如干净的贝加尔湖水，而你的工程环境如同你小区的垃圾堆脏乱不堪。这里没有贬低之意，只是环境的简单和复杂会在你引进依赖库后报很多奇怪的问题，比如重复引入的问题、依赖传递的问题等等，而这些就依赖我们自己解决问题的能力了。</p>
+<p>上面sonatype的使用也是最简单的，它还有很多复杂的功能，比如权限、分组等，这些如果你要用到再找资料也不迟。多提一嘴，在拉仓库代码时，可能会失败报错：Repository does not allow updating assets，此时你就进入sonatype的配置页允许匿名访问就ok了。</p>
+<p>总的来说，想要debug某个aar库，想办法搞到源码，源码在手，debug我有。</p>
+<hr>
+<p>参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/adeng/p/7065717.html">maven使用nexus3.3在windows下搭建私服</a> </li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/d6f6aec8903c">Android Studio 教你5分钟搭建和使用Maven仓库</a> </li>
+<li><a target="_blank" rel="noopener" href="https://discuss.kotlinlang.org/t/how-to-debug-koltin-aar-file-on-android/12987">关于debug kotlin aar的问题，kotlin官方论坛上的答复是建议引入源module</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/yaolong336/article/details/78264767">Repository does not allow updating assets 解决方法</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/entry/59918304518825489151732d">build.gradle管理依赖的版本</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" rel="tag"># 疑难杂症</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2019/10/21/2019/2019-10-21-Kotlin%E9%AB%98%E7%BA%A7%E5%85%A5%E9%97%A8/" rel="prev" title="Kotlin高级入门">
+      <i class="fa fa-chevron-left"></i> Kotlin高级入门
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2020/07/08/2020/2020-07-08-%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E8%AE%B0%E5%BD%952%EF%BC%9A%E5%9C%A8%E7%BC%93%E5%AD%98%E5%A5%BD%E4%B8%A4%E4%B8%AAmtg%E6%8F%92%E5%B1%8F%E5%B9%BF%E5%91%8A%E5%90%8E%EF%BC%8C%E6%98%BE%E7%A4%BA%E9%98%B6%E6%AE%B5%E6%8A%A5%E9%94%99/" rel="next" title="疑难杂症记录2：在缓存好两个mtg插屏广告后，显示阶段报错isNotReady">
+      疑难杂症记录2：在缓存好两个mtg插屏广告后，显示阶段报错isNotReady <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E6%A8%A1%E5%9D%97%E6%96%B9%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">子模块方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#maven%E5%BA%93%E6%96%B9%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">maven库方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AE%B0"><span class="nav-number">3.</span> <span class="nav-text">后记</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. MessageQueue的创建过程即消息队列，以单链表的方式存储和管理着Message。在Andrid 2.3以前，只有Java世界的居民有资格向MessageQueue中添加消息以驱动Java世界的正常运转，但从Android 2.3开始，MessageQueue的核心部分下移至Native层，让Native世界的居民也能利用消息循环来处理他们所在世界的事情。因此MessageQueue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="⎡稳扎稳打系列⎦：Handler机制全面解析2(2&#x2F;3)">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2021/12/16/2021/2021-12-16-%E2%8E%A1%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E7%B3%BB%E5%88%97%E2%8E%A6%EF%BC%9AHandler%E6%9C%BA%E5%88%B6%E5%85%A8%E9%9D%A2%E8%A7%A3%E6%9E%902/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="1. MessageQueue的创建过程即消息队列，以单链表的方式存储和管理着Message。在Andrid 2.3以前，只有Java世界的居民有资格向MessageQueue中添加消息以驱动Java世界的正常运转，但从Android 2.3开始，MessageQueue的核心部分下移至Native层，让Native世界的居民也能利用消息循环来处理他们所在世界的事情。因此MessageQueue">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2021/wallpaper/2021-12-16-nikhil-pThIEv416pE-unsplash.webp?raw=true">
+<meta property="article:published_time" content="2021-12-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-02-21T12:40:35.370Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Handler">
+<meta property="article:tag" content="稳扎稳打系列">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/Leeeyou/blog/blob/master/images/2021/wallpaper/2021-12-16-nikhil-pThIEv416pE-unsplash.webp?raw=true">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2021/12/16/2021/2021-12-16-%E2%8E%A1%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E7%B3%BB%E5%88%97%E2%8E%A6%EF%BC%9AHandler%E6%9C%BA%E5%88%B6%E5%85%A8%E9%9D%A2%E8%A7%A3%E6%9E%902/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>⎡稳扎稳打系列⎦：Handler机制全面解析2(2/3) | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2021/12/16/2021/2021-12-16-%E2%8E%A1%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E7%B3%BB%E5%88%97%E2%8E%A6%EF%BC%9AHandler%E6%9C%BA%E5%88%B6%E5%85%A8%E9%9D%A2%E8%A7%A3%E6%9E%902/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ⎡稳扎稳打系列⎦：Handler机制全面解析2(2/3)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-12-16 00:00:00" itemprop="dateCreated datePublished" datetime="2021-12-16T00:00:00+08:00">2021-12-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-21 20:40:35" itemprop="dateModified" datetime="2022-02-21T20:40:35+08:00">2022-02-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="https://github.com/Leeeyou/blog/blob/master/images/2021/wallpaper/2021-12-16-nikhil-pThIEv416pE-unsplash.webp?raw=true" alt="2021-12-16"></p>
+<h1 id="1-MessageQueue的创建过程"><a href="#1-MessageQueue的创建过程" class="headerlink" title="1. MessageQueue的创建过程"></a>1. MessageQueue的创建过程</h1><p>即消息队列，以单链表的方式存储和管理着Message。在Andrid 2.3以前，只有Java世界的居民有资格向MessageQueue中添加消息以驱动Java世界的正常运转，但从Android 2.3开始，MessageQueue的核心部分下移至Native层，让Native世界的居民也能利用消息循环来处理他们所在世界的事情。因此MessageQueue心系Native和Java两个世界，担任着两个世界沟通的桥梁。下面即将从“存消息”和“取消息”两个动作详细分析Native和Java是怎么交流合作的。不过开始之前我们先扫清楚一些MessageQueue的细节知识点。</p>
+<span id="more"></span>
+
+<p>之所以说MessageQueue是单链表存储Message，是因为Message中保存着next Message，下面是Message中部分属性值说明：</p>
+<p><strong>frameworks/base/core/java/android/os/Message.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Message</span> <span class="keyword">implements</span> <span class="title">Parcelable</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 用户自定义的消息编号</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> what; </span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 标记位，标识消息是否处于使用中，是否为异步消息</span></span><br><span class="line">    <span class="meta">@UnsupportedAppUsage</span></span><br><span class="line">    <span class="keyword">int</span> flags; </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 消息执行时间</span></span><br><span class="line">    <span class="meta">@UnsupportedAppUsage</span></span><br><span class="line">    <span class="meta">@VisibleForTesting(visibility = VisibleForTesting.Visibility.PACKAGE)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">long</span> when; </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 随消息一起传输的数据</span></span><br><span class="line">    Bundle data; </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 目标Handler，将在该Handler中处理消息回调</span></span><br><span class="line">    <span class="meta">@UnsupportedAppUsage</span></span><br><span class="line">    Handler target; </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 消息自带的Callback</span></span><br><span class="line">    <span class="meta">@UnsupportedAppUsage</span></span><br><span class="line">    Runnable callback; </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 保存下一条消息，单链表体现在此</span></span><br><span class="line">    <span class="meta">@UnsupportedAppUsage</span></span><br><span class="line">    Message next; </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进入消息池所需的锁</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Object sPoolSync = <span class="keyword">new</span> Object(); </span><br><span class="line">    <span class="comment">// 消息池</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Message sPool; </span><br><span class="line">    <span class="comment">// 记录消息池总大小</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> sPoolSize = <span class="number">0</span>; </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 消息池的总大小</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_POOL_SIZE = <span class="number">50</span>; </span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到Message的有消息池相关的属性定义sPool，实际上通过obtain()获取Message就是问这个sPool要，否则才新建。其中还有个next属性，它保存了下一条消息，单链表体现在此，类似链表指针指向下一个Message。</p>
+<p>接着我们回到MessageQueue中，MessageQueue中的mMessages保存了Java层链表头的消息，而Message本身又指向了下一条消息，所以整个消息队列以单链表的形式来存储，这种数据结构在插入和删除方面有很大的优势，在遍历方面要稍弱，不过消息队列中本身就是从链表头开始一条一条消费，要遍历整个链表的场景相对来说还是较少的，即使发送延迟消息，也是先遍历后插入，插入时并不需要移动整个队列，这是它最大的优势。</p>
+<p>MessageQueue中的mPtr保存的是Native层的NativeMessageQueue引用，该对象与Java层的MessageQueue一起，共同组成了Android消息机制中的消息队列，分别管理着各层的消息。</p>
+<p>接着我们了解下MessageQueue的创建过程，下面直接从Java层的创建开始逐步进入到Native层的创建过程：</p>
+<p><strong>frameworks/base/core/java/android/os/MessageQueue.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java层的创建代码</span></span><br><span class="line">MessageQueue(<span class="keyword">boolean</span> quitAllowed) &#123;</span><br><span class="line">    mQuitAllowed = quitAllowed;</span><br><span class="line">    <span class="comment">// 调用native方法，该方法的真正实现是android_os_MessageQueue_nativeInit</span></span><br><span class="line">    mPtr = nativeInit(); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>frameworks/base/core/jni/android_os_MessageQueue.cpp</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Native层的创建代码</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> jlong <span class="title">android_os_MessageQueue_nativeInit</span><span class="params">(JNIEnv* env, jclass clazz)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 创建NativeMessageQueue对象</span></span><br><span class="line">    NativeMessageQueue* nativeMessageQueue = <span class="keyword">new</span> NativeMessageQueue();</span><br><span class="line">    <span class="keyword">if</span> (!nativeMessageQueue) &#123;</span><br><span class="line">        jniThrowRuntimeException(env, <span class="string">&quot;Unable to allocate native queue&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    nativeMessageQueue-&gt;incStrong(env);</span><br><span class="line">    <span class="comment">// reinterpret_cast是C++里的强制类型转换符</span></span><br><span class="line">    <span class="keyword">return</span> reinterpret_cast&lt;jlong&gt;(nativeMessageQueue);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Native层创建NativeMessageQueue</span></span><br><span class="line">NativeMessageQueue::NativeMessageQueue() : mPollEnv(NULL), mPollObj(NULL), mExceptionObj(NULL) &#123;</span><br><span class="line">    <span class="comment">// 获取该线程的Looper对象，一个线程只会保存一份Looper实例，在Native层亦是如此</span></span><br><span class="line">    mLooper = Looper::getForThread(); </span><br><span class="line">    <span class="comment">// 如果为空则新建并设置到当前线程中</span></span><br><span class="line">    <span class="keyword">if</span> (mLooper == NULL) &#123; </span><br><span class="line">        mLooper = <span class="keyword">new</span> Looper(<span class="keyword">false</span>);</span><br><span class="line">        Looper::setForThread(mLooper);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>system/core/libutils/Looper.cpp</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Native层创建Looper对象</span></span><br><span class="line">Looper::Looper(bool allowNonCallbacks)</span><br><span class="line">    : mAllowNonCallbacks(allowNonCallbacks),</span><br><span class="line">      mSendingMessage(<span class="keyword">false</span>),</span><br><span class="line">      mPolling(<span class="keyword">false</span>),</span><br><span class="line">      mEpollRebuildRequired(<span class="keyword">false</span>),</span><br><span class="line">      mNextRequestSeq(WAKE_EVENT_FD_SEQ + <span class="number">1</span>),</span><br><span class="line">      mResponseIndex(<span class="number">0</span>),</span><br><span class="line">      mNextMessageUptime(LLONG_MAX) &#123;</span><br><span class="line">    <span class="comment">// 重置mWakeEventFd</span></span><br><span class="line">    mWakeEventFd.reset(eventfd(<span class="number">0</span>, EFD_NONBLOCK | EFD_CLOEXEC));</span><br><span class="line">    LOG_ALWAYS_FATAL_IF(mWakeEventFd.get() &lt; <span class="number">0</span>, <span class="string">&quot;Could not make wake event fd: %s&quot;</span>, strerror(errno));</span><br><span class="line"></span><br><span class="line">    <span class="function">AutoMutex <span class="title">_l</span><span class="params">(mLock)</span></span>;</span><br><span class="line">    <span class="comment">// 重建epoll，内部会调用epoll_create和epoll_ctl</span></span><br><span class="line">    rebuildEpollLocked();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码看到这里，我们能清晰的看到在Native世界几乎有一套跟Java类似的架构来保证消息机制的运行，事实上Java层中的诸多机制设计都是如此，大部分核心逻辑都由Native层完成。</p>
+<p>分析完MessageQueue的创建过程后，我们需要有个大概的认知就是MessageQueue连接着Java层和Native层（mPtr指向了NativeMessageQueue），同时核心逻辑下沉到Native层，在Native层几乎有一套类似的架构来共同完成Android的消息机制。</p>
+<h1 id="2-往消息队列存消息"><a href="#2-往消息队列存消息" class="headerlink" title="2. 往消息队列存消息"></a>2. 往消息队列存消息</h1><p>新消息入队列最终会来到MessageQueue的enqueueMessage，源码分析如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(Message msg, <span class="keyword">long</span> when)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 应用层发出的msg都需要有target，否则抛出异常</span></span><br><span class="line">    <span class="keyword">if</span> (msg.target == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Message must have a target.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 上锁</span></span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="comment">// 安全性检查，如果msg正在使用，则抛出异常</span></span><br><span class="line">        <span class="keyword">if</span> (msg.isInUse()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(msg + <span class="string">&quot; This message is already in use.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果调用了quit，表示要退出消息循环，此时新消息再入队列已无意义，直接return</span></span><br><span class="line">        <span class="keyword">if</span> (mQuitting) &#123;</span><br><span class="line">            IllegalStateException e = <span class="keyword">new</span> IllegalStateException(</span><br><span class="line">                    msg.target + <span class="string">&quot; sending message to a Handler on a dead thread&quot;</span>);</span><br><span class="line">            Log.w(TAG, e.getMessage(), e);</span><br><span class="line">            msg.recycle();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        msg.markInUse(); <span class="comment">// 标记msg正在使用 </span></span><br><span class="line">        msg.when = when; <span class="comment">// 赋值msg的when</span></span><br><span class="line">        Message p = mMessages; <span class="comment">// 链表头消息</span></span><br><span class="line">        <span class="keyword">boolean</span> needWake; <span class="comment">// 是否需要唤醒阻塞</span></span><br><span class="line">        <span class="comment">// 如果链表为空，或者新消息是立即执行的，或者新消息的执行时间早于链表头消息</span></span><br><span class="line">        <span class="comment">// 此时要重置链表头消息</span></span><br><span class="line">        <span class="keyword">if</span> (p == <span class="keyword">null</span> || when == <span class="number">0</span> || when &lt; p.when) &#123;</span><br><span class="line">            msg.next = p;</span><br><span class="line">            mMessages = msg;</span><br><span class="line">            needWake = mBlocked;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 如果已经阻塞了，或者是消息屏障，或者是异步消息，此时需要唤醒</span></span><br><span class="line">            needWake = mBlocked &amp;&amp; p.target == <span class="keyword">null</span> &amp;&amp; msg.isAsynchronous();</span><br><span class="line">            Message prev;</span><br><span class="line">            <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">                prev = p;</span><br><span class="line">                p = p.next;</span><br><span class="line">                <span class="comment">// 按照执行时间找到合适的位置准备插入msg</span></span><br><span class="line">                <span class="keyword">if</span> (p == <span class="keyword">null</span> || when &lt; p.when) &#123; </span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (needWake &amp;&amp; p.isAsynchronous()) &#123;</span><br><span class="line">                    <span class="comment">// 如果整个消息队列中本就存在异步消息，那么重置needWake的值为false，不需要调用nativeWake</span></span><br><span class="line">                    needWake = <span class="keyword">false</span>; </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            msg.next = p;</span><br><span class="line">            prev.next = msg; <span class="comment">// 插入msg</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (needWake) &#123;</span><br><span class="line">            <span class="comment">// 唤醒Native层的阻塞，触发nativePollOnce结束等待</span></span><br><span class="line">            nativeWake(mPtr); </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>消息入队整个过程是挺简单的，首先检查msg的target不能为空，然后上锁，接着是安全性校验，然后给新msg找个合适的插入位置执行插入，最后调用nativeWake()进行唤醒。</p>
+<p>接着看看关于nativeWake的细节：</p>
+<p><strong>frameworks/base/core/jni/android_os_MessageQueue.cpp</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">android_os_MessageQueue_nativeWake</span><span class="params">(JNIEnv* env, jclass clazz, jlong ptr)</span> </span>&#123;</span><br><span class="line">    NativeMessageQueue* nativeMessageQueue = <span class="keyword">reinterpret_cast</span>&lt;NativeMessageQueue*&gt;(ptr);</span><br><span class="line">    nativeMessageQueue-&gt;wake(); <span class="comment">// 调用nativeMessageQueue的wake()</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">NativeMessageQueue::wake</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    mLooper-&gt;wake(); <span class="comment">// 调用native层Looper实例的wake()</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>system/core/libutils/Looper.cpp</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Looper::wake</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">uint64_t</span> inc = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// 向管道mWakeEventFd中写入字符1，</span></span><br><span class="line">    <span class="comment">// TEMP_FAILURE_RETRY 是一个宏定义，当执行write失败后，会不断重复执行，直到执行成功为止。</span></span><br><span class="line">    <span class="keyword">ssize_t</span> nWrite = TEMP_FAILURE_RETRY(write(mWakeEventFd.get(), &amp;inc, <span class="keyword">sizeof</span>(<span class="keyword">uint64_t</span>)));</span><br><span class="line">    </span><br><span class="line">    ......</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>nativeWake函数所做的事情就是向文件描述符中写入数字1，这样读端就会因为有数据可读而从等待状态中醒来。</p>
+<p>至此消息入队从Java层到Native层基本分析完毕，我们再去查阅NativeMessageQueue源码发现并没有看到Native消息入队的代码，这是因为Native层的消息入队跟Java层的不一样，Native层的消息入队在Looper中：</p>
+<p><strong>system/core/libutils/Looper.cpp</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> Looper::sendMessageAtTime(nsecs_t uptime, <span class="keyword">const</span> sp&lt;MessageHandler&gt;&amp; handler, <span class="keyword">const</span> Message&amp; message) &#123;</span><br><span class="line">    size_t i = <span class="number">0</span>;</span><br><span class="line">    &#123; <span class="comment">// acquire lock</span></span><br><span class="line">        <span class="function">AutoMutex <span class="title">_l</span><span class="params">(mLock)</span></span>;</span><br><span class="line"></span><br><span class="line">        size_t messageCount = mMessageEnvelopes.size();</span><br><span class="line">        <span class="comment">// 按照执行时间，为msg找到准确的位置</span></span><br><span class="line">        <span class="keyword">while</span> (i &lt; messageCount &amp;&amp; uptime &gt;= mMessageEnvelopes.itemAt(i).uptime) &#123;</span><br><span class="line">            i += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function">MessageEnvelope <span class="title">messageEnvelope</span><span class="params">(uptime, handler, message)</span></span>;</span><br><span class="line">        <span class="comment">// 插入msg</span></span><br><span class="line">        mMessageEnvelopes.insertAt(messageEnvelope, i, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// mSendingMessage和Java层中的那个mBlocked一样，是一个小小的优化措施</span></span><br><span class="line">        <span class="comment">// 如果当前Looper当前正在发送一个msg，则不需要再次wake</span></span><br><span class="line">        <span class="keyword">if</span> (mSendingMessage) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="comment">// release lock</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 唤醒epoll_wait</span></span><br><span class="line">    <span class="keyword">if</span> (i == <span class="number">0</span>) &#123;</span><br><span class="line">        wake();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意mMessageEnvelopes是定义在Looper.h中的Vector类型的集合，MessageEnvelope里面记录着收信人(handler)，发信时间(uptime)，信件内容(message)</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">MessageEnvelope</span> &#123;</span></span><br><span class="line">    MessageEnvelope() : uptime(<span class="number">0</span>) &#123; &#125;</span><br><span class="line"></span><br><span class="line">    MessageEnvelope(<span class="keyword">nsecs_t</span> u, sp&lt;MessageHandler&gt; h, <span class="keyword">const</span> Message&amp; m)</span><br><span class="line">        : uptime(u), handler(<span class="built_in">std</span>::move(h)), message(m) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 时间</span></span><br><span class="line">    <span class="keyword">nsecs_t</span> uptime; </span><br><span class="line">    <span class="comment">// 接收者</span></span><br><span class="line">    sp&lt;MessageHandler&gt; handler;</span><br><span class="line">    <span class="comment">// 内容</span></span><br><span class="line">    Message message;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-向消息队列取消息"><a href="#3-向消息队列取消息" class="headerlink" title="3. 向消息队列取消息"></a>3. 向消息队列取消息</h1><p>以主线程为切入点，在main函数里面会开启Looper无限循环，在loop函数中会调用loopOnce，在这个函数中第一句就是获取msg：mQueue.next()，下面把这个过程的源码简单整理如下：</p>
+<p><strong>frameworks/base/core/java/android/os/Looper.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Looper me = myLooper();</span><br><span class="line"></span><br><span class="line">    ......</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 死循环</span></span><br><span class="line">    <span class="keyword">for</span> (;;) &#123; </span><br><span class="line">        <span class="comment">// 轮询一次</span></span><br><span class="line">        <span class="keyword">if</span> (!loopOnce(me, ident, thresholdOverride)) &#123; </span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">loopOnce</span><span class="params">(<span class="keyword">final</span> Looper me, <span class="keyword">final</span> <span class="keyword">long</span> ident, <span class="keyword">final</span> <span class="keyword">int</span> thresholdOverride)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取msg，可能会阻塞</span></span><br><span class="line">    Message msg = me.mQueue.next(); </span><br><span class="line">    <span class="keyword">if</span> (msg == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ......</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此会进入到MessageQueue的next函数，我们可能多少了解这个函数会导致阻塞，具体阻塞原理是怎样的可能就说不上来；在该函数的后半段涉及到IdleHandler，这里是在干什么，使用场景是怎样的可能也一知半解，接下来我们就详细的分析这个函数。</p>
+<p><strong>frameworks/base/core/java/android/os/MessageQueue.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function">Message <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// mPtr是NativeMessageQueue的引用</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">long</span> ptr = mPtr; </span><br><span class="line">    <span class="comment">// 如果这个对象都不存在了，那么消息机制就跑不动了，所以直接return</span></span><br><span class="line">    <span class="keyword">if</span> (ptr == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> pendingIdleHandlerCount = -<span class="number">1</span>; <span class="comment">// -1 only during first iteration</span></span><br><span class="line">    <span class="keyword">int</span> nextPollTimeoutMillis = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 这里也是个死循环，不停的问MQ要msg</span></span><br><span class="line">    <span class="keyword">for</span> (;;) &#123; </span><br><span class="line">        <span class="keyword">if</span> (nextPollTimeoutMillis != <span class="number">0</span>) &#123;</span><br><span class="line">            Binder.flushPendingCommands();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 在native层轮询一次，可能会阻塞</span></span><br><span class="line">        nativePollOnce(ptr, nextPollTimeoutMillis); </span><br><span class="line"></span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">long</span> now = SystemClock.uptimeMillis();</span><br><span class="line">            Message prevMsg = <span class="keyword">null</span>;</span><br><span class="line">            Message msg = mMessages;</span><br><span class="line">            <span class="comment">// 检查是否为消息屏障，是的话则会阻挡后续同步消息的执行，这里在上一篇中有介绍</span></span><br><span class="line">            <span class="keyword">if</span> (msg != <span class="keyword">null</span> &amp;&amp; msg.target == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">do</span> &#123;</span><br><span class="line">                    <span class="comment">// 记录消息屏障消息或者消息屏障期间第1条异步消息的前一条消息</span></span><br><span class="line">                    prevMsg = msg;</span><br><span class="line">                    msg = msg.next;</span><br><span class="line">                &#125; <span class="keyword">while</span> (msg != <span class="keyword">null</span> &amp;&amp; !msg.isAsynchronous()); <span class="comment">// 消息屏障期间，获取第1条异步消息执行</span></span><br><span class="line">                <span class="comment">// 消息屏障期间，如果没有异步消息，则msg最终会为null</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (msg != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (now &lt; msg.when) &#123;</span><br><span class="line">                    nextPollTimeoutMillis = (<span class="keyword">int</span>) Math.min(msg.when - now, Integer.MAX_VALUE);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    mBlocked = <span class="keyword">false</span>;</span><br><span class="line">                    <span class="keyword">if</span> (prevMsg != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        <span class="comment">// 有消息屏障的情况下，将异步消息msg后面的消息接到prevMsg的next</span></span><br><span class="line">                        prevMsg.next = msg.next;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="comment">// 否则，将mMessages直接指向下一个消息</span></span><br><span class="line">                        mMessages = msg.next;</span><br><span class="line">                    &#125;</span><br><span class="line">                    msg.next = <span class="keyword">null</span>;</span><br><span class="line">                    <span class="keyword">if</span> (DEBUG) Log.v(TAG, <span class="string">&quot;Returning message: &quot;</span> + msg);</span><br><span class="line">                    msg.markInUse();</span><br><span class="line">                    <span class="keyword">return</span> msg; <span class="comment">// 返回消息</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 如果是消息屏障期间，消息队列不存在异步消息，同步消息是没机会执行的</span></span><br><span class="line">                nextPollTimeoutMillis = -<span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// mQuitting标志位是描述MessageQueue调用了quit后置为true的</span></span><br><span class="line">            <span class="keyword">if</span> (mQuitting) &#123;</span><br><span class="line">                dispose(); <span class="comment">// 销毁native层的消息循环队列</span></span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 接下来这段都是处理IdleHandler，注意这里是在上面没有可用的msg后才进行的</span></span><br><span class="line">            <span class="comment">// 重新赋值IdleHandler的Count</span></span><br><span class="line">            <span class="keyword">if</span> (pendingIdleHandlerCount &lt; <span class="number">0</span></span><br><span class="line">                    &amp;&amp; (mMessages == <span class="keyword">null</span> || now &lt; mMessages.when)) &#123;</span><br><span class="line">                pendingIdleHandlerCount = mIdleHandlers.size();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (pendingIdleHandlerCount &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                mBlocked = <span class="keyword">true</span>; <span class="comment">// count也小于0，则置mBlocked为阻塞态</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 创建mPendingIdleHandlers实例对象</span></span><br><span class="line">            <span class="keyword">if</span> (mPendingIdleHandlers == <span class="keyword">null</span>) &#123;</span><br><span class="line">                mPendingIdleHandlers = <span class="keyword">new</span> IdleHandler[Math.max(pendingIdleHandlerCount, <span class="number">4</span>)];</span><br><span class="line">            &#125;</span><br><span class="line">            mPendingIdleHandlers = mIdleHandlers.toArray(mPendingIdleHandlers);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 遍历IdleHandler，并调用其queueIdle函数，最后remove掉该IdleHandler</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pendingIdleHandlerCount; i++) &#123;</span><br><span class="line">            <span class="keyword">final</span> IdleHandler idler = mPendingIdleHandlers[i];</span><br><span class="line">            mPendingIdleHandlers[i] = <span class="keyword">null</span>; <span class="comment">// release the reference to the handler</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">boolean</span> keep = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                keep = idler.queueIdle();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                Log.wtf(TAG, <span class="string">&quot;IdleHandler threw exception&quot;</span>, t);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!keep) &#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">                    mIdleHandlers.remove(idler);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 重置IdleHandler的Count</span></span><br><span class="line">        pendingIdleHandlerCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 重置超时时长</span></span><br><span class="line">        nextPollTimeoutMillis = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个函数在上一节<a href="https://leeeyou.github.io/iBlogWebsite/2021/12/01/2021/2021-12-01-%E2%8E%A1%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E7%B3%BB%E5%88%97%E2%8E%A6%EF%BC%9AHandler%E6%9C%BA%E5%88%B6%E5%85%A8%E9%9D%A2%E8%A7%A3%E6%9E%901/">[⎡稳扎稳打系列⎦：Handler机制全面解析1(1/3)]</a>中也有分析过，总的来说next是问MQ要一个msg，如果有则返回，如果无则阻塞；其中内部还涉及到消息屏障的逻辑，如果消息屏障来了，则会取消息队列中的异步消息先执行，同步消息就先缓一缓。下面将进一步分析里面的nativePollOnce函数。</p>
+<p><strong>frameworks/base/core/jni/android_os_MessageQueue.cpp</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">android_os_MessageQueue_nativePollOnce</span><span class="params">(JNIEnv* env, jobject obj,</span></span></span><br><span class="line"><span class="function"><span class="params">        jlong ptr, jint timeoutMillis)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 先获取到nativeMessageQueue</span></span><br><span class="line">    NativeMessageQueue* nativeMessageQueue = <span class="keyword">reinterpret_cast</span>&lt;NativeMessageQueue*&gt;(ptr);</span><br><span class="line">    <span class="comment">// 再通过它调起native层的pollOnece</span></span><br><span class="line">    nativeMessageQueue-&gt;pollOnce(env, obj, timeoutMillis);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">NativeMessageQueue::pollOnce</span><span class="params">(JNIEnv* env, jobject pollObj, <span class="keyword">int</span> timeoutMillis)</span> </span>&#123;</span><br><span class="line">    mPollEnv = env;</span><br><span class="line">    mPollObj = pollObj;</span><br><span class="line">    mLooper-&gt;pollOnce(timeoutMillis); <span class="comment">// 最终是通过native层的Looper调起pollOnece</span></span><br><span class="line">    mPollObj = <span class="literal">NULL</span>;</span><br><span class="line">    mPollEnv = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (mExceptionObj) &#123;</span><br><span class="line">        env-&gt;Throw(mExceptionObj);</span><br><span class="line">        env-&gt;DeleteLocalRef(mExceptionObj);</span><br><span class="line">        mExceptionObj = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>system/core/libutils/Looper.cpp</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Looper::pollOnce</span><span class="params">(<span class="keyword">int</span> timeoutMillis, <span class="keyword">int</span>* outFd, <span class="keyword">int</span>* outEvents, <span class="keyword">void</span>** outData)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> result = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123; <span class="comment">// 这里也是一个死循环</span></span><br><span class="line">        <span class="comment">// 先处理没有Callback方法的Response事件</span></span><br><span class="line">        <span class="keyword">while</span> (mResponseIndex &lt; mResponses.size()) &#123;</span><br><span class="line">            <span class="keyword">const</span> Response&amp; response = mResponses.itemAt(mResponseIndex++);</span><br><span class="line">            <span class="keyword">int</span> ident = response.request.ident;</span><br><span class="line">            <span class="comment">// ident大于0，则表示没有callback, 因为POLL_CALLBACK = -2</span></span><br><span class="line">            <span class="keyword">if</span> (ident &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">int</span> fd = response.request.fd;</span><br><span class="line">                <span class="keyword">int</span> events = response.events;</span><br><span class="line">                <span class="keyword">void</span>* data = response.request.data;</span><br><span class="line">                <span class="comment">// 存储发生事件的文件描述符</span></span><br><span class="line">                <span class="keyword">if</span> (outFd != <span class="literal">nullptr</span>) *outFd = fd; </span><br><span class="line">                <span class="comment">// 存储在该文件描述符上发生了哪些事件</span></span><br><span class="line">                <span class="keyword">if</span> (outEvents != <span class="literal">nullptr</span>) *outEvents = events; </span><br><span class="line">                <span class="comment">// 存储上下文数据，可传递用户自定义的数据</span></span><br><span class="line">                <span class="keyword">if</span> (outData != <span class="literal">nullptr</span>) *outData = data; </span><br><span class="line">                <span class="keyword">return</span> ident;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (result != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (outFd != <span class="literal">nullptr</span>) *outFd = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span> (outEvents != <span class="literal">nullptr</span>) *outEvents = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">if</span> (outData != <span class="literal">nullptr</span>) *outData = <span class="literal">nullptr</span>;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 再处理内部轮询，调用pollInner，注意这里是在for循环内部</span></span><br><span class="line">        result = pollInner(timeoutMillis);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里分析下pollOnce里面的四个参数：</p>
+<ul>
+<li>timeOutMillis：超时等待时间。如果为-1，则表示无限等待，直到有事件发生为止。如果值为0，则无需等待立即返回。</li>
+<li>outFd：存储发生事件的那个文件描述符。</li>
+<li>outEvents：存储在该文件描述符上发生了哪些事件，目前支持可读、可写、错误和中断4个事件。<ul>
+<li>EVENT_INPUT 可读</li>
+<li>EVENT_OUTPUT 可写</li>
+<li>EVENT_ERROR 错误</li>
+<li>EVENT_HANGUP 中断</li>
+</ul>
+</li>
+<li>outData：存储上下文数据，这个数据是由用户在添加监听句柄时传递的，它的作用和pthread_create函数最后一个参数param一样，用来传递用户自定义的数据。</li>
+</ul>
+<p>pollOnce函数的返回值是如下四个：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> &#123;</span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Result from Looper_pollOnce() and Looper_pollAll():</span></span><br><span class="line"><span class="comment">    * The poll was awoken using wake() before the timeout expired</span></span><br><span class="line"><span class="comment">    * and no callbacks were executed and no other file descriptors were ready.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="comment">// 表示这次返回是由wake函数触发的，也就是管道写端的那次写事件触发的</span></span><br><span class="line">    POLL_WAKE = <span class="number">-1</span>, </span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Result from Looper_pollOnce() and Looper_pollAll():</span></span><br><span class="line"><span class="comment">    * One or more callbacks were executed.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="comment">// 表示某个被监听的句柄因某种原因被触发</span></span><br><span class="line">    <span class="comment">// 这时outFd参数用于存储发生事件的文件句柄，outEvents用于存储所发生的事件</span></span><br><span class="line">    POLL_CALLBACK = <span class="number">-2</span>, </span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Result from Looper_pollOnce() and Looper_pollAll():</span></span><br><span class="line"><span class="comment">    * The timeout expired.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="comment">// 表示等待超时</span></span><br><span class="line">    POLL_TIMEOUT = <span class="number">-3</span>, </span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Result from Looper_pollOnce() and Looper_pollAll():</span></span><br><span class="line"><span class="comment">    * An error occurred.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="comment">// 表示等待过程中发生错误</span></span><br><span class="line">    POLL_ERROR = <span class="number">-4</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>接着分析pollInner函数，这个函数的逻辑比较复杂，代码较长，会真正涉及到epoll，大家调整下心态，准备发车：</p>
+<p><strong>system/core/libutils/Looper.cpp</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Looper::pollInner</span><span class="params">(<span class="keyword">int</span> timeoutMillis)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 计算出真正需要等待的时间</span></span><br><span class="line">    <span class="keyword">if</span> (timeoutMillis != <span class="number">0</span> &amp;&amp; mNextMessageUptime != LLONG_MAX) &#123;</span><br><span class="line">        <span class="keyword">nsecs_t</span> now = systemTime(SYSTEM_TIME_MONOTONIC);</span><br><span class="line">        <span class="keyword">int</span> messageTimeoutMillis = toMillisecondTimeoutDelay(now, mNextMessageUptime);</span><br><span class="line">        <span class="keyword">if</span> (messageTimeoutMillis &gt;= <span class="number">0</span> &amp;&amp; (timeoutMillis &lt; <span class="number">0</span> || messageTimeoutMillis &lt; timeoutMillis)) &#123;</span><br><span class="line">            timeoutMillis = messageTimeoutMillis;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Poll.</span></span><br><span class="line">    <span class="keyword">int</span> result = POLL_WAKE;</span><br><span class="line">    mResponses.clear();</span><br><span class="line">    mResponseIndex = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// We are about to idle.</span></span><br><span class="line">    <span class="comment">// 即将处于idle状态</span></span><br><span class="line">    mPolling = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> <span class="title">eventItems</span>[<span class="title">EPOLL_MAX_EVENTS</span>];</span></span><br><span class="line">    <span class="comment">// 默认采用了epoll，调用epoll_wait等待感兴趣的事件或超时发生</span></span><br><span class="line">    <span class="keyword">int</span> eventCount = epoll_wait(mEpollFd.get(), eventItems, EPOLL_MAX_EVENTS, timeoutMillis);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// No longer idling.</span></span><br><span class="line">    <span class="comment">// 不再处于idle状态</span></span><br><span class="line">    mPolling = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Acquire lock.</span></span><br><span class="line">    <span class="comment">// 请求锁，从epoll_wait返回了，此时一定发生了什么事情</span></span><br><span class="line">    mLock.lock();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Rebuild epoll set if needed.</span></span><br><span class="line">    <span class="keyword">if</span> (mEpollRebuildRequired) &#123;</span><br><span class="line">        mEpollRebuildRequired = <span class="literal">false</span>;</span><br><span class="line">        <span class="comment">// epoll重建，直接跳到Done</span></span><br><span class="line">        rebuildEpollLocked();</span><br><span class="line">        <span class="keyword">goto</span> Done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check for poll error.</span></span><br><span class="line">    <span class="comment">// 返回值小于0，表示发生了错误</span></span><br><span class="line">    <span class="keyword">if</span> (eventCount &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (errno == EINTR) &#123;</span><br><span class="line">            <span class="keyword">goto</span> Done;</span><br><span class="line">        &#125;</span><br><span class="line">        ALOGW(<span class="string">&quot;Poll failed with an unexpected error: %s&quot;</span>, strerror(errno));</span><br><span class="line">        <span class="comment">// 设置结果为POLL_ERROR并跳到Done</span></span><br><span class="line">        result = POLL_ERROR;</span><br><span class="line">        <span class="keyword">goto</span> Done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check for poll timeout.</span></span><br><span class="line">    <span class="comment">// 返回值等于0，标识发生超时</span></span><br><span class="line">    <span class="keyword">if</span> (eventCount == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 设置结果为POLL_TIMEOUT并跳到Done</span></span><br><span class="line">        result = POLL_TIMEOUT;</span><br><span class="line">        <span class="keyword">goto</span> Done;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Handle all events.</span></span><br><span class="line">    <span class="comment">// 根据epoll的用法，eventCount表示发生事件的个数</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; eventCount; i++) &#123;</span><br><span class="line">        <span class="keyword">const</span> SequenceNumber seq = eventItems[i].data.u64;</span><br><span class="line">        <span class="keyword">uint32_t</span> epollEvents = eventItems[i].events;</span><br><span class="line">        <span class="comment">// WAKE_EVENT_FD_SEQ的值就是1，上面分析过nativeWake函数就是向文件描述符中写入1，</span></span><br><span class="line">        <span class="comment">// 这样就能触发管道读端从epoll_wait函数返回了</span></span><br><span class="line">        <span class="keyword">if</span> (seq == WAKE_EVENT_FD_SEQ) &#123;</span><br><span class="line">            <span class="keyword">if</span> (epollEvents &amp; EPOLLIN) &#123;</span><br><span class="line">                <span class="comment">// 直接读取并清空管道数据</span></span><br><span class="line">                awoken();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                ALOGW(<span class="string">&quot;Ignoring unexpected epoll events 0x%x on wake event fd.&quot;</span>, epollEvents);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// mRequests和前面的mResponse相对应，它也是一个KeyedVector，其中存储了</span></span><br><span class="line">            <span class="comment">// fd和对应的Request结构体，该结构体封装了和监控文件句柄相关的一些上下文信息，</span></span><br><span class="line">            <span class="comment">// 例如回调函数等。</span></span><br><span class="line">            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; request_it = mRequests.find(seq);</span><br><span class="line">            <span class="keyword">if</span> (request_it != mRequests.end()) &#123;</span><br><span class="line">                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; request = request_it-&gt;second;</span><br><span class="line">                <span class="keyword">int</span> events = <span class="number">0</span>;</span><br><span class="line">                <span class="comment">// 将epoll返回的事件转换成上层LOOPER使用的事件</span></span><br><span class="line">                <span class="keyword">if</span> (epollEvents &amp; EPOLLIN) events |= EVENT_INPUT;</span><br><span class="line">                <span class="keyword">if</span> (epollEvents &amp; EPOLLOUT) events |= EVENT_OUTPUT;</span><br><span class="line">                <span class="keyword">if</span> (epollEvents &amp; EPOLLERR) events |= EVENT_ERROR;</span><br><span class="line">                <span class="keyword">if</span> (epollEvents &amp; EPOLLHUP) events |= EVENT_HANGUP;</span><br><span class="line">                <span class="comment">// 每处理一个Request，就相应构造一个Response</span></span><br><span class="line">                mResponses.push(&#123;.seq = seq, .events = events, .request = request&#125;);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                ALOGW(<span class="string">&quot;Ignoring unexpected epoll events 0x%x for sequence number %&quot;</span> PRIu64</span><br><span class="line">                      <span class="string">&quot; that is no longer registered.&quot;</span>,</span><br><span class="line">                      epollEvents, seq);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">Done: ;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Invoke pending message callbacks.</span></span><br><span class="line">    mNextMessageUptime = LLONG_MAX;</span><br><span class="line">    <span class="comment">//  开始处理Native的Message</span></span><br><span class="line">    <span class="keyword">while</span> (mMessageEnvelopes.size() != <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">nsecs_t</span> now = systemTime(SYSTEM_TIME_MONOTONIC);</span><br><span class="line">        <span class="keyword">const</span> MessageEnvelope&amp; messageEnvelope = mMessageEnvelopes.itemAt(<span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span> (messageEnvelope.uptime &lt;= now) &#123;</span><br><span class="line">            &#123; <span class="comment">// obtain handler</span></span><br><span class="line">                sp&lt;MessageHandler&gt; handler = messageEnvelope.handler;</span><br><span class="line">                Message message = messageEnvelope.message;</span><br><span class="line">                mMessageEnvelopes.removeAt(<span class="number">0</span>);</span><br><span class="line">                mSendingMessage = <span class="literal">true</span>;</span><br><span class="line">                mLock.unlock();</span><br><span class="line">                <span class="comment">// 调用Native的handler处理Native的Message</span></span><br><span class="line">                <span class="comment">// 从这里也可看出NativeMessage和Java层的Message没有什么关系</span></span><br><span class="line">                handler-&gt;handleMessage(message);</span><br><span class="line">            &#125; <span class="comment">// release handler</span></span><br><span class="line"></span><br><span class="line">            mLock.lock();</span><br><span class="line">            mSendingMessage = <span class="literal">false</span>;</span><br><span class="line">            result = POLL_CALLBACK; <span class="comment">// 发生回调</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// The last message left at the head of the queue determines the next wakeup time.</span></span><br><span class="line">            mNextMessageUptime = messageEnvelope.uptime;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Release lock.</span></span><br><span class="line">    mLock.unlock();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 处理那些带回调函数的Response</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; mResponses.size(); i++) &#123;</span><br><span class="line">        Response&amp; response = mResponses.editItemAt(i);</span><br><span class="line">        <span class="comment">// 有了回调函数，就能知道如何处理所发生的事情了</span></span><br><span class="line">        <span class="keyword">if</span> (response.request.ident == POLL_CALLBACK) &#123;</span><br><span class="line">            <span class="keyword">int</span> fd = response.request.fd;</span><br><span class="line">            <span class="keyword">int</span> events = response.events;</span><br><span class="line">            <span class="keyword">void</span>* data = response.request.data;</span><br><span class="line">            <span class="comment">// 调用回调函数处理所发生的事件</span></span><br><span class="line">            <span class="keyword">int</span> callbackResult = response.request.callback-&gt;handleEvent(fd, events, data);</span><br><span class="line">            <span class="comment">// callback函数的返回值很重要，如果为0，表明不需要再次监视该文件句柄</span></span><br><span class="line">            <span class="keyword">if</span> (callbackResult == <span class="number">0</span>) &#123;</span><br><span class="line">                AutoMutex _l(mLock);</span><br><span class="line">                removeSequenceNumberLocked(response.seq); <span class="comment">// 移除fd</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            response.request.callback.clear();</span><br><span class="line">            result = POLL_CALLBACK;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>pollInner的代码着实有点长，整理下所发生的事情：</p>
+<ol>
+<li>首先计算真正需要等待的时间</li>
+<li>调用epoll_wait函数等待，这是阻塞方法，用于等待事件发生或者超时，这是也nativePollOnce阻塞的原因</li>
+<li>epoll_wait被唤醒，有了函数返回值，返回值可能的情况如下：<ul>
+<li>POLL_ERROR 发生错误，则直接跳到Done</li>
+<li>POLL_TIMEOUT 发生超时，则直接跳到Done</li>
+<li>正常流程，检测到某些文件句柄上有事件发生<ul>
+<li>如果是管道读端的事件，则认为是控制命令，直接读取数据</li>
+<li>如果是其他FD发生事件，则根据Request构造Response，并保存到Response数组中</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Done标记的代码段是真正开始处理事件的地方<ul>
+<li>首先处理Native的Message，调用Native handler的handlerMessage</li>
+<li>接着处理Response数组中那些带有callback的事件，也就是POLL_CALLBACK类型的事件</li>
+</ul>
+</li>
+</ol>
+<p>到这里就基本分析完“取消息”的主要逻辑，总结一下消息的处理流程，首先是处理Native层的Message，然后是处理Native层的Request，最后才是Java层的Message。了解了这些细节后，也就明白了有时Java上层消息很少，但响应时间却较长的真正原因。</p>
+<h1 id="4-Looper"><a href="#4-Looper" class="headerlink" title="4. Looper"></a>4. Looper</h1><h2 id="4-1-主线程中Looper-loop-无限循环跟ANR问题"><a href="#4-1-主线程中Looper-loop-无限循环跟ANR问题" class="headerlink" title="4.1 主线程中Looper.loop()无限循环跟ANR问题"></a>4.1 主线程中Looper.loop()无限循环跟ANR问题</h2><p>这个问题这样问其实有点混淆视听，Looper无限循环跟ANR是两件事。</p>
+<h3 id="ANR"><a href="#ANR" class="headerlink" title="ANR"></a>ANR</h3><p>ANR即Application Not responding ，应用程序无响应。在Android中，如果由于某些耗时操作（网络请求或者IO操作）造成主线程阻塞一定时间（例如造成5s内不能响应用户事件或者BroadcastReceiver的onReceive方法执行时间超过10s），那么系统就会显示ANR对话框提示用户对应的应用处于无响应状态。</p>
+<p>耗时操作导致ANR的情况如下：</p>
+<ul>
+<li>Service Timeout：前台服务在20s内未执行完，后台服务在200s内未执行完</li>
+<li>Broadcast Timeout：前台广播在10s内未执行完，后台广告在60s内未执行完</li>
+<li>ContentProvider Timeout：内容提供者，在publish过超时10s</li>
+<li>InputDispatching Timeout：输入事件分发超时5s，包括按键和触摸事件</li>
+</ul>
+<p>造成主线程阻塞的具体时间如下：</p>
+<p><strong>frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BROADCAST_FG_TIMEOUT = <span class="number">10</span> * <span class="number">1000</span>; <span class="comment">// 前台</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BROADCAST_BG_TIMEOUT = <span class="number">60</span> * <span class="number">1000</span>; <span class="comment">// 后台</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>frameworks/base/services/core/java/com/android/server/am/ActiveServices.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SERVICE_TIMEOUT = <span class="number">20</span> * <span class="number">1000</span>; <span class="comment">// 前台</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SERVICE_BACKGROUND_TIMEOUT = SERVICE_TIMEOUT * <span class="number">10</span>; <span class="comment">// 后台</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>frameworks/base/core/java/android/content/ContentResolver.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CONTENT_PROVIDER_PUBLISH_TIMEOUT_MILLIS = <span class="number">10</span> * <span class="number">1000</span>;</span><br></pre></td></tr></table></figure>
+
+<p>总的来说ANR是因为消息队列当中的事件没有及时得到处理造成的，而我们在主线程中写个死循环基本上会造成ANR，是由于死循环阻塞了后面的事件处理。</p>
+<h3 id="Looper无限循环的意义"><a href="#Looper无限循环的意义" class="headerlink" title="Looper无限循环的意义"></a>Looper无限循环的意义</h3><p>在以消息机制为基础的系统中，Looper无限循环是必不可少，否则当Looper停止也就意味着退出主线程，即退出程序。</p>
+<p>Looper的主要作用就是无限循环，不停的问MQ要消息，然后递给Handler去处理，这里只是“传递”的作用，而且Looper会在无可用消息的情况下进入阻塞状态，属于阻塞式的死循环，这样就更少的消耗cpu资源了。</p>
+<p>Android应用程序的主线程进入空闲等待状态的方式实际上就是在管道的读端等待管道中有新的内容可读，具体来说是通过Linux系统的Epoll机制中的epoll_wait函数进行的。当往Android应用程序的消息队列中加入新的消息时，会同时往管道中的写端写入内容(nativeWake)，通过这种方式就可以唤醒正在等待消息到来的应用程序主线程。因此Looper的无限循环并不会对CPU性能有过多的消耗。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
+<li>Looper无限循环是必不可少的，否则就意味着退出应用程序</li>
+<li>Looper中是阻塞式的死循环，充当“中间人”的传递作用，拿到消息后再递给相应Handler处理</li>
+<li>ANR是因为消息队列当中的事件没有及时得到处理造成的</li>
+<li>死循环不会必然导致ANR</li>
+</ul>
+<h2 id="4-2-Looper-myLooper-setMessageLogging的使用"><a href="#4-2-Looper-myLooper-setMessageLogging的使用" class="headerlink" title="4.2 Looper.myLooper().setMessageLogging的使用"></a>4.2 Looper.myLooper().setMessageLogging的使用</h2><p>首先看看setMessageLogging的源码，就是设置一个Printer类型的入参给mLogging</p>
+<p><strong>frameworks/base/core/java/android/os/Looper.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setMessageLogging</span><span class="params">(<span class="meta">@Nullable</span> Printer printer)</span> </span>&#123;</span><br><span class="line">    mLogging = printer;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在loopOnce中会获取mLogging，在开始处理消息前以及处理后调用Printer输出日志，这样就可以很容易知道主线程的耗时操作了。</p>
+<p><strong>frameworks/base/core/java/android/os/Looper.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">loopOnce</span><span class="params">(<span class="keyword">final</span> Looper me, <span class="keyword">final</span> <span class="keyword">long</span> ident, <span class="keyword">final</span> <span class="keyword">int</span> thresholdOverride)</span> </span>&#123;</span><br><span class="line">    Message msg = me.mQueue.next(); <span class="comment">// might block</span></span><br><span class="line">    <span class="keyword">if</span> (msg == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// No message indicates that the message queue is quitting.</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取printer</span></span><br><span class="line">    <span class="keyword">final</span> Printer logging = me.mLogging;</span><br><span class="line">    <span class="comment">// 开始处理前，打印日志</span></span><br><span class="line">    <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</span><br><span class="line">        logging.println(<span class="string">&quot;&gt;&gt;&gt;&gt;&gt; Dispatching to &quot;</span> + msg.target + <span class="string">&quot; &quot;</span></span><br><span class="line">                + msg.callback + <span class="string">&quot;: &quot;</span> + msg.what);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ......</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 消息处理完，打印日志</span></span><br><span class="line">    <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</span><br><span class="line">        logging.println(<span class="string">&quot;&lt;&lt;&lt;&lt;&lt; Finished to &quot;</span> + msg.target + <span class="string">&quot; &quot;</span> + msg.callback);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ......</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>性能监控组件<a target="_blank" rel="noopener" href="https://github.com/markzhai/AndroidPerformanceMonitor">[BlockCanary]</a>就是利用这个原理检测主线程上的各种卡顿问题，并可通过组件提供的各种信息分析出原因并进行修复。</p>
+<h1 id="5-epoll机制"><a href="#5-epoll机制" class="headerlink" title="5. epoll机制"></a>5. epoll机制</h1><p>select/poll/epoll都是IO多路复用机制，可以同时监控多个描述符，当某个描述符就绪（读或写就绪），则立刻通知相应程序进行读或写操作。本质上select/poll/epoll都是同步I/O，即读写是阻塞的。</p>
+<p>不过开始了解epoll之前，要先熟悉下句柄和文件描述符的含义。</p>
+<h2 id="5-1-句柄和文件描述符"><a href="#5-1-句柄和文件描述符" class="headerlink" title="5.1 句柄和文件描述符"></a>5.1 句柄和文件描述符</h2><h3 id="句柄"><a href="#句柄" class="headerlink" title="句柄"></a>句柄</h3><p>句柄就是个数字，一般和当前系统下的整数的位数一样，比如32bit系统下就是4个字节。这个数字是一个对象的唯一标示，和对象一一对应。这个对象可以是一个块内存，一个资源，或者一个服务的context（如 socket，thread）等等。</p>
+<p>句柄的英文是handle。在英文中有操作、处理、控制之类的意义。作为一个名词时，是指某个中间媒介，通过这个中间媒介可控制、操作某样东西。这样说有点抽象，举个例子。door handle是指门把手，通过门把手可以去控制门，但door handle并非door本身，只是一个中间媒介。又比如knife handle是刀柄，通过刀柄可以使用刀。</p>
+<p>跟door handle类似，我们可以用file handle去操作file, 但file handle并非file本身。这个file handle就被翻译成文件句柄，同理还有各种资源句柄。</p>
+<h3 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h3><p>文件描述符（File descriptor）是计算机科学中的一个术语，是一个用于表述指向文件的引用的抽象化概念。</p>
+<p>文件描述符在形式上是一个非负整数。实际上它是一个索引值，指向内核为每一个进程所维护的该进程打开文件的记录表。当程序打开一个现有文件或者创建一个新文件时，内核向进程返回一个文件描述符。在程序设计中，一些涉及底层的程序编写往往会围绕着文件描述符展开。但是文件描述符这一概念往往只适用于UNIX、Linux这样的操作系统。</p>
+<p>Linux 系统中，把一切都看做是文件，<strong>当进程打开现有文件或创建新文件时，内核向进程返回一个文件描述符，文件描述符就是内核为了高效管理已被打开的文件所创建的索引，用来指向被打开的文件，所有执行I/O操作的系统调用都会通过文件描述符。</strong></p>
+<h2 id="5-2-select"><a href="#5-2-select" class="headerlink" title="5.2 select"></a>5.2 select</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">select</span> <span class="params">(<span class="keyword">int</span> n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>select函数监视的文件描述符分3类，分别是writefds、readfds、和exceptfds。调用后select函数会阻塞，直到有描述符就绪（有数据可读、可写、或者有except），或者超时（timeout指定等待时间，如果立即返回设为null即可），函数返回。当select函数返回后，可以通过遍历fdset，来找到就绪的描述符。</p>
+<p>select目前几乎在所有的平台上支持，其良好跨平台支持也是它的一个优点。<strong>select的一个缺点在于单个进程能够监视的文件描述符的数量存在最大限制，在Linux上一般为1024，可以通过修改宏定义甚至重新编译内核的方式提升这一限制，但是这样也会造成效率的降低。</strong></p>
+<h2 id="5-3-poll"><a href="#5-3-poll" class="headerlink" title="5.3 poll"></a>5.3 poll</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span> <span class="params">(struct pollfd *fds, <span class="keyword">unsigned</span> <span class="keyword">int</span> nfds, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>不同与select使用三个位图来表示三个fdset的方式，poll使用一个pollfd的指针实现。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">pollfd</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> fd; <span class="comment">/* file descriptor */</span></span><br><span class="line">    <span class="keyword">short</span> events; <span class="comment">/* requested events to watch */</span></span><br><span class="line">    <span class="keyword">short</span> revents; <span class="comment">/* returned events witnessed */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>pollfd结构包含了要监视的event和发生的event，不再使用select“参数-值”传递的方式。同时pollfd并没有最大数量限制（但是数量过大后性能也是会下降）。和select函数一样，poll返回后，需要轮询pollfd来获取就绪的描述符。</p>
+<p>从上面看，select和poll都需要在返回后，通过遍历文件描述符来获取已经就绪的socket。<strong>事实上，同时连接的大量客户端在一时刻可能只有很少的处于就绪状态，因此随着监视的描述符数量的增长，其效率也会线性下降。</strong></p>
+<h2 id="5-4-epoll"><a href="#5-4-epoll" class="headerlink" title="5.4 epoll"></a>5.4 epoll</h2><p>epoll是在2.6内核中提出的，是之前的select和poll的增强版本。相对于select和poll来说，epoll更加灵活，没有描述符限制。epoll使用一个文件描述符管理多个描述符，将用户关心的文件描述符的事件存放到内核的一个事件表中，这样在用户空间和内核空间的copy只需一次。</p>
+<h3 id="epoll操作过程"><a href="#epoll操作过程" class="headerlink" title="epoll操作过程"></a>epoll操作过程</h3><p>epoll操作过程需要三个接口，分别如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int epoll_create(int size)；//创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大</span><br><span class="line">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span><span class="params">(<span class="keyword">int</span> epfd, struct epoll_event * events, <span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>int epoll_create(int size);</li>
+</ol>
+<p>创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大，这个参数不同于select()中的第一个参数，给出最大监听的fd+1的值，参数size并不是限制了epoll所能监听的描述符最大个数，只是对内核初始分配内部数据结构的一个建议。</p>
+<p>当创建好epoll句柄后，它就会占用一个fd值，在linux下如果查看/proc/进程id/fd/，是能够看到这个fd的，所以在使用完epoll后，必须调用close()关闭，否则可能导致fd被耗尽。</p>
+<ol start="2">
+<li>int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；</li>
+</ol>
+<p>函数是对指定描述符fd执行op操作。</p>
+<ul>
+<li>epfd：是epoll_create()的返回值。</li>
+<li>op：表示op操作，用三个宏来分别表示添加、删除和修改对fd的监听事件<ul>
+<li>添加EPOLL_CTL_ADD</li>
+<li>删除EPOLL_CTL_DEL</li>
+<li>修改EPOLL_CTL_MOD。</li>
+</ul>
+</li>
+<li>fd：是需要监听的fd（文件描述符）</li>
+<li>epoll_event：是告诉内核需要监听什么事，struct epoll_event结构如下：</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> &#123;</span></span><br><span class="line">  <span class="keyword">__uint32_t</span> events;  <span class="comment">/* Epoll events */</span></span><br><span class="line">  <span class="keyword">epoll_data_t</span> data;  <span class="comment">/* User data variable */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>events可以是以下几个宏的集合：</p>
+<ul>
+<li>EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；</li>
+<li>EPOLLOUT：表示对应的文件描述符可以写；</li>
+<li>EPOLLPRI：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；</li>
+<li>EPOLLERR：表示对应的文件描述符发生错误；</li>
+<li>EPOLLHUP：表示对应的文件描述符被挂断；</li>
+<li>EPOLLET： 将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。</li>
+<li>EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里</li>
+</ul>
+<ol start="3">
+<li>int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);</li>
+</ol>
+<p>等待epfd上的io事件，最多返回maxevents个事件。</p>
+<p>参数events用来从内核得到事件的集合，maxevents告之内核这个events有多大，这个maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间（毫秒，0会立即返回，-1将不确定，也有说法说是永久阻塞）。该函数返回需要处理的事件数目，如返回0表示已超时。</p>
+<h3 id="工作模式"><a href="#工作模式" class="headerlink" title="工作模式"></a>工作模式</h3><p>epoll对文件描述符的操作有两种模式：LT（level trigger）和ET（edge trigger）。LT模式是默认模式，LT模式与ET模式的区别如下：</p>
+<ul>
+<li>LT模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。</li>
+<li>ET模式：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。</li>
+</ul>
+<h2 id="5-5-小结"><a href="#5-5-小结" class="headerlink" title="5.5 小结"></a>5.5 小结</h2><ul>
+<li><strong>描述符数量限制</strong><ul>
+<li>epoll监视的描述符数量不受限制，它所支持的FD上限是最大可以打开文件的数目，这个数字一般远大于2048，举个例子：在1GB内存的机器上大约是10万左右，具体数目可以cat/proc/sys/fs/file-max查看，一般来说这个数目和系统内存关系很大。</li>
+<li><strong>select的最大缺点就是进程打开的fd是有数量限制的</strong>。这对于连接数量比较大的服务器来说根本不能满足。虽然也可以选择多进程的解决方案( Apache就是这样实现的)，不过虽然linux上面创建进程的代价比较小，但仍旧是不可忽视的，加上进程间数据同步远比不上线程间同步的高效，所以也不是一种完美的方案。</li>
+</ul>
+</li>
+<li><strong>遍历文件描述符问题</strong><ul>
+<li>在select/poll中，进程只有在调用一定的方法后，内核才对所有监视的文件描述符进行扫描，</li>
+<li>而epoll事先通过epoll_ctl()来注册一个文件描述符，一旦基于某个文件描述符就绪时，内核会采用类似callback的回调机制，迅速激活这个文件描述符，当进程调用epoll_wait()时便得到通知。<strong>此处去掉了遍历文件描述符，而是通过监听回调的的机制。这正是epoll的魅力所在。</strong></li>
+</ul>
+</li>
+<li>IO效率<ul>
+<li>epoll不同于select和poll轮询的方式，而是通过每个fd定义的回调函数来实现的。只有就绪的fd才会执行回调函数。<strong>IO的效率不会随着监视FD的数量的增长而下降。</strong> </li>
+<li>如果没有大量的idle-connection或者dead-connection，epoll的效率并不会比select/poll高很多，但是当遇到大量的idle- connection，就会发现epoll的效率大大高于select/poll。</li>
+</ul>
+</li>
+</ul>
+<h1 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. 总结</h1><p>这篇文章主要聚焦于MessageQueue和Looper在Java层和Native层的运行逻辑，从“存消息”和“取消息”切入分析内部细节，一直分析到epoll机制，整个链路是比较长的，涉及的知识点比较多。</p>
+<p>在Looper小节中还重点分析了ANR和无限循环问题，最后详细介绍了epoll机制及其优势。下一篇是整个Handler系列的终结篇，会重点讨论延时消息原理，以及Android为什么选择管道模式作为进程间通信机制，屏幕刷新的sync信号与消息机制是怎样运作的，敬请期待。</p>
+<hr>
+<p>参考</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.kancloud.cn/alex_wsc/android-deep2/413391">心系两界的MessageQueue</a></li>
+<li><a target="_blank" rel="noopener" href="http://gityuan.com/2015/12/06/linux_epoll/">select/poll/epoll对比分析</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/XueyinGuo/article/details/113096163">select、poll、epoll - IO模型超详解</a></li>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000003063859?utm_source=Weibo&utm_medium=shareLink&utm_campaign=socialShare&from=timeline&isappinstalled=0">Linux IO模式及 select、poll、epoll详解</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Handler/" rel="tag"># Handler</a>
+              <a href="/iBlogWebsite/tags/%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E7%B3%BB%E5%88%97/" rel="tag"># 稳扎稳打系列</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2021/12/01/2021/2021-12-01-%E2%8E%A1%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E7%B3%BB%E5%88%97%E2%8E%A6%EF%BC%9AHandler%E6%9C%BA%E5%88%B6%E5%85%A8%E9%9D%A2%E8%A7%A3%E6%9E%901/" rel="prev" title="⎡稳扎稳打系列⎦：Handler机制全面解析1(1/3)">
+      <i class="fa fa-chevron-left"></i> ⎡稳扎稳打系列⎦：Handler机制全面解析1(1/3)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2022/02/18/2022/2022-02-18-%E2%8E%A1%E7%A8%B3%E6%89%8E%E7%A8%B3%E6%89%93%E7%B3%BB%E5%88%97%E2%8E%A6%EF%BC%9AHandler%E6%9C%BA%E5%88%B6%E5%85%A8%E9%9D%A2%E8%A7%A3%E6%9E%903/" rel="next" title="⎡稳扎稳打系列⎦：Handler机制全面解析3(3/3)">
+      ⎡稳扎稳打系列⎦：Handler机制全面解析3(3/3) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-MessageQueue%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">1. MessageQueue的创建过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%BE%80%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%AD%98%E6%B6%88%E6%81%AF"><span class="nav-number">2.</span> <span class="nav-text">2. 往消息队列存消息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E5%90%91%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%8F%96%E6%B6%88%E6%81%AF"><span class="nav-number">3.</span> <span class="nav-text">3. 向消息队列取消息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Looper"><span class="nav-number">4.</span> <span class="nav-text">4. Looper</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E4%B8%BB%E7%BA%BF%E7%A8%8B%E4%B8%ADLooper-loop-%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E8%B7%9FANR%E9%97%AE%E9%A2%98"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 主线程中Looper.loop()无限循环跟ANR问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ANR"><span class="nav-number">4.1.1.</span> <span class="nav-text">ANR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Looper%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E7%9A%84%E6%84%8F%E4%B9%89"><span class="nav-number">4.1.2.</span> <span class="nav-text">Looper无限循环的意义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">4.1.3.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Looper-myLooper-setMessageLogging%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 Looper.myLooper().setMessageLogging的使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-epoll%E6%9C%BA%E5%88%B6"><span class="nav-number">5.</span> <span class="nav-text">5. epoll机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E5%8F%A5%E6%9F%84%E5%92%8C%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 句柄和文件描述符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%A5%E6%9F%84"><span class="nav-number">5.1.1.</span> <span class="nav-text">句柄</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="nav-number">5.1.2.</span> <span class="nav-text">文件描述符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-select"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 select</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-poll"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 poll</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-epoll"><span class="nav-number">5.4.</span> <span class="nav-text">5.4 epoll</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#epoll%E6%93%8D%E4%BD%9C%E8%BF%87%E7%A8%8B"><span class="nav-number">5.4.1.</span> <span class="nav-text">epoll操作过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.4.2.</span> <span class="nav-text">工作模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-5-%E5%B0%8F%E7%BB%93"><span class="nav-number">5.5.</span> <span class="nav-text">5.5 小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">6. 总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

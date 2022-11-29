@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Path类就是用来画各种线...滴">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android之绘图基础Path类">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2016/01/11/2016/2016-01-11-Android%E4%B9%8B%E7%BB%98%E5%9B%BE%E5%9F%BA%E7%A1%80Path%E7%B1%BB/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="Path类就是用来画各种线...滴">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/path_%E5%9F%BA%E6%9C%AC%E5%BD%A2%E7%8A%B6.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/path_%E6%8A%98%E7%BA%BF.png">
+<meta property="article:published_time" content="2016-01-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.312Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="自定义控件">
+<meta property="article:tag" content="Path">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/path_%E5%9F%BA%E6%9C%AC%E5%BD%A2%E7%8A%B6.png">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2016/01/11/2016/2016-01-11-Android%E4%B9%8B%E7%BB%98%E5%9B%BE%E5%9F%BA%E7%A1%80Path%E7%B1%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Android之绘图基础Path类 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2016/01/11/2016/2016-01-11-Android%E4%B9%8B%E7%BB%98%E5%9B%BE%E5%9F%BA%E7%A1%80Path%E7%B1%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android之绘图基础Path类
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-01-11 00:00:00" itemprop="dateCreated datePublished" datetime="2016-01-11T00:00:00+08:00">2016-01-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Path类就是用来画各种线...滴</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>先上一段Andorid官网关于Path的解释：</p>
+<p>The Path class encapsulates compound (multiple contour) geometric paths consisting of straight line segments, quadratic curves, and cubic curves. It can be drawn with canvas.drawPath(path, paint), either filled or stroked (based on the paint’s Style), or it can be used for clipping or to draw text on a path.</p>
+<p>Path类封装了复合(多个轮廓)几何路径组成的直线段,二次曲线,立方曲线。它可以通过canvas.drawPath()带上填充或描边（基于涂料的风格）的效果被绘制，也可用于剪切或在路径上绘制文本。总而言之就是：Path类可以画线。至于怎么画，加什么效果，就是接下来的事情了。</p>
+<h2 id="利用Path画基本形状"><a href="#利用Path画基本形状" class="headerlink" title="利用Path画基本形状"></a>利用Path画基本形状</h2><p>先上效果图：<br><img src="../../../../images/githubpages/path_%E5%9F%BA%E6%9C%AC%E5%BD%A2%E7%8A%B6.png" alt="path_基本形状.png"></p>
+<p>代码实现如下  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.leeyou.demopath;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.content.Context;</span><br><span class="line"><span class="keyword">import</span> android.graphics.Canvas;</span><br><span class="line"><span class="keyword">import</span> android.graphics.Color;</span><br><span class="line"><span class="keyword">import</span> android.graphics.CornerPathEffect;</span><br><span class="line"><span class="keyword">import</span> android.graphics.LinearGradient;</span><br><span class="line"><span class="keyword">import</span> android.graphics.Paint;</span><br><span class="line"><span class="keyword">import</span> android.graphics.Path;</span><br><span class="line"><span class="keyword">import</span> android.graphics.PathEffect;</span><br><span class="line"><span class="keyword">import</span> android.graphics.RectF;</span><br><span class="line"><span class="keyword">import</span> android.graphics.Shader;</span><br><span class="line"><span class="keyword">import</span> android.util.AttributeSet;</span><br><span class="line"><span class="keyword">import</span> android.view.View;</span><br><span class="line"></span><br><span class="line"><span class="comment">//参考：http://www.cnblogs.com/tt_mc/archive/2012/12/07/2807518.html</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPaintView</span> <span class="keyword">extends</span> <span class="title">View</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyPaintView</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyPaintView</span><span class="params">(Context context, AttributeSet attrs)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, attrs);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyPaintView</span><span class="params">(Context context, AttributeSet attrs, <span class="keyword">int</span> defStyleAttr)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, attrs, defStyleAttr);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    PathEffect[] effects = <span class="keyword">new</span> PathEffect[<span class="number">7</span>];</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDraw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas);</span><br><span class="line"></span><br><span class="line">        canvas.drawColor(Color.WHITE);</span><br><span class="line"></span><br><span class="line">        Paint paint = <span class="keyword">new</span> Paint();</span><br><span class="line">        paint.setAntiAlias(<span class="keyword">true</span>);</span><br><span class="line">        paint.setColor(Color.RED);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        * 画笔样式分三种：</span></span><br><span class="line"><span class="comment">        * 1.Paint.Style.STROKE：描边</span></span><br><span class="line"><span class="comment">        * 2.Paint.Style.FILL_AND_STROKE：描边并填充</span></span><br><span class="line"><span class="comment">        * 3.Paint.Style.FILL：填充</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        paint.setStyle(Paint.Style.STROKE);</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * 设置描边的粗细，单位：像素px</span></span><br><span class="line"><span class="comment">         * 注意：当setStrokeWidth(0)的时候描边宽度并不为0而是只占一个像素</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        paint.setStrokeWidth(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">        canvas.drawCircle(<span class="number">140</span>, <span class="number">140</span>, <span class="number">100</span>, paint);<span class="comment">//圆形</span></span><br><span class="line"></span><br><span class="line">        canvas.drawRect(<span class="number">50</span>, <span class="number">270</span>, <span class="number">150</span>, <span class="number">370</span>, paint);<span class="comment">//正方形</span></span><br><span class="line"></span><br><span class="line">        canvas.drawRect(<span class="number">50</span>, <span class="number">400</span>, <span class="number">250</span>, <span class="number">450</span>, paint);<span class="comment">//长方形</span></span><br><span class="line"></span><br><span class="line">        canvas.drawOval(<span class="keyword">new</span> RectF(<span class="number">50</span>, <span class="number">470</span>, <span class="number">250</span>, <span class="number">570</span>), paint);<span class="comment">//画椭圆</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//画三角形</span></span><br><span class="line">        Path path = <span class="keyword">new</span> Path();</span><br><span class="line">        path.moveTo(<span class="number">50</span>, <span class="number">800</span>);</span><br><span class="line">        path.lineTo(<span class="number">250</span>, <span class="number">800</span>);</span><br><span class="line">        path.lineTo(<span class="number">150</span>, <span class="number">600</span>);</span><br><span class="line">        path.close();</span><br><span class="line">        canvas.drawPath(path, paint);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//画梯形</span></span><br><span class="line">        Path path2 = <span class="keyword">new</span> Path();</span><br><span class="line">        path2.moveTo(<span class="number">50</span>, <span class="number">1100</span>);</span><br><span class="line">        path2.lineTo(<span class="number">250</span>, <span class="number">1100</span>);</span><br><span class="line">        path2.lineTo(<span class="number">200</span>, <span class="number">900</span>);</span><br><span class="line">        path2.lineTo(<span class="number">100</span>, <span class="number">900</span>);</span><br><span class="line">        path2.close();</span><br><span class="line">        canvas.drawPath(path2, paint);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">////////////////////////////////////////第二列</span></span><br><span class="line">        paint.setColor(Color.BLUE);</span><br><span class="line">        paint.setStyle(Paint.Style.FILL);</span><br><span class="line"></span><br><span class="line">        canvas.drawCircle(<span class="number">390</span>, <span class="number">140</span>, <span class="number">100</span>, paint);<span class="comment">//圆形</span></span><br><span class="line"></span><br><span class="line">        canvas.drawRect(<span class="number">300</span>, <span class="number">270</span>, <span class="number">400</span>, <span class="number">370</span>, paint);<span class="comment">//正方形</span></span><br><span class="line"></span><br><span class="line">        canvas.drawRect(<span class="number">300</span>, <span class="number">400</span>, <span class="number">500</span>, <span class="number">450</span>, paint);<span class="comment">//长方形</span></span><br><span class="line"></span><br><span class="line">        canvas.drawOval(<span class="keyword">new</span> RectF(<span class="number">300</span>, <span class="number">470</span>, <span class="number">500</span>, <span class="number">570</span>), paint);<span class="comment">//画椭圆</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//画三角形</span></span><br><span class="line">        Path path3 = <span class="keyword">new</span> Path();</span><br><span class="line">        path3.moveTo(<span class="number">300</span>, <span class="number">800</span>);</span><br><span class="line">        path3.lineTo(<span class="number">500</span>, <span class="number">800</span>);</span><br><span class="line">        path3.lineTo(<span class="number">400</span>, <span class="number">600</span>);</span><br><span class="line"><span class="comment">//        path3.close();  // paint.setStyle(Paint.Style.FILL); 可以不设置close</span></span><br><span class="line">        canvas.drawPath(path3, paint);</span><br><span class="line"><span class="comment">//</span></span><br><span class="line">        Path path4 = <span class="keyword">new</span> Path();</span><br><span class="line">        path4.moveTo(<span class="number">300</span>, <span class="number">1100</span>);</span><br><span class="line">        path4.lineTo(<span class="number">500</span>, <span class="number">1100</span>);</span><br><span class="line">        path4.lineTo(<span class="number">450</span>, <span class="number">900</span>);</span><br><span class="line">        path4.lineTo(<span class="number">350</span>, <span class="number">900</span>);</span><br><span class="line"><span class="comment">//        path4.close();  // paint.setStyle(Paint.Style.FILL); 可以不设置close</span></span><br><span class="line">        canvas.drawPath(path4, paint);</span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//        ////////////////////////////////////////第三列</span></span><br><span class="line"><span class="comment">//        //参数一为渐变起初点坐标x位置，参数二为y轴位置，参数三和四分辨对应渐变终点</span></span><br><span class="line"><span class="comment">//        //其中参数new int[]&#123;startColor, midleColor,endColor&#125;是参与渐变效果的颜色集合</span></span><br><span class="line"><span class="comment">//        //其中参数new float[]&#123;0 , 0.5f, 1.0f&#125;是定义每个颜色处于的渐变相对位置，这个参数可以为null，如果为null表示所有的颜色按顺序均匀的分布</span></span><br><span class="line">        Shader mShader = <span class="keyword">new</span> LinearGradient(<span class="number">0</span>, <span class="number">0</span>, <span class="number">100</span>, <span class="number">100</span>, <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;Color.RED, Color.GREEN, Color.BLUE&#125;, <span class="keyword">null</span>, Shader.TileMode.REPEAT);</span><br><span class="line"><span class="comment">//        Shader mShader = new LinearGradient(0, 0, 100, 100, new int[]&#123;Color.RED, Color.GREEN, Color.BLUE&#125;, new float[]&#123;0, 0.5f, 1.0f&#125;, Shader.TileMode.REPEAT);</span></span><br><span class="line">        paint.setShader(mShader);</span><br><span class="line"></span><br><span class="line">        canvas.drawCircle(<span class="number">640</span>, <span class="number">140</span>, <span class="number">100</span>, paint);<span class="comment">//圆形</span></span><br><span class="line"></span><br><span class="line">        canvas.drawRect(<span class="number">550</span>, <span class="number">270</span>, <span class="number">650</span>, <span class="number">370</span>, paint);<span class="comment">//正方形</span></span><br><span class="line"></span><br><span class="line">        canvas.drawRect(<span class="number">550</span>, <span class="number">400</span>, <span class="number">750</span>, <span class="number">450</span>, paint);<span class="comment">//长方形</span></span><br><span class="line"></span><br><span class="line">        canvas.drawOval(<span class="keyword">new</span> RectF(<span class="number">550</span>, <span class="number">470</span>, <span class="number">750</span>, <span class="number">570</span>), paint);<span class="comment">//画椭圆</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//画三角形</span></span><br><span class="line">        Path path5 = <span class="keyword">new</span> Path();</span><br><span class="line">        path5.moveTo(<span class="number">550</span>, <span class="number">800</span>);</span><br><span class="line">        path5.lineTo(<span class="number">750</span>, <span class="number">800</span>);</span><br><span class="line">        path5.lineTo(<span class="number">650</span>, <span class="number">600</span>);</span><br><span class="line">        canvas.drawPath(path5, paint);</span><br><span class="line"></span><br><span class="line">        Path path6 = <span class="keyword">new</span> Path();</span><br><span class="line">        path6.moveTo(<span class="number">550</span>, <span class="number">1100</span>);</span><br><span class="line">        path6.lineTo(<span class="number">750</span>, <span class="number">1100</span>);</span><br><span class="line">        path6.lineTo(<span class="number">700</span>, <span class="number">900</span>);</span><br><span class="line">        path6.lineTo(<span class="number">600</span>, <span class="number">900</span>);</span><br><span class="line">        canvas.drawPath(path6, paint);</span><br><span class="line"></span><br><span class="line">        <span class="comment">////////////////////////////////////////第四列</span></span><br><span class="line">        paint.setTextSize(<span class="number">70</span>);</span><br><span class="line"></span><br><span class="line">        canvas.drawText(<span class="string">&quot;圆形&quot;</span>, <span class="number">800</span>, <span class="number">140</span>, paint);</span><br><span class="line">        canvas.drawText(<span class="string">&quot;正方形&quot;</span>, <span class="number">800</span>, <span class="number">340</span>, paint);</span><br><span class="line">        canvas.drawText(<span class="string">&quot;长方形&quot;</span>, <span class="number">800</span>, <span class="number">450</span>, paint);</span><br><span class="line">        canvas.drawText(<span class="string">&quot;椭圆&quot;</span>, <span class="number">800</span>, <span class="number">540</span>, paint);</span><br><span class="line">        canvas.drawText(<span class="string">&quot;三角形&quot;</span>, <span class="number">800</span>, <span class="number">700</span>, paint);</span><br><span class="line">        canvas.drawText(<span class="string">&quot;梯形&quot;</span>, <span class="number">800</span>, <span class="number">1000</span>, paint);</span><br><span class="line"></span><br><span class="line">        <span class="comment">////////////////////////////////////////画折线</span></span><br><span class="line">        Paint paint8 = <span class="keyword">new</span> Paint();</span><br><span class="line">        paint8.setStyle(Paint.Style.STROKE);</span><br><span class="line">        paint8.setStrokeWidth(<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span>[] colors;</span><br><span class="line"></span><br><span class="line">        Path path7 = <span class="keyword">new</span> Path();</span><br><span class="line">        path7.moveTo(<span class="number">0</span>, <span class="number">1000</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;= <span class="number">15</span>; i++) &#123;</span><br><span class="line">            path7.lineTo(i * <span class="number">900</span>, (<span class="keyword">float</span>) (Math.random() * <span class="number">60</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        colors = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.BLACK, Color.MAGENTA, Color.CYAN&#125;;</span><br><span class="line"></span><br><span class="line">        effects[<span class="number">0</span>] = <span class="keyword">null</span>;<span class="comment">// 不实用路径</span></span><br><span class="line"></span><br><span class="line">        effects[<span class="number">1</span>] = <span class="keyword">new</span> CornerPathEffect(<span class="number">10</span>);<span class="comment">//使用CornerPathEffect路径效果</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; effects.length; i++) &#123;</span><br><span class="line">            paint8.setPathEffect(effects[i]);</span><br><span class="line">            paint8.setColor(colors[i]);</span><br><span class="line">            canvas.drawPath(path7, paint8);</span><br><span class="line">            canvas.translate(<span class="number">0</span>, <span class="number">60</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="利用Path画折线"><a href="#利用Path画折线" class="headerlink" title="利用Path画折线"></a>利用Path画折线</h2><p>Android为路径绘制提供了<a target="_blank" rel="noopener" href="http://developer.android.com/reference/android/graphics/PathEffect.html">PathEffect</a>来定义绘制效果，画折线利用了PathEffect子类的各种效果：<br><a target="_blank" rel="noopener" href="http://developer.android.com/reference/android/graphics/CornerPathEffect.html">CornerPathEffect</a><br><a target="_blank" rel="noopener" href="http://developer.android.com/reference/android/graphics/DiscretePathEffect.html">DiscretePathEffect</a><br><a target="_blank" rel="noopener" href="http://developer.android.com/reference/android/graphics/DashPathEffect.html">DashPathEffect</a><br><a target="_blank" rel="noopener" href="http://developer.android.com/reference/android/graphics/PathDashPathEffect.html">PathDashPathEffect</a><br><a target="_blank" rel="noopener" href="http://developer.android.com/reference/android/graphics/ComposePathEffect.html">ComposePathEffect</a>  </p>
+<p>效果图如下，其中第一条线是默认效果，没有设置任何PathEffect：<br><img src="../../../../images/githubpages/path_%E6%8A%98%E7%BA%BF.png" alt="path_折线.png"></p>
+<p>代码实现如下：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.leeyou.demopath;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.content.Context;</span><br><span class="line"><span class="keyword">import</span> android.graphics.Canvas;</span><br><span class="line"><span class="keyword">import</span> android.graphics.Color;</span><br><span class="line"><span class="keyword">import</span> android.graphics.ComposePathEffect;</span><br><span class="line"><span class="keyword">import</span> android.graphics.CornerPathEffect;</span><br><span class="line"><span class="keyword">import</span> android.graphics.DashPathEffect;</span><br><span class="line"><span class="keyword">import</span> android.graphics.DiscretePathEffect;</span><br><span class="line"><span class="keyword">import</span> android.graphics.Paint;</span><br><span class="line"><span class="keyword">import</span> android.graphics.Path;</span><br><span class="line"><span class="keyword">import</span> android.graphics.PathDashPathEffect;</span><br><span class="line"><span class="keyword">import</span> android.graphics.PathEffect;</span><br><span class="line"><span class="keyword">import</span> android.util.AttributeSet;</span><br><span class="line"><span class="keyword">import</span> android.view.View;</span><br><span class="line"></span><br><span class="line"><span class="comment">//参考：http://blog.csdn.net/x605940745/article/details/17141987</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPathEffectView</span> <span class="keyword">extends</span> <span class="title">View</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyPathEffectView</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyPathEffectView</span><span class="params">(Context context, AttributeSet attrs)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, attrs);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyPathEffectView</span><span class="params">(Context context, AttributeSet attrs, <span class="keyword">int</span> defStyleAttr)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, attrs, defStyleAttr);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    PathEffect[] effects = <span class="keyword">new</span> PathEffect[<span class="number">7</span>];</span><br><span class="line">    <span class="keyword">float</span> phase = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDraw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas);</span><br><span class="line"></span><br><span class="line">        canvas.drawColor(Color.WHITE);</span><br><span class="line"></span><br><span class="line">        Paint paint = <span class="keyword">new</span> Paint();</span><br><span class="line">        paint.setStyle(Paint.Style.STROKE);</span><br><span class="line">        paint.setStrokeWidth(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span>[] colors;</span><br><span class="line"></span><br><span class="line">        Path path = <span class="keyword">new</span> Path();</span><br><span class="line">        path.moveTo(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;= <span class="number">35</span>; i++) &#123;</span><br><span class="line">            path.lineTo(i * <span class="number">30</span>, (<span class="keyword">float</span>) (Math.random() * <span class="number">150</span>));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        colors = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;Color.RED, Color.BLUE, Color.GREEN, Color.parseColor(<span class="string">&quot;#FFF87D09&quot;</span>), Color.BLACK, Color.MAGENTA, Color.CYAN&#125;;</span><br><span class="line"></span><br><span class="line">        effects[<span class="number">0</span>] = <span class="keyword">null</span>;<span class="comment">// 不实用路径</span></span><br><span class="line"></span><br><span class="line">        effects[<span class="number">1</span>] = <span class="keyword">new</span> CornerPathEffect(<span class="number">20</span>);<span class="comment">//使用CornerPathEffect路径效果</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//Chop the path into lines of segmentLength, randomly deviating from the original path by deviation.</span></span><br><span class="line">        effects[<span class="number">2</span>] = <span class="keyword">new</span> DiscretePathEffect(<span class="number">9.0f</span>, <span class="number">15.0f</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//The intervals array must contain an even number of entries (&gt;=2), with the even indices specifying the &quot;on&quot; intervals, and the odd indices specifying the &quot;off&quot; intervals.</span></span><br><span class="line">        effects[<span class="number">3</span>] = <span class="keyword">new</span> DashPathEffect(<span class="keyword">new</span> <span class="keyword">float</span>[]&#123;<span class="number">20</span>, <span class="number">10</span>, <span class="number">5</span>, <span class="number">10</span>&#125;, phase);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//Dash the drawn path by stamping it with the specified shape.</span></span><br><span class="line">        Path path1 = <span class="keyword">new</span> Path();</span><br><span class="line">        path1.addRect(<span class="number">0</span>, <span class="number">0</span>, <span class="number">8</span>, <span class="number">8</span>, Path.Direction.CCW);</span><br><span class="line">        effects[<span class="number">4</span>] = <span class="keyword">new</span> PathDashPathEffect(path1, <span class="number">12</span>, phase, PathDashPathEffect.Style.ROTATE);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//Construct a PathEffect whose effect is to apply first the inner effect and the the outer pathEffect</span></span><br><span class="line">        effects[<span class="number">5</span>] = <span class="keyword">new</span> ComposePathEffect(effects[<span class="number">2</span>], effects[<span class="number">4</span>]);</span><br><span class="line"></span><br><span class="line">        effects[<span class="number">6</span>] = <span class="keyword">new</span> ComposePathEffect(effects[<span class="number">4</span>], effects[<span class="number">3</span>]);</span><br><span class="line"></span><br><span class="line">        canvas.translate(<span class="number">8</span>, <span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; effects.length; i++) &#123;</span><br><span class="line">            paint.setPathEffect(effects[i]);</span><br><span class="line">            paint.setColor(colors[i]);</span><br><span class="line">            canvas.drawPath(path, paint);</span><br><span class="line">            canvas.translate(<span class="number">0</span>, <span class="number">150</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//        phase += 1;</span></span><br><span class="line"><span class="comment">//        invalidate();</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="http://pan.baidu.com/s/1o7bw3dK">源文件下载走你</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Android/" rel="tag"># Android</a>
+              <a href="/iBlogWebsite/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/" rel="tag"># 自定义控件</a>
+              <a href="/iBlogWebsite/tags/Path/" rel="tag"># Path</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/01/09/2016/2016-01-09-Java%E4%B9%8B%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" rel="prev" title="Java之集合框架">
+      <i class="fa fa-chevron-left"></i> Java之集合框架
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/01/20/2016/2016-01-20-Android%E4%B9%8B%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6%E4%B9%8B%E7%94%BB%E7%AC%94/" rel="next" title="Android之自定义控件之画笔">
+      Android之自定义控件之画笔 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8Path%E7%94%BB%E5%9F%BA%E6%9C%AC%E5%BD%A2%E7%8A%B6"><span class="nav-number">1.</span> <span class="nav-text">利用Path画基本形状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8Path%E7%94%BB%E6%8A%98%E7%BA%BF"><span class="nav-number">2.</span> <span class="nav-text">利用Path画折线</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

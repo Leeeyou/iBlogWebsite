@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="对于算法的复杂度，一直是懵懂状态。索性这次将这段时间听到看到的一些内容整理出来，以求准确清晰的理解它。 听吴军老师的音频，才了解在计算机发展初期，对于算法好坏的评判标准科学家也是不清楚的，1965年哈特马尼斯（Juris Hartmanis）和斯坦恩斯（Richard Stearns）提出了算法复杂度的概念（二人后来因此获得了图灵奖），计算机科学家们开始考虑一个公平的、一致的评判算法好坏的方法。不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法之复杂度分析">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2018/04/11/2018/2018-04-11-%E7%AE%97%E6%B3%95%E4%B9%8B%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="对于算法的复杂度，一直是懵懂状态。索性这次将这段时间听到看到的一些内容整理出来，以求准确清晰的理解它。 听吴军老师的音频，才了解在计算机发展初期，对于算法好坏的评判标准科学家也是不清楚的，1965年哈特马尼斯（Juris Hartmanis）和斯坦恩斯（Richard Stearns）提出了算法复杂度的概念（二人后来因此获得了图灵奖），计算机科学家们开始考虑一个公平的、一致的评判算法好坏的方法。不">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2018/code/algorithm-time-complexity-summary.jpg?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2018/code/algorithm-time-complexity-problem-size.jpg?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2018/code/algorithm-time-complexity-math.jpg?raw=true">
+<meta property="article:published_time" content="2018-04-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-03T02:11:02.837Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="复杂度">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2018/code/algorithm-time-complexity-summary.jpg?raw=true">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2018/04/11/2018/2018-04-11-%E7%AE%97%E6%B3%95%E4%B9%8B%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>算法之复杂度分析 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2018/04/11/2018/2018-04-11-%E7%AE%97%E6%B3%95%E4%B9%8B%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          算法之复杂度分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-11 00:00:00" itemprop="dateCreated datePublished" datetime="2018-04-11T00:00:00+08:00">2018-04-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-06-03 10:11:02" itemprop="dateModified" datetime="2021-06-03T10:11:02+08:00">2021-06-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>对于算法的复杂度，一直是懵懂状态。索性这次将这段时间听到看到的一些内容整理出来，以求准确清晰的理解它。</p>
+<p>听吴军老师的音频，才了解在计算机发展初期，对于算法好坏的评判标准科学家也是不清楚的，1965年哈特马尼斯（Juris Hartmanis）和斯坦恩斯（Richard Stearns）提出了算法复杂度的概念（二人后来因此获得了图灵奖），计算机科学家们开始考虑一个公平的、一致的评判算法好坏的方法。不过，最早将复杂度严格量化衡量的是著名计算机科学家、算法分析之父 <strong>高德纳（Don Knuth）</strong> 。今天全世界计算机领域都以高德纳的思想为准。</p>
+<p>高德纳的思想主要包括这三个部分：</p>
+<ol>
+<li><p>在比较算法的快慢时，需要考虑数据量特别特别大，大到近乎无穷大时的情况。为什么要比大数的情况，而不比小数的情况呢？因为计算机的发明就是为了处理大量数据的，而且数据越处理越多。</p>
+</li>
+<li><p>决定算法快慢的因素虽然可能很多，但是所有的因素都可以被分为两类。第一类是不随数据量变化的因素，第二类是随着数量变化的。</p>
+<ul>
+<li><p>比如说，有一种大小排序的算法，它的运算次数是10倍的N平方，其中N是要排序的数字的数量。前面的那个10倍是个常数，和N的大小显然没有关系，10个数排序是如此，一亿个数排序时也是如此。而后面的N平方自然和N有关系了。高德纳讲，我们在研究算法时，不必考虑前面那个不变的常数，它是10倍，还是1倍，或者是100倍，只需要看后面那个变化的因素即可。</p>
+</li>
+<li><p>因为N这个数趋近于无穷大时，前面那个不变的常数的影响是微乎其微的，算法的速度主要由后面一个因素决定。比如，当N＝10的时候，N平方就是100；N＝100，N平方就是1万；N＝1万，N平方就是一亿……总之，N平方这个因子的变化非常快。更广泛地讲，任何随着N变化的因素，通常会造成量级的差异。量级就如同芝麻和西瓜的差异，西瓜和地球的差异。100个芝麻是无法和一个西瓜去对比的。</p>
+</li>
+</ul>
+</li>
+<li><p>如果两种算法 <strong>在量级上相当</strong> ，在计算机科学里，就认为它们是一样好的，也就是计算机科学家并不关心三五倍的差别，这就好比1粒芝麻和5粒芝麻都是芝麻量级的东西，大家就不要比了。只有当科学家们不关心几倍的差异后，才可能集中精力考虑量级的差异。也就是说，计算机科学家要尽可能地去捡西瓜。事实上在计算机科学领域，如果谁说自己把目前最好的算法速度提升了一倍，这种论文是无法发表的。</p>
+</li>
+</ol>
+<p>在了解了高德纳提出的思想后，对于算法复杂度关心的点以及评判标准才有了“最正宗”的理解。关心的是大量数据的问题，排除掉不变的因素，且只关注量级的差别，这其实是一个理想的环境，这种假设是非常有意义的。吴军老师说“回顾下科学发展的历史，那些能总结出理论的人要做的第一件事，就是多虑掉所有次要的因素，构建一个理想的环境（或者虚拟的环境），其目的是找到真正的主要矛盾，先把主要问题解决了再说。这些人的思维方式，比普通人是高出一大截的。我们都同意艺术上要有想象力，其实在科学上也是如此，抽象的想象力很重要。”</p>
+<p>在有了上面这段内容作为基础后，下面对时间复杂度和空间复杂度的讲述会简单很多。</p>
+<h1 id="1-时间复杂度"><a href="#1-时间复杂度" class="headerlink" title="1. 时间复杂度"></a>1. 时间复杂度</h1><p>一句话描述就是：<strong>一个算法在问题规模不断增大时对应的时间增长曲线。</strong><br>看完下面这两张图，你大概能理解问题规模的增大以及时间增长曲线之间的关系。</p>
+<p><img src="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2018/code/algorithm-time-complexity-summary.jpg?raw=true" alt="algorithm-time-complexity-summary"></p>
+<p><img src="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2018/code/algorithm-time-complexity-problem-size.jpg?raw=true" alt="algorithm-time-complexity-problem-size"></p>
+<p>从第二张图可以直观的反应出指数、立方和平方级别同线性对数级别的时间增长曲线不在一个量级上。所以你在写代码时，到底选择怎样的时间曲线增长量级是不是有底了？这里其实也印证了高德纳思想的第1和第3点，那第2点排除掉不变的因素怎么理解，这需要用到数学公式了。</p>
+<p>在数学上定义： 存在常数 c，使得当 N &gt;= c 时 T(N) &lt;= f(N)，表示为 T(n) = O(f(n)) 。<br>算法需要执行的运算次数 用输入大小n的函数表示，即 T(n)。如下图示：  </p>
+<p><img src="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2018/code/algorithm-time-complexity-math.jpg?raw=true" alt="algorithm-time-complexity-math"></p>
+<p>当 N &gt;= 2 的时候，f(n) = n^2 总是大于 T(n) = n + 2 的，于是我们说 f(n) 的增长速度是大于或者等于 T(n) 的，也说 f(n) 是 T(n) 的上界，可以表示为 T(n) = O(f(n))。</p>
+<p>因为f(n) 的增长速度是大于或者等于 T(n) 的，即T(n) = O(f(n))，所以我们可以用 f(n) 的增长速度来度量 T(n) 的增长速度，所以我们说这个算法的时间复杂度是 O(f(n))。其实就是我们通常所说的大O推倒法，几条重要的准则如下：<br>1.用常数1来取代运行时间中所有加法常数。<br>2.修改后的运行次数函数中，只保留最高阶项。<br>3.如果最高阶项存在且不是1，则去除与这个项相乘的常数。  </p>
+<p>至此，时间复杂度讲述完毕，没有复杂的描述，利用几张图和一个数学公式推倒就能理解好。另外还需要掌握时间复杂度分析的基本策略：<strong>从内向外分析，从最深层开始分析。如果遇到函数调用，要深入函数进行分析。</strong></p>
+<h1 id="2-空间复杂度"><a href="#2-空间复杂度" class="headerlink" title="2. 空间复杂度"></a>2. 空间复杂度</h1><p>空间复杂度讨论的是<strong>算法所需要的辅助存储空间</strong>，其中输入数据所占用的具体空间取决于问题本身, 与算法无关。记作：<br>S(n) = O(f(n))</p>
+<p>若算法执行时间时所需要的辅助空间相对于输入数据量而言是一个常数，则称这个算法为原地工作， 辅助空间为O(1)。</p>
+<p>将一维数组a中的n个数据逆序存放到原数组中, 下面是两种算法:</p>
+<p>[算法1]<br>S(n) = O(n)  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; n; i++)    b[i] = a[n - i - <span class="number">1</span>];   <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; n; i++)    a[i] = b[i]  </span><br></pre></td></tr></table></figure>
+
+<p>[算法2]<br>S(n) = O(1)  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i=<span class="number">0</span>; i &lt; n/<span class="number">2</span>; i++)&#123;    t = a[i];    a[i] = a[n - i - <span class="number">1</span>];    a[n - i - <span class="number">1</span>] = t;   &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>算法1的空间复杂度为O(n), 需要一个大小为n的辅助数组b</li>
+<li>算法2的空间复杂度为O(1), 仅需要一个变量t, 与问题规模n无关</li>
+</ul>
+<p>算法的空间复杂度与时间复杂度合称为算法的复杂度。面对不同的算法如何选择主要就从这两个方面去考虑，理想情况是一个算法的时间与空间复杂度都小，但这是很难做到的，面对不同的情况要具体问题具体分析: 是以时间换空间, 还是以空间换时间。</p>
+<p>参考：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/f4cca5ce055a">(数据结构）十分钟从零搞定时间复杂度（计算算法的时间复杂度)</a>  </li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/21387264">如何理解算法时间复杂度的表示法O(n²)、O(n)、O(1)、O(nlogn)等？</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/itachi85/article/details/54882603"> 算法（一）时间复杂度</a>  </li>
+<li><a target="_blank" rel="noopener" href="https://ghui.me/post/2016/08/algorithm_performance/">算法的性能分析</a>  </li>
+<li><a href="https://leeeyou.github.io/2016/02/01/blog-2016-02-01-%E7%AE%97%E6%B3%95%E4%B9%8B%E5%9F%BA%E6%9C%AC%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">算法之基本排序算法</a>  </li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+              <a href="/iBlogWebsite/tags/%E5%A4%8D%E6%9D%82%E5%BA%A6/" rel="tag"># 复杂度</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2018/02/27/2018/2018-02-27-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8BAndroid%E7%BE%A4%E8%8B%B1%E4%BC%A0/" rel="prev" title="读书笔记之Android群英传">
+      <i class="fa fa-chevron-left"></i> 读书笔记之Android群英传
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2018/04/18/2018/2018-04-18-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%9C%A8%E8%80%B6%E9%B2%81%E7%B2%BE%E8%BF%9B/" rel="next" title="读书笔记之在耶鲁精进">
+      读书笔记之在耶鲁精进 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-number">1.</span> <span class="nav-text">1. 时间复杂度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E7%A9%BA%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-number">2.</span> <span class="nav-text">2. 空间复杂度</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

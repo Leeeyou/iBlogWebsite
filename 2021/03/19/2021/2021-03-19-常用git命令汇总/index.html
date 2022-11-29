@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 基础linux命令   描述 命令    清除屏幕 clear   重新初始化终端 reset   查看当前目录 pwd   将当前目录下的子文件&amp;子目录平铺在控制台 ls  ls -ll   往控制台输出信息 echo &#39;test content&#39;  echo &#39;test content&#39; &gt; test.txt   在当前目录下新建一个文件 t">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常用git命令汇总">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2021/03/19/2021/2021-03-19-%E5%B8%B8%E7%94%A8git%E5%91%BD%E4%BB%A4%E6%B1%87%E6%80%BB/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="1. 基础linux命令   描述 命令    清除屏幕 clear   重新初始化终端 reset   查看当前目录 pwd   将当前目录下的子文件&amp;子目录平铺在控制台 ls  ls -ll   往控制台输出信息 echo &#39;test content&#39;  echo &#39;test content&#39; &gt; test.txt   在当前目录下新建一个文件 t">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-03-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-26T08:08:38.797Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2021/03/19/2021/2021-03-19-%E5%B8%B8%E7%94%A8git%E5%91%BD%E4%BB%A4%E6%B1%87%E6%80%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>常用git命令汇总 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2021/03/19/2021/2021-03-19-%E5%B8%B8%E7%94%A8git%E5%91%BD%E4%BB%A4%E6%B1%87%E6%80%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          常用git命令汇总
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-19 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-19T00:00:00+08:00">2021-03-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-26 16:08:38" itemprop="dateModified" datetime="2021-03-26T16:08:38+08:00">2021-03-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-基础linux命令"><a href="#1-基础linux命令" class="headerlink" title="1. 基础linux命令"></a>1. 基础linux命令</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>清除屏幕</td>
+<td>clear</td>
+</tr>
+<tr>
+<td>重新初始化终端</td>
+<td>reset</td>
+</tr>
+<tr>
+<td>查看当前目录</td>
+<td>pwd</td>
+</tr>
+<tr>
+<td>将当前目录下的子文件&amp;子目录平铺在控制台</td>
+<td>ls <br> ls -ll</td>
+</tr>
+<tr>
+<td>往控制台输出信息</td>
+<td>echo &#39;test content&#39; <br> echo &#39;test content&#39; &gt; test.txt</td>
+</tr>
+<tr>
+<td>在当前目录下新建一个文件</td>
+<td>touch [文件名]</td>
+</tr>
+<tr>
+<td>查看对应文件的内容</td>
+<td>cat [文件的url]</td>
+</tr>
+<tr>
+<td>编辑文件</td>
+<td>vim [文件的url] <br> &nbsp;&nbsp;- 按i键进入插入模式 <br> &nbsp;&nbsp;- 按esc键进行命令执行 <br> &nbsp;&nbsp;&nbsp;&nbsp;* q! 强制退出(不保存) <br> &nbsp;&nbsp;&nbsp;&nbsp;* wq 保存退出 <br> &nbsp;&nbsp;&nbsp;&nbsp;* set nu 设置行号</td>
+</tr>
+<tr>
+<td>新建文件夹</td>
+<td>mkdir [文件目录]</td>
+</tr>
+<tr>
+<td>将对应目录下的子孙文件&amp;子孙目录平铺在控制台</td>
+<td>find [目录名]</td>
+</tr>
+<tr>
+<td>将对应目录下的文件平铺在控制台</td>
+<td>find [目录名] -typef</td>
+</tr>
+<tr>
+<td>删除文件</td>
+<td>rm [文件名]</td>
+</tr>
+<tr>
+<td>删除文件夹</td>
+<td>rm -r [文件目录]</td>
+</tr>
+<tr>
+<td>重命名</td>
+<td>mv [源文件] [重命名文件]</td>
+</tr>
+<tr>
+<td>查看历史命令</td>
+<td>history</td>
+</tr>
+<tr>
+<td>退出</td>
+<td>exit</td>
+</tr>
+</tbody></table>
+<h1 id="2-新建仓库"><a href="#2-新建仓库" class="headerlink" title="2. 新建仓库"></a>2. 新建仓库</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>在当前目录新建一个git代码库</td>
+<td>git init</td>
+</tr>
+<tr>
+<td>新建一个目录，将其初始化为git代码库</td>
+<td>git init [project-name]</td>
+</tr>
+<tr>
+<td>下载一个项目和它到整个代码历史</td>
+<td>git clone [url]</td>
+</tr>
+</tbody></table>
+<h1 id="3-配置"><a href="#3-配置" class="headerlink" title="3. 配置"></a>3. 配置</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>显示当前的git配置</td>
+<td>git config --list</td>
+</tr>
+<tr>
+<td>编辑git配置文件</td>
+<td>git config -e [--global]</td>
+</tr>
+<tr>
+<td>设置提交代码时的用户信息</td>
+<td>git config [--global] user.name &quot;[name]&quot; <br> git config [--global] user.email &quot;[email address]&quot;</td>
+</tr>
+</tbody></table>
+<h1 id="4-增加-删除文件"><a href="#4-增加-删除文件" class="headerlink" title="4. 增加/删除文件"></a>4. 增加/删除文件</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>添加当前目录的所有文件到暂存区</td>
+<td>git add .</td>
+</tr>
+<tr>
+<td>删除工作区文件，并且将这次删除放入暂存区</td>
+<td>git rm [file1] [file2] …</td>
+</tr>
+<tr>
+<td>停止追踪指定文件，但该文件会保留在工作区</td>
+<td>git rm --cached [file1]</td>
+</tr>
+<tr>
+<td>改名文件，并且将这个改名放入暂存区</td>
+<td>git mv [file-original] [file-renamed]</td>
+</tr>
+</tbody></table>
+<span id="more"></span>
+
+<h1 id="5-代码提交"><a href="#5-代码提交" class="headerlink" title="5. 代码提交"></a>5. 代码提交</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>提交暂存区到仓库区</td>
+<td>git commit -m [message]</td>
+</tr>
+<tr>
+<td>将已commit过的文件直接提交到仓库区</td>
+<td>git commit -a -m [message]</td>
+</tr>
+<tr>
+<td>提交时显示所有diff信息</td>
+<td>git commit -v</td>
+</tr>
+<tr>
+<td>使用一次新的commit替代上一次提交 <br> 如果代码没任何变化，则用来改写上一次commit的提交信息</td>
+<td>git commit --amend <br> git commit --amend -m [message]</td>
+</tr>
+<tr>
+<td>重做上一次commit，并包括指定文件的新变化</td>
+<td>git commit --amend [file1] [file2] …</td>
+</tr>
+</tbody></table>
+<h1 id="6-分支"><a href="#6-分支" class="headerlink" title="6. 分支"></a>6. 分支</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>列出所有本地分支</td>
+<td>git branch</td>
+</tr>
+<tr>
+<td>列出所有远程分支</td>
+<td>git branch -r</td>
+</tr>
+<tr>
+<td>列出所有本地分支和远程分支</td>
+<td>git branch -a</td>
+</tr>
+<tr>
+<td>新建一个分支，但依然停留在当前分支</td>
+<td>git branch [branch-name]</td>
+</tr>
+<tr>
+<td>新建一个分支，并切换到该分支</td>
+<td>git checkout -b [branch] [commit]</td>
+</tr>
+<tr>
+<td>切换到指定分支，并更新工作区</td>
+<td>git checkout [branch-name]</td>
+</tr>
+<tr>
+<td>切换到上一个分支</td>
+<td>git checkout -</td>
+</tr>
+<tr>
+<td>合并指定分支到当前分支</td>
+<td>git merge [branch]</td>
+</tr>
+<tr>
+<td>选择一个commit合并进当前分支</td>
+<td>git cherry-pick [commit]</td>
+</tr>
+<tr>
+<td>删除分支</td>
+<td>git branch -d [branch-name]</td>
+</tr>
+<tr>
+<td>强制删除分支，忽略该分支的变化</td>
+<td>git branch -D [branch-name]</td>
+</tr>
+<tr>
+<td>删除远程分支</td>
+<td>git push origin --delete [branch-name] <br> git branch -dr [remote/branch]</td>
+</tr>
+</tbody></table>
+<h1 id="7-标签"><a href="#7-标签" class="headerlink" title="7. 标签"></a>7. 标签</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>列出所有tag</td>
+<td>git tag</td>
+</tr>
+<tr>
+<td>在当前commit新建一个tag</td>
+<td>git tag [tag]</td>
+</tr>
+<tr>
+<td>在指定commit新建一个tag</td>
+<td>git tag [tag] [commit]</td>
+</tr>
+<tr>
+<td>删除本地tag</td>
+<td>git tag -d [tag]</td>
+</tr>
+<tr>
+<td>删除远程tag</td>
+<td>git push origin :refs/tags/[tagName]</td>
+</tr>
+<tr>
+<td>查看tag信息</td>
+<td>git show [tag]</td>
+</tr>
+<tr>
+<td>提交指定tag</td>
+<td>git push [remote] [tag]</td>
+</tr>
+<tr>
+<td>提交所有tag</td>
+<td>git push [remote] --tags</td>
+</tr>
+<tr>
+<td>新建一个分支，指向某个tag</td>
+<td>git checkout -b [branch] [tag]</td>
+</tr>
+</tbody></table>
+<h1 id="8-查看信息"><a href="#8-查看信息" class="headerlink" title="8. 查看信息"></a>8. 查看信息</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>显示有变更的文件</td>
+<td>git status</td>
+</tr>
+<tr>
+<td>显示当前分支的历史版本 <br> 原则是递归当前指针的父亲，父亲的父亲</td>
+<td>git log</td>
+</tr>
+<tr>
+<td>查看HEAD所指向的一个顺序提交列表 <br> reflog不遍历HEAD的祖先</td>
+<td>git reflog</td>
+</tr>
+<tr>
+<td>显示commit历史以及每次commit发生变更的文件</td>
+<td>git log --stat</td>
+</tr>
+<tr>
+<td>查看远程分支的日志</td>
+<td>git log remotes/origin/[branchName]</td>
+</tr>
+<tr>
+<td>以图表形式显示分支和提交信息</td>
+<td>git log --all --decorate --oneline --graph</td>
+</tr>
+<tr>
+<td>根据关键词搜索提交历史</td>
+<td>git log -S [keyword]</td>
+</tr>
+<tr>
+<td>显示过去5次提交</td>
+<td>git log -5 --oneline</td>
+</tr>
+<tr>
+<td>显示所有提交过的用户，按提交次数排序</td>
+<td>git shortlog -sn</td>
+</tr>
+<tr>
+<td>显示指定文件是什么人在什么时间修改过</td>
+<td>git blame [file]</td>
+</tr>
+<tr>
+<td>显示暂存区和工作区的差异</td>
+<td>git diff</td>
+</tr>
+<tr>
+<td>显示暂存区和上一个commit的差异</td>
+<td>git diff --cached [file]</td>
+</tr>
+<tr>
+<td>显示工作区与当前分支最新commit之间的差异</td>
+<td>git diff HEAD</td>
+</tr>
+<tr>
+<td>显示两次提交之间的差异</td>
+<td>git diff [first-branch]…[second-branch]</td>
+</tr>
+<tr>
+<td>显示已被修改的文件已被暂存但还未提交</td>
+<td>git diff --staged</td>
+</tr>
+</tbody></table>
+<h1 id="9-远程同步"><a href="#9-远程同步" class="headerlink" title="9. 远程同步"></a>9. 远程同步</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>下载远程仓库的所有变动</td>
+<td>git fetch [remote]</td>
+</tr>
+<tr>
+<td>显示所有远程仓库</td>
+<td>git remote -v</td>
+</tr>
+<tr>
+<td>显示某个远程仓库的信息</td>
+<td>git remote show [remote]</td>
+</tr>
+<tr>
+<td>增加一个新的远程仓库并命名</td>
+<td>git remote add [shortname] [url]</td>
+</tr>
+<tr>
+<td>取回远程仓库的所有变化并与本地分支合并</td>
+<td>git pull [remote] [branch]</td>
+</tr>
+<tr>
+<td>上传本地指定分支到远程仓库</td>
+<td>git push [remote] [branch] <br> git push [remote] HEAD:[current_branch_name]</td>
+</tr>
+<tr>
+<td>强行推送当前分支到远程仓库，即使有冲突</td>
+<td>git push [remote] –force</td>
+</tr>
+<tr>
+<td>推送所有分支到远程仓库</td>
+<td>git push [remote] --all</td>
+</tr>
+</tbody></table>
+<h1 id="10-撤销"><a href="#10-撤销" class="headerlink" title="10. 撤销"></a>10. 撤销</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>恢复暂存区的指定文件到工作区</td>
+<td>git checkout [file]</td>
+</tr>
+<tr>
+<td>恢复某个commit的指定文件到暂存区和工作区</td>
+<td>git checkout [commit] [file]</td>
+</tr>
+<tr>
+<td>恢复暂存区的所有文件到工作区</td>
+<td>git checkout .</td>
+</tr>
+<tr>
+<td>重置暂存区的指定文件，与上一次commit保持一致 <br> 但工作区不变（即只动暂存区的内容，针对指定文件重置）</td>
+<td>git reset [file] <br> git reset --mixed HEAD [file]</td>
+</tr>
+<tr>
+<td>重置暂存区与工作区，与上一次commit保持一致</td>
+<td>git reset --hard</td>
+</tr>
+<tr>
+<td>重置当前分支的HEAD为指定commit <br> 同时重置暂存区和工作区，与指定commit一致</td>
+<td>git reset --hard [commit]</td>
+</tr>
+<tr>
+<td>重置当前HEAD为指定commit，但保持暂存区和工作区不变</td>
+<td>git reset --keep [commit]</td>
+</tr>
+<tr>
+<td>新建一个commit，用来撤销指定commit <br> 后者的所有变化都将被前者抵消，并且应用到当前分支</td>
+<td>git revert [commit]</td>
+</tr>
+</tbody></table>
+<h1 id="11-存储"><a href="#11-存储" class="headerlink" title="11. 存储"></a>11. 存储</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>将未完成的修改保存到一个栈上</td>
+<td>git stash</td>
+</tr>
+<tr>
+<td>应用上一次的存储</td>
+<td>git stash apply</td>
+</tr>
+<tr>
+<td>查看存储</td>
+<td>git stash list</td>
+</tr>
+<tr>
+<td>应用指定的存储</td>
+<td>git stash apply [stash@{2}]</td>
+</tr>
+<tr>
+<td>移除指定的存储</td>
+<td>git stash drop [stash@{0}]</td>
+</tr>
+<tr>
+<td>应用指定的存储然后将其出栈</td>
+<td>git stash pop [stash@{0}]</td>
+</tr>
+</tbody></table>
+<h1 id="12-git底层命令"><a href="#12-git底层命令" class="headerlink" title="12. git底层命令"></a>12. git底层命令</h1><table>
+<thead>
+<tr>
+<th>描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>查看存储对象的内容</td>
+<td>git cat-file -p [commithash]</td>
+</tr>
+<tr>
+<td>查看存储对象的类型</td>
+<td>git cat-file -t [commithash]</td>
+</tr>
+<tr>
+<td>查看暂存区内容</td>
+<td>git ls-files -s</td>
+</tr>
+<tr>
+<td>查看暂存区是否有文件</td>
+<td>find .git/objects/ -type f</td>
+</tr>
+<tr>
+<td>生成git对象并写进数据库</td>
+<td>git hash-object -w [filename]</td>
+</tr>
+<tr>
+<td>更新暂存区</td>
+<td>git update-index --add --cacheinfo</td>
+</tr>
+<tr>
+<td>生成树对象</td>
+<td>git write-tree</td>
+</tr>
+<tr>
+<td>生成commit对象</td>
+<td>git commit-trees</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/git/" rel="tag"># git</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2020/07/12/2020/2020-07-12-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8BKotlin%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B/" rel="prev" title="读书笔记之《Kotlin核心编程》">
+      <i class="fa fa-chevron-left"></i> 读书笔记之《Kotlin核心编程》
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2021/04/02/2021/2021-04-02-JVM%E7%B3%BB%E5%88%97%E5%A4%A7%E7%BA%B2%E6%95%B4%E7%90%86/" rel="next" title="JVM系列之大纲整理">
+      JVM系列之大纲整理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%9F%BA%E7%A1%80linux%E5%91%BD%E4%BB%A4"><span class="nav-number">1.</span> <span class="nav-text">1. 基础linux命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%96%B0%E5%BB%BA%E4%BB%93%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">2. 新建仓库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">3. 配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E5%A2%9E%E5%8A%A0-%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6"><span class="nav-number">4.</span> <span class="nav-text">4. 增加&#x2F;删除文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E4%BB%A3%E7%A0%81%E6%8F%90%E4%BA%A4"><span class="nav-number">5.</span> <span class="nav-text">5. 代码提交</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E5%88%86%E6%94%AF"><span class="nav-number">6.</span> <span class="nav-text">6. 分支</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-%E6%A0%87%E7%AD%BE"><span class="nav-number">7.</span> <span class="nav-text">7. 标签</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-%E6%9F%A5%E7%9C%8B%E4%BF%A1%E6%81%AF"><span class="nav-number">8.</span> <span class="nav-text">8. 查看信息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#9-%E8%BF%9C%E7%A8%8B%E5%90%8C%E6%AD%A5"><span class="nav-number">9.</span> <span class="nav-text">9. 远程同步</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-%E6%92%A4%E9%94%80"><span class="nav-number">10.</span> <span class="nav-text">10. 撤销</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-%E5%AD%98%E5%82%A8"><span class="nav-number">11.</span> <span class="nav-text">11. 存储</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-git%E5%BA%95%E5%B1%82%E5%91%BD%E4%BB%A4"><span class="nav-number">12.</span> <span class="nav-text">12. git底层命令</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

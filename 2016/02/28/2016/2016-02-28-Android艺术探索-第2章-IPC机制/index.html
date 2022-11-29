@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="IPC机制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android艺术探索-第2章-IPC机制">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2016/02/28/2016/2016-02-28-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%AC2%E7%AB%A0-IPC%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="IPC机制">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2016/wallpaper/2016-02-28.jpg?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2016/code/android-art-exploration-2-binder-connection-pool.webp?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2016/code/android-art-exploration-2-choose-the-right-ipc-method.png?raw=true">
+<meta property="article:published_time" content="2016-02-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-05-19T06:16:59.721Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="IPC机制">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/Leeeyou/blog/blob/master/images/2016/wallpaper/2016-02-28.jpg?raw=true">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2016/02/28/2016/2016-02-28-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%AC2%E7%AB%A0-IPC%E6%9C%BA%E5%88%B6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Android艺术探索-第2章-IPC机制 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2016/02/28/2016/2016-02-28-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%AC2%E7%AB%A0-IPC%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android艺术探索-第2章-IPC机制
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-02-28 00:00:00" itemprop="dateCreated datePublished" datetime="2016-02-28T00:00:00+08:00">2016-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-05-19 14:16:59" itemprop="dateModified" datetime="2021-05-19T14:16:59+08:00">2021-05-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">IPC机制</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="https://github.com/Leeeyou/blog/blob/master/images/2016/wallpaper/2016-02-28.jpg?raw=true" alt="2016-02-28"></p>
+<h1 id="1-IPC简介"><a href="#1-IPC简介" class="headerlink" title="1. IPC简介"></a>1. IPC简介</h1><ul>
+<li>IPC不是Android特有的，任何一个操作系统都需要有相应的IPC机制。</li>
+<li>在Android中有特色的进程间通信方式就是Binder了，通过Binder可以轻松地实现进程间通信。</li>
+<li>除了Binder，Android还支持Socket，通过Socket也可以实现任意两个终端或两个进程之间的通信。</li>
+</ul>
+<h1 id="2-多进程模式"><a href="#2-多进程模式" class="headerlink" title="2. 多进程模式"></a>2. 多进程模式</h1><h2 id="2-1-开启多进程模式"><a href="#2-1-开启多进程模式" class="headerlink" title="2.1. 开启多进程模式"></a>2.1. 开启多进程模式</h2><ul>
+<li>在清单文件中配置android:process属性。</li>
+<li>以: 开头的进程属于当前应用的私有进程，其他应用的组件不可以和它跑在同一个进程中。</li>
+<li>而进程名不以: 开头的进程属于全局进程，其他应用通过ShareUID方式可以和它跑在同一个进程中。</li>
+</ul>
+<h2 id="2-2-多进程模式运行机制"><a href="#2-2-多进程模式运行机制" class="headerlink" title="2.2. 多进程模式运行机制"></a>2.2. 多进程模式运行机制</h2><h3 id="2-2-1-多进程造成的问题"><a href="#2-2-1-多进程造成的问题" class="headerlink" title="2.2.1. 多进程造成的问题"></a>2.2.1. 多进程造成的问题</h3><ul>
+<li>静态成员和单例模式完全失效。</li>
+<li>线程同步机制完全失效。</li>
+<li>SharedPreferences的可靠性下降。</li>
+<li>Application会多次创建，分配独立虚拟机，启动一个应用。</li>
+</ul>
+<h3 id="2-2-2-理解同一个应用间的多进程"><a href="#2-2-2-理解同一个应用间的多进程" class="headerlink" title="2.2.2. 理解同一个应用间的多进程"></a>2.2.2. 理解同一个应用间的多进程</h3><p>它就相当于两个不同的应用采用了SharedUID的模式，这样能够更加直接地理解多进程模式的本质。</p>
+<h3 id="2-2-3-实现跨进程通信的方式"><a href="#2-2-3-实现跨进程通信的方式" class="headerlink" title="2.2.3. 实现跨进程通信的方式"></a>2.2.3. 实现跨进程通信的方式</h3><ul>
+<li>Intent</li>
+<li>共享文件</li>
+<li>SharedPreferences</li>
+<li>基于Binder的Messager和AIDL</li>
+<li>Socket</li>
+</ul>
+<h1 id="3-IPC基础概念介绍"><a href="#3-IPC基础概念介绍" class="headerlink" title="3. IPC基础概念介绍"></a>3. IPC基础概念介绍</h1><h2 id="3-1-Serializable接口"><a href="#3-1-Serializable接口" class="headerlink" title="3.1. Serializable接口"></a>3.1. Serializable接口</h2><ul>
+<li>Java所提供的一个序列化接口，它是一个空接口，为对象提供标准的序列化和反序列化。</li>
+<li>序列化的时候系统会把当前类的SerialVersionUID写入序列化的文件中。</li>
+<li>当反序列化的时候系统会去检测文件中的serialVersionUID，看它是否和当前类的serialVersionUID一致。</li>
+<li>注意：首先静态成员变量属于类不属于对象，所以不会参与序列化过程；其次用transient关键字标记的成员变量不参与序列化过程。</li>
+</ul>
+<h2 id="3-2-Parcelable接口"><a href="#3-2-Parcelable接口" class="headerlink" title="3.2. Parcelable接口"></a>3.2. Parcelable接口</h2><ul>
+<li>序列化功能由writeToParcel方法来完成，最终是通过Parcel中的一系列write方法来完成。</li>
+<li>反序列化功能由CREATOR来完成，其内部标明了如何创建序列化对象和数组，并通过Parcel的一系列read方法来完成反序列化过程。</li>
+</ul>
+<p>选择序列化方法的原则</p>
+<ul>
+<li>在使用内存的时候，Parcelable比Serializable性能高，所以推荐使用Parcelable。</li>
+<li>Serializable在序列化的时候使用了反射，序列化的过程较慢，会产生大量的临时变量，从而引起频繁的GC。</li>
+<li>但是在要将数组存储到外部磁盘的情况下，还是首先Serializable。因为Parcelable不能很好的保证数据的持续性在外界有变化的情况下。</li>
+</ul>
+<h2 id="3-3-Binder"><a href="#3-3-Binder" class="headerlink" title="3.3. Binder"></a>3.3. Binder</h2><h3 id="3-3-1-简介"><a href="#3-3-1-简介" class="headerlink" title="3.3.1. 简介"></a>3.3.1. 简介</h3><ul>
+<li>直观来说，Binder是Android中的一个类，它实现了IBinder接口。</li>
+<li>从IPC角度来说，Binder是Android中的一种跨进程通信方式。</li>
+<li>Binder可以理解为一个虚拟的物理设备，它的设备驱动是/dev/binder，该通信方式在Linux中没有。</li>
+<li>从Android Framework角度来说，Binder是ServiceManager连接各种Manager和ManagerService的桥梁。</li>
+<li>从Android应用层来说，Binder是客户端和服务端进行通信的媒介，当bindService的时候，服务端会返回一个包含了服务端业务调用的Binder对象，通过这个Binder对象，客户端就可以获取服务端提供的服务和数据，这里的服务包括普通服务和机遇AIDL的服务。</li>
+</ul>
+<h3 id="3-3-2-手动实现一个Binder"><a href="#3-3-2-手动实现一个Binder" class="headerlink" title="3.3.2. 手动实现一个Binder"></a>3.3.2. 手动实现一个Binder</h3><ul>
+<li><p>声明一个AIDL性质的接口，只需要继承IInterface接口即可</p>
+</li>
+<li><p>实现Stub类和Stub类中的Proxy代理类</p>
+<ul>
+<li>asInterface：<strong>用于将服务端的Binder对象转换成客户端所需的AIDL接口类型的对象，这种转换过程是区分进程的，如果客户端和服务端位于同一进程，那么此方法返回的就是服务端的Stub对象本身，否则返回的是系统封装后的Stub.proxy对象。</strong></li>
+<li>asBinder：此方法返回当前Binder对象。</li>
+<li>onTransact：<strong>这个方法运行在服务端中的Binder线程池中，当客户端发起跨进程请求时，远程请求会通过系统底层封装后交由此方法来处理。</strong> 该方法的原型为 public Boolean onTransact(int code , android.os.Parcel data , android.os.Parcel reply , int falgs)。服务端通过code可以确定客户端所请求的目标方法是什么，接着从data中取出所需所需的参数（如果目标方法有参数的话），然后执行目标方法。当目标方法执行完毕后，就想reply中写入返回值（如果目标方法有返回值的话），onTransact方法的执行过程就是这样的。<strong>需要注意的是，如果此方法返回false，那么客户端的请求会失败，因此我们可以利用这个特性来做权限校验</strong>，毕竟我们也不希望随便一个进程都能远程调用我们的服务。</li>
+<li>Proxy类</li>
+</ul>
+</li>
+</ul>
+<p>下面代码是IBookManager.aidl文件生成java文件的源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//IBookManager.aidl</span></span><br><span class="line"><span class="keyword">package</span> com.leeeyou.sampleofservice.book;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.leeeyou.sampleofservice.book.Book;</span><br><span class="line"><span class="keyword">import</span> com.leeeyou.sampleofservice.book.IOnNewBookArrivedListener;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">     <span class="function">List&lt;Book&gt; <span class="title">getBookList</span><span class="params">()</span></span>;</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">addBook</span><span class="params">(in Book book)</span></span>;</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">registerListener</span><span class="params">(IOnNewBookArrivedListener listener)</span></span>;</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">unregisterListener</span><span class="params">(IOnNewBookArrivedListener listener)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//IBookManager.aidl编译后的java文件</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * This file is auto-generated.  DO NOT MODIFY.</span></span><br><span class="line"><span class="comment"> * Original file: /Users/leeeyou/github/SampleOfService/app/src/main/aidl/com/leeeyou/sampleofservice/book/IBookManager.aidl</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">package</span> com.leeeyou.sampleofservice.book;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IBookManager</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">IInterface</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Local-side IPC implementation stub class.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Stub</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">com</span>.<span class="title">leeeyou</span>.<span class="title">sampleofservice</span>.<span class="title">book</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String DESCRIPTOR = <span class="string">&quot;com.leeeyou.sampleofservice.book.IBookManager&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Construct the stub at attach it to the interface.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Stub</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.attachInterface(<span class="keyword">this</span>, DESCRIPTOR);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Cast an IBinder object into an com.leeeyou.sampleofservice.book.IBookManager interface,</span></span><br><span class="line"><span class="comment">         * generating a proxy if needed.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> com.leeeyou.sampleofservice.book.<span class="function">IBookManager <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> ((obj == <span class="keyword">null</span>)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</span><br><span class="line">            <span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> com.leeeyou.sampleofservice.book.IBookManager))) &#123;</span><br><span class="line">                <span class="keyword">return</span> ((com.leeeyou.sampleofservice.book.IBookManager) iin);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> com.leeeyou.sampleofservice.book.IBookManager.Stub.Proxy(obj);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> android.os.<span class="function">IBinder <span class="title">asBinder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">            java.lang.String descriptor = DESCRIPTOR;</span><br><span class="line">            <span class="keyword">switch</span> (code) &#123;</span><br><span class="line">                <span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</span><br><span class="line">                    reply.writeString(descriptor);</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> TRANSACTION_getBookList: &#123;</span><br><span class="line">                    data.enforceInterface(descriptor);</span><br><span class="line">                    java.util.List&lt;com.leeeyou.sampleofservice.book.Book&gt; _result = <span class="keyword">this</span>.getBookList();</span><br><span class="line">                    reply.writeNoException();</span><br><span class="line">                    reply.writeTypedList(_result);</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> TRANSACTION_addBook: &#123;</span><br><span class="line">                    data.enforceInterface(descriptor);</span><br><span class="line">                    com.leeeyou.sampleofservice.book.Book _arg0;</span><br><span class="line">                    <span class="keyword">if</span> ((<span class="number">0</span> != data.readInt())) &#123;</span><br><span class="line">                        _arg0 = com.leeeyou.sampleofservice.book.Book.CREATOR.createFromParcel(data);</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        _arg0 = <span class="keyword">null</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">this</span>.addBook(_arg0);</span><br><span class="line">                    reply.writeNoException();</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> TRANSACTION_registerListener: &#123;</span><br><span class="line">                    data.enforceInterface(descriptor);</span><br><span class="line">                    com.leeeyou.sampleofservice.book.IOnNewBookArrivedListener _arg0;</span><br><span class="line">                    _arg0 = com.leeeyou.sampleofservice.book.IOnNewBookArrivedListener.Stub.asInterface(data.readStrongBinder());</span><br><span class="line">                    <span class="keyword">this</span>.registerListener(_arg0);</span><br><span class="line">                    reply.writeNoException();</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">case</span> TRANSACTION_unregisterListener: &#123;</span><br><span class="line">                    data.enforceInterface(descriptor);</span><br><span class="line">                    com.leeeyou.sampleofservice.book.IOnNewBookArrivedListener _arg0;</span><br><span class="line">                    _arg0 = com.leeeyou.sampleofservice.book.IOnNewBookArrivedListener.Stub.asInterface(data.readStrongBinder());</span><br><span class="line">                    <span class="keyword">this</span>.unregisterListener(_arg0);</span><br><span class="line">                    reply.writeNoException();</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">default</span>: &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">com</span>.<span class="title">leeeyou</span>.<span class="title">sampleofservice</span>.<span class="title">book</span>.<span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">            <span class="keyword">private</span> android.os.IBinder mRemote;</span><br><span class="line"></span><br><span class="line">            Proxy(android.os.IBinder remote) &#123;</span><br><span class="line">                mRemote = remote;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> android.os.<span class="function">IBinder <span class="title">asBinder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> mRemote;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">public</span> java.lang.<span class="function">String <span class="title">getInterfaceDescriptor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> DESCRIPTOR;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> java.util.List&lt;com.leeeyou.sampleofservice.book.Book&gt; getBookList() <span class="keyword">throws</span> android.os.RemoteException &#123;</span><br><span class="line">                android.os.Parcel _data = android.os.Parcel.obtain();</span><br><span class="line">                android.os.Parcel _reply = android.os.Parcel.obtain();</span><br><span class="line">                java.util.List&lt;com.leeeyou.sampleofservice.book.Book&gt; _result;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    _data.writeInterfaceToken(DESCRIPTOR);</span><br><span class="line">                    mRemote.transact(Stub.TRANSACTION_getBookList, _data, _reply, <span class="number">0</span>);</span><br><span class="line">                    _reply.readException();</span><br><span class="line">                    _result = _reply.createTypedArrayList(com.leeeyou.sampleofservice.book.Book.CREATOR);</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    _reply.recycle();</span><br><span class="line">                    _data.recycle();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> _result;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(com.leeeyou.sampleofservice.book.Book book)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">                android.os.Parcel _data = android.os.Parcel.obtain();</span><br><span class="line">                android.os.Parcel _reply = android.os.Parcel.obtain();</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    _data.writeInterfaceToken(DESCRIPTOR);</span><br><span class="line">                    <span class="keyword">if</span> ((book != <span class="keyword">null</span>)) &#123;</span><br><span class="line">                        _data.writeInt(<span class="number">1</span>);</span><br><span class="line">                        book.writeToParcel(_data, <span class="number">0</span>);</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        _data.writeInt(<span class="number">0</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                    mRemote.transact(Stub.TRANSACTION_addBook, _data, _reply, <span class="number">0</span>);</span><br><span class="line">                    _reply.readException();</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    _reply.recycle();</span><br><span class="line">                    _data.recycle();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerListener</span><span class="params">(com.leeeyou.sampleofservice.book.IOnNewBookArrivedListener listener)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">                android.os.Parcel _data = android.os.Parcel.obtain();</span><br><span class="line">                android.os.Parcel _reply = android.os.Parcel.obtain();</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    _data.writeInterfaceToken(DESCRIPTOR);</span><br><span class="line">                    _data.writeStrongBinder((((listener != <span class="keyword">null</span>)) ? (listener.asBinder()) : (<span class="keyword">null</span>)));</span><br><span class="line">                    mRemote.transact(Stub.TRANSACTION_registerListener, _data, _reply, <span class="number">0</span>);</span><br><span class="line">                    _reply.readException();</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    _reply.recycle();</span><br><span class="line">                    _data.recycle();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unregisterListener</span><span class="params">(com.leeeyou.sampleofservice.book.IOnNewBookArrivedListener listener)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</span><br><span class="line">                android.os.Parcel _data = android.os.Parcel.obtain();</span><br><span class="line">                android.os.Parcel _reply = android.os.Parcel.obtain();</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    _data.writeInterfaceToken(DESCRIPTOR);</span><br><span class="line">                    _data.writeStrongBinder((((listener != <span class="keyword">null</span>)) ? (listener.asBinder()) : (<span class="keyword">null</span>)));</span><br><span class="line">                    mRemote.transact(Stub.TRANSACTION_unregisterListener, _data, _reply, <span class="number">0</span>);</span><br><span class="line">                    _reply.readException();</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    _reply.recycle();</span><br><span class="line">                    _data.recycle();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_getBookList = (android.os.IBinder.FIRST_CALL_TRANSACTION + <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_addBook = (android.os.IBinder.FIRST_CALL_TRANSACTION + <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_registerListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + <span class="number">2</span>);</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_unregisterListener = (android.os.IBinder.FIRST_CALL_TRANSACTION + <span class="number">3</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> java.util.List&lt;com.leeeyou.sampleofservice.book.Book&gt; getBookList() <span class="keyword">throws</span> android.os.RemoteException;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addBook</span><span class="params">(com.leeeyou.sampleofservice.book.Book book)</span> <span class="keyword">throws</span> android.os.RemoteException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerListener</span><span class="params">(com.leeeyou.sampleofservice.book.IOnNewBookArrivedListener listener)</span> <span class="keyword">throws</span> android.os.RemoteException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unregisterListener</span><span class="params">(com.leeeyou.sampleofservice.book.IOnNewBookArrivedListener listener)</span> <span class="keyword">throws</span> android.os.RemoteException</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>AIDL并不是实现Binder的必需品，AIDL文件的本质是系统为我们提供一种快速实现Binder的工具而已。</strong></p>
+</blockquote>
+<h3 id="3-3-3-两个重要的方法"><a href="#3-3-3-两个重要的方法" class="headerlink" title="3.3.3. 两个重要的方法"></a>3.3.3. 两个重要的方法</h3><ul>
+<li>linkToDeath：给Binder设置一个死亡代理，当Binder死亡时，我们就会收到通知。</li>
+<li>unlinkToDeath：当Binder连接断裂时，使用此方法解绑对象。</li>
+</ul>
+<h1 id="4-Android中的IPC方式"><a href="#4-Android中的IPC方式" class="headerlink" title="4. Android中的IPC方式"></a>4. Android中的IPC方式</h1><h2 id="4-1-使用Bundle"><a href="#4-1-使用Bundle" class="headerlink" title="4.1. 使用Bundle"></a>4.1. 使用Bundle</h2><p>Activity、Service、Receiver都支持在Intent中传递Bundle数据，由于Bundle实现了Parcelable接口，所以它可以方便地在不同的进程间传输。</p>
+<h2 id="4-2-使用文件共享"><a href="#4-2-使用文件共享" class="headerlink" title="4.2. 使用文件共享"></a>4.2. 使用文件共享</h2><p>通过文件共享这种方式来共享数据对文件格式是没有具体要求的，比如可以是文本文件，也可以是XML文件，只要读/写双方约定数据格式即可。</p>
+<p>通过文件共享的方式也是有局限性的，比如并发读/写的问题。因此我们要尽量避免并发写这种情况的发生或者考虑使用线程同步来限制多个线程的写操作。</p>
+<p>文件共享方式适合在对数据同步要求不高的进程之间进行通信，并要妥善处理并发读/写的问题。</p>
+<p>SharedPreferences是Android中提供的轻量级存储方案，它通过键值对的方式来存储数据，在底层实现上它采用XML文件来存储键值对。</p>
+<p>从本质上来说，SharedPreferences也属于文件的一种，但是由于系统对它的读/写有一定的缓存策略，<strong>即在内存中会有一份SharedPrefereces文件的缓存，因此在多进程模式下，系统对它的读/写就变得不可靠，当面对高并发的读/写访问，SharedPreferences有很大几率会丢失数据，</strong> 因此，不建议在进程间通信中使用SharedPreferences。</p>
+<h2 id="4-3-使用Messenger"><a href="#4-3-使用Messenger" class="headerlink" title="4.3. 使用Messenger"></a>4.3. 使用Messenger</h2><p>可以在不同进程中传递Message对象，在Message中放入我们需要传递的数据，就可以实现数据的进程间传递。Messenger是一种轻量级的IPC方案，它的底层实现是AIDL。</p>
+<p>实现一个Messenger由如下几个步骤：</p>
+<p>服务端进程</p>
+<blockquote>
+<p>在服务端创建一个Service来处理客户端的连接请求，同时创建一个Handler并通过它来创建一个Messenger对象，然后在Service的onBind中返回这个Messenger对象底层的Binder即可。</p>
+</blockquote>
+<p>客户端进程</p>
+<blockquote>
+<p>首先要绑定服务端的Service，绑定成功后，用服务端返回的IBinder对象创建一个Messenger，通过这个Messenger就可以想服务端发送消息了。</p>
+</blockquote>
+<p>数据传递细节：</p>
+<p>在Android2.2以前object字段不支持跨进程传输，即便是2.2以后，也仅仅是系统提供的实现了Parcelable接口的对象才能通过它来传输。这就意味着我们自定义的Parcelable对象是无法通过object字段来传输的。</p>
+<p>Messenger是以串行的方式处理客户端发来的消息，如果大量的消息同时发送到服务端，服务端仍只能一个个处理，如果有大量的并发请求，那么用Messenger就不太合适了。</p>
+<p><strong>Messenger的作用主要是为了传递消息，很多时候我们可能需要跨进程调用服务端的方法，这种情形用Messenger无法做到。</strong></p>
+<p>具体代码实现可参考：<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/lmj623565791/article/details/47017485">Android 基于Message的进程间通信 Messenger完全解析</a></p>
+<h2 id="4-4-使用AIDL"><a href="#4-4-使用AIDL" class="headerlink" title="4.4. 使用AIDL"></a>4.4. 使用AIDL</h2><p>可以参考代码：<br><a target="_blank" rel="noopener" href="https://github.com/Leeeyou/SampleOfService">SampleOfService</a></p>
+<h3 id="4-4-1-基本使用"><a href="#4-4-1-基本使用" class="headerlink" title="4.4.1. 基本使用"></a>4.4.1. 基本使用</h3><p>服务端</p>
+<blockquote>
+<p>创建一个Service用来监听客户端的连接请求，然后创建一个AIDL文件，将暴露给客户端的接口在这个AIDL文件中声明。最后在Service中实现这个AIDL接口即可。</p>
+</blockquote>
+<p>客户端</p>
+<blockquote>
+<p>绑定服务端的Service，将服务端返回的Binder对象转成AIDL接口所属的类型，调用AIDL中的方法。</p>
+</blockquote>
+<p>AIDL接口的创建</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.leeeyou.sampleofservice.book;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.leeeyou.sampleofservice.book.Book;</span><br><span class="line"><span class="keyword">import</span> com.leeeyou.sampleofservice.book.IOnNewBookArrivedListener;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">IBookManager</span> </span>&#123;</span><br><span class="line">     <span class="function">List&lt;Book&gt; <span class="title">getBookList</span><span class="params">()</span></span>;</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">addBook</span><span class="params">(in Book book)</span></span>;</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">registerListener</span><span class="params">(IOnNewBookArrivedListener listener)</span></span>;</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">unregisterListener</span><span class="params">(IOnNewBookArrivedListener listener)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>AIDL文件支持的数据类型</p>
+<ul>
+<li>基本数据类型。</li>
+<li>String和CharSequence。</li>
+<li>List:只支持ArrayList，里面每个元素都必须能够被AIDL支持。</li>
+<li>Map:只支持HashMap，里面的每个元素都必须被AIDL支持，包括key和value。</li>
+<li>Parcelable:所有实现了Parcelable接口的对象。</li>
+<li>AIDL:<strong>所有的AIDL接口本身也可以在AIDL文件中使用。</strong></li>
+</ul>
+<p>除了基本数据类型，其他类型的参数必须表上方向：in、out或者inout。</p>
+<p>如果AIDL文件中用到了自定义的Parcelable对象，那么必须新建一个和它同名的AIDL文件，并在其中声明它为Parcelable类型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.leeeyou.sampleofservice.book;</span><br><span class="line">parcelable Book;</span><br></pre></td></tr></table></figure>
+
+<p><strong>AIDL接口中只支持方法，不支持声明静态变量，这一点区别于传统的接口。</strong></p>
+<p>AIDL包结构在服务端和客户端要保持一致，否则运行会出错，这是因为客户端需要反序列化服务端中和AIDL接口相关的所有类，如果类的完整路径不一样的话，就无法成功反序列，程序也就无法正常运行。</p>
+<p>远程服务端Service的运行流程</p>
+<p>1 客户端的实现：先绑定远程服务，将服务端返回的Binder对象转换成AIDL接口，然后就可以通过这个接口去调用服务端的远程方法了。</p>
+<p>2 创建Service，Kotlin版本的代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.leeeyou.sampleofservice.book</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.app.Service</span><br><span class="line"><span class="keyword">import</span> android.content.Intent</span><br><span class="line"><span class="keyword">import</span> android.content.pm.PackageManager</span><br><span class="line"><span class="keyword">import</span> android.os.*</span><br><span class="line"><span class="keyword">import</span> android.util.Log</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.CopyOnWriteArrayList</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicBoolean</span><br><span class="line"></span><br><span class="line">class BookManagerService : Service() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> val mIsServiceDestroyed = AtomicBoolean(<span class="keyword">false</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> val mBookList = CopyOnWriteArrayList&lt;Book&gt;()</span><br><span class="line">    <span class="comment">// private CopyOnWriteArrayList&lt;IOnNewBookArrivedListener&gt; mListenerList =</span></span><br><span class="line">    <span class="comment">// new CopyOnWriteArrayList&lt;IOnNewBookArrivedListener&gt;();</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> val mListenerList = RemoteCallbackList&lt;IOnNewBookArrivedListener&gt;()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> val mBinder = object : IBookManager.Stub() &#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Throws(RemoteException::class)</span></span><br><span class="line">        <span class="function">override fun <span class="title">getBookList</span><span class="params">()</span>: List&lt;Book&gt; </span>&#123;</span><br><span class="line">            <span class="comment">//模拟耗时操作</span></span><br><span class="line">            SystemClock.sleep(<span class="number">5000</span>)</span><br><span class="line">            <span class="keyword">return</span> mBookList</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Throws(RemoteException::class)</span></span><br><span class="line">        <span class="function">override fun <span class="title">addBook</span><span class="params">(book: Book)</span> </span>&#123;</span><br><span class="line">            mBookList.add(book)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Throws(RemoteException::class)</span></span><br><span class="line">        <span class="function">override fun <span class="title">onTransact</span><span class="params">(code: Int, data: Parcel, reply: Parcel?, flags: Int)</span>: Boolean </span>&#123;</span><br><span class="line">            val check = checkCallingOrSelfPermission(<span class="string">&quot;com.leeeyou.sampleofservice.book.permission.ACCESS_BOOK_SERVICE&quot;</span>)</span><br><span class="line">            <span class="keyword">if</span> (check == PackageManager.PERMISSION_DENIED) &#123;</span><br><span class="line">                Log.d(TAG, <span class="string">&quot;onTransact ，Check permission failed&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> packageName: String? = <span class="keyword">null</span></span><br><span class="line">            val packages = packageManager.getPackagesForUid(Binder.getCallingUid())</span><br><span class="line">            <span class="keyword">if</span> (packages != <span class="keyword">null</span> &amp;&amp; packages.isNotEmpty()) &#123;</span><br><span class="line">                packageName = packages[<span class="number">0</span>]</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (packageName == <span class="keyword">null</span> || !packageName.startsWith(<span class="string">&quot;com.leeeyou.sampleofservice&quot;</span>)) &#123;</span><br><span class="line">                Log.d(TAG, <span class="string">&quot;onTransact ，Check that packageName failed : &quot;</span> + packageName!!)</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                Log.d(TAG, <span class="string">&quot;onTransact ，Check that packageName passed : $packageName&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Throws(RemoteException::class)</span></span><br><span class="line">        <span class="function">override fun <span class="title">registerListener</span><span class="params">(listener: IOnNewBookArrivedListener)</span> </span>&#123;</span><br><span class="line">            mListenerList.register(listener)</span><br><span class="line">            val count = mListenerList.beginBroadcast()</span><br><span class="line">            mListenerList.finishBroadcast()</span><br><span class="line">            Log.d(TAG, <span class="string">&quot;registerListener, current size:$count&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Throws(RemoteException::class)</span></span><br><span class="line">        <span class="function">override fun <span class="title">unregisterListener</span><span class="params">(listener: IOnNewBookArrivedListener)</span> </span>&#123;</span><br><span class="line">            val success = mListenerList.unregister(listener)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (success) &#123;</span><br><span class="line">                Log.d(TAG, <span class="string">&quot;unregister success.&quot;</span>)</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                Log.d(TAG, <span class="string">&quot;not found, can not unregister.&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            val count = mListenerList.beginBroadcast()</span><br><span class="line">            mListenerList.finishBroadcast()</span><br><span class="line">            Log.d(TAG, <span class="string">&quot;unregisterListener, current size:$count&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate()</span><br><span class="line">        Log.d(TAG, <span class="string">&quot;onCreate&quot;</span>)</span><br><span class="line">        mBookList.add(Book(<span class="number">1</span>, <span class="string">&quot;Android&quot;</span>))</span><br><span class="line">        mBookList.add(Book(<span class="number">2</span>, <span class="string">&quot;Ios&quot;</span>))</span><br><span class="line">        Thread(ServiceWorker()).start()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onBind</span><span class="params">(intent: Intent)</span>: IBinder? </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">&quot;onBind&quot;</span>)</span><br><span class="line">        val check = checkCallingOrSelfPermission(<span class="string">&quot;com.leeeyou.sampleofservice.book.permission.ACCESS_BOOK_SERVICE&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">if</span> (check == PackageManager.PERMISSION_DENIED) &#123;</span><br><span class="line">            Log.d(TAG, <span class="string">&quot;onBind ，Check permission failed&quot;</span>)</span><br><span class="line">            <span class="keyword">null</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            Log.d(TAG, <span class="string">&quot;onBind ，Check permission passed&quot;</span>)</span><br><span class="line">            mBinder</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">&quot;onDestroy&quot;</span>)</span><br><span class="line">        mIsServiceDestroyed.set(<span class="keyword">true</span>)</span><br><span class="line">        <span class="keyword">super</span>.onDestroy()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Throws(RemoteException::class)</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> fun <span class="title">onNewBookArrived</span><span class="params">(book: Book)</span> </span>&#123;</span><br><span class="line">        mBookList.add(book)</span><br><span class="line">        <span class="comment">//beginBroadcast 与 finishBroadcast 要配套使用</span></span><br><span class="line">        val count = mListenerList.beginBroadcast()</span><br><span class="line">        <span class="keyword">for</span> (i in <span class="number">0</span> until count) &#123;</span><br><span class="line">            val listener = mListenerList.getBroadcastItem(i)</span><br><span class="line">            <span class="keyword">if</span> (listener != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    listener.onNewBookArrived(book)</span><br><span class="line">                &#125; <span class="keyword">catch</span> (e: RemoteException) &#123;</span><br><span class="line">                    e.printStackTrace()</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        mListenerList.finishBroadcast()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private inner class ServiceWorker : Runnable &#123;</span><br><span class="line">        <span class="function">override fun <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="comment">// do background processing here.....</span></span><br><span class="line">            <span class="keyword">while</span> (!mIsServiceDestroyed.get()) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">5000</span>)</span><br><span class="line">                &#125; <span class="keyword">catch</span> (e: InterruptedException) &#123;</span><br><span class="line">                    e.printStackTrace()</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                val bookId = mBookList.size + <span class="number">1</span></span><br><span class="line">                val newBook = Book(bookId, <span class="string">&quot;new book#$bookId&quot;</span>)</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    onNewBookArrived(newBook)</span><br><span class="line">                &#125; <span class="keyword">catch</span> (e: RemoteException) &#123;</span><br><span class="line">                    e.printStackTrace()</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    companion object &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> val TAG = BookManagerService::class.java.simpleName</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>AIDL方法是在服务端的Binder线程池中运行的，因此当多个客户端同时连接的时候，会存在多个线程同时访问的情形，所以我们要在AIDL方法中处理线程同步，而我们这里直接使用CopyOnWriteArrayList来进行自动的线程同步。</p>
+<p>在Binder中会按照List的规则去访问数据，并最终形成一个新的ArrayList传递给客户端。</p>
+<h3 id="4-4-2-AIDL中增加并删除Listener"><a href="#4-4-2-AIDL中增加并删除Listener" class="headerlink" title="4.4.2. AIDL中增加并删除Listener"></a>4.4.2. AIDL中增加并删除Listener</h3><p>模仿观察者模式，当服务端有新的内容更新时，去通知客户端。</p>
+<ul>
+<li>创建一个IOnNewBookArrivedListener.aidl文件。</li>
+<li>在原AIDL接口中增加两个新方法：注册监听器和注销监听器。</li>
+<li>修改服务端中的Service的实现，针对上面增加的两个新方法。</li>
+<li>最后修改客户端的代码，客户端要注册监听器到远程服务端，在activity退出时解除这个注册。</li>
+</ul>
+<p>为了便于UI操作，需要有一个handler可以在onNewBookArrived执行的时候，切换到客户端主线程执行。</p>
+<h3 id="4-4-3-避免ANR和无响应"><a href="#4-4-3-避免ANR和无响应" class="headerlink" title="4.4.3. 避免ANR和无响应"></a>4.4.3. 避免ANR和无响应</h3><p><strong>不管是客户端还是服务端，通过Binder通信时都应该考虑耗时操作阻塞主线程导致ANR的问题，都需要将耗时任务放到子线程中执行。</strong></p>
+<h3 id="4-4-4-Binder意外死亡处理方式"><a href="#4-4-4-Binder意外死亡处理方式" class="headerlink" title="4.4.4. Binder意外死亡处理方式"></a>4.4.4. Binder意外死亡处理方式</h3><p>给Binder设置DeathRecipient监听，当Binder死亡时，我们会收到binderDied方法的回调，在binderDied方法中我们可以重连远程服务。</p>
+<p>另一种方法是在onServiceDisconnected中重连远程服务。</p>
+<p><strong>这两种方法的区别在于：onServiceDisconnected在客户端的UI线程中被回调，而binderDied在客户端的binder线程池中被回调。也就是说，在binderDied方法中我们不能访问UI。</strong></p>
+<h3 id="4-4-5-权限验证"><a href="#4-4-5-权限验证" class="headerlink" title="4.4.5. 权限验证"></a>4.4.5. 权限验证</h3><p>在onBinder中验证，验证不通过就直接返回null，这样验证失败的客户端直接无法绑定服务，至于验证方式可以有多种，比如使用permission验证。</p>
+<p>第二种方法在服务端的onTransact方法中进行权限验证，如果验证失败就直接返回false，这样服务端就不会终止执行AIDL中的方法从而达到保护服务端的效果。</p>
+<ul>
+<li>permission验证</li>
+<li>采用Uid和Pid来做验证</li>
+</ul>
+<h2 id="4-5-使用ContentProvider"><a href="#4-5-使用ContentProvider" class="headerlink" title="4.5. 使用ContentProvider"></a>4.5. 使用ContentProvider</h2><p>ContentProvider是Android中提供的专门用于不同应用间进行数据共享的方式。</p>
+<p>和Messenger一样，ContentProvider的底层实现同样也是Binder，但是它的使用过程要比AIDL简单许多，因为系统底层的封装，我们无需关心底层细节即可轻松实现IPC。</p>
+<h2 id="4-6-使用Socket"><a href="#4-6-使用Socket" class="headerlink" title="4.6. 使用Socket"></a>4.6. 使用Socket</h2><p>还可以通过Socket实现不通机器以及不同网络之间的数据传递。</p>
+<h1 id="5-Binder连接池"><a href="#5-Binder连接池" class="headerlink" title="5. Binder连接池"></a>5. Binder连接池</h1><p>问题：Service是系统四大组件之一，本身就是一种系统资源，大多的service会使得我们的应用看起来很重量级，因为正在运行的Service可以在应用详情页看到，当我们的应用详情显示有10个服务正在运行时，这看起来并不是什么好事。针对上述问题，我们需要减少Service的数量，将所有的AIDL放在同一个Service去管理。</p>
+<h2 id="5-1-工作机制"><a href="#5-1-工作机制" class="headerlink" title="5.1. 工作机制"></a>5.1. 工作机制</h2><p>每个业务模块创建自己的AIDL接口并实现此接口，这个时候不同业务模块之间是不能有耦合的，所有实现细节我们要单独开来，然后向服务端提供自己的唯一标识和其对应的Binder对象。</p>
+<p>对于服务端来说，只需要一个Service就可以了，服务端提供一个queryBinder接口，这个接口能够根据业务模块的特征来返回相应的Binder对象给他们，不同的业务模块拿到所需的Binder对象后就可以进行远程方法调用了。</p>
+<h2 id="5-2-实现步骤"><a href="#5-2-实现步骤" class="headerlink" title="5.2. 实现步骤"></a>5.2. 实现步骤</h2><ul>
+<li>首先，为每个业务模块创建AIDL接口并实现此接口及其业务方法。</li>
+<li>创建IBinderPool的AIDL接口，定义IBinder queryBinder(int BinderCode)方法。外部通过调用此方法传入对应的code值来获取对应的Binder对象。</li>
+<li>创建BinderPoolService，通过new BinderPool.BinderPoolImpl实例化Binder对象，通过onBind方法返回出去。</li>
+<li>创建BinderPool类，单例模式，在构造方法中绑定Service，在onServiceConnected方法获取到BinderPoolImpl对象，这个BinderPoolImpl类是BinderPool的内部类，并实现了IBinderPool的业务方法。BinderPool类中向外暴露了queryBinder方法，这个方法其实调用的是BinderPoolImpl对象的queryBinder方法。</li>
+</ul>
+<h2 id="5-3-Binder连接池图示"><a href="#5-3-Binder连接池图示" class="headerlink" title="5.3. Binder连接池图示"></a>5.3. Binder连接池图示</h2><p><img src="https://github.com/Leeeyou/blog/blob/master/images/2016/code/android-art-exploration-2-binder-connection-pool.webp?raw=true" alt="android-art-exploration-2-binder-connection-pool"></p>
+<h1 id="6-选用合适的IPC方式"><a href="#6-选用合适的IPC方式" class="headerlink" title="6. 选用合适的IPC方式"></a>6. 选用合适的IPC方式</h1><p><img src="https://github.com/Leeeyou/blog/blob/master/images/2016/code/android-art-exploration-2-choose-the-right-ipc-method.png?raw=true" alt="android-art-exploration-2-choose-the-right-ipc-method"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Android/" rel="tag"># Android</a>
+              <a href="/iBlogWebsite/tags/IPC%E6%9C%BA%E5%88%B6/" rel="tag"># IPC机制</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/02/27/2016/2016-02-27-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%20%E7%AC%AC1%E7%AB%A0%20Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F/" rel="prev" title="Android艺术探索 第1章 Activity的生命周期和启动模式">
+      <i class="fa fa-chevron-left"></i> Android艺术探索 第1章 Activity的生命周期和启动模式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/02/29/2016/2016-02-29-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%20%E7%AC%AC3%E7%AB%A0%20View%E7%9A%84%E4%BA%8B%E4%BB%B6%E4%BD%93%E7%B3%BB/" rel="next" title="Android艺术探索 第3章 View的事件体系">
+      Android艺术探索 第3章 View的事件体系 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-IPC%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">1. IPC简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">2. 多进程模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E5%BC%80%E5%90%AF%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">2.1. 开启多进程模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%BC%8F%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6"><span class="nav-number">2.2.</span> <span class="nav-text">2.2. 多进程模式运行机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-%E5%A4%9A%E8%BF%9B%E7%A8%8B%E9%80%A0%E6%88%90%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1. 多进程造成的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-%E7%90%86%E8%A7%A3%E5%90%8C%E4%B8%80%E4%B8%AA%E5%BA%94%E7%94%A8%E9%97%B4%E7%9A%84%E5%A4%9A%E8%BF%9B%E7%A8%8B"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2.2. 理解同一个应用间的多进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-%E5%AE%9E%E7%8E%B0%E8%B7%A8%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.2.3. 实现跨进程通信的方式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-IPC%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.</span> <span class="nav-text">3. IPC基础概念介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Serializable%E6%8E%A5%E5%8F%A3"><span class="nav-number">3.1.</span> <span class="nav-text">3.1. Serializable接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Parcelable%E6%8E%A5%E5%8F%A3"><span class="nav-number">3.2.</span> <span class="nav-text">3.2. Parcelable接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Binder"><span class="nav-number">3.3.</span> <span class="nav-text">3.3. Binder</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-1-%E7%AE%80%E4%BB%8B"><span class="nav-number">3.3.1.</span> <span class="nav-text">3.3.1. 简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-2-%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AABinder"><span class="nav-number">3.3.2.</span> <span class="nav-text">3.3.2. 手动实现一个Binder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-3-%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.3.3.</span> <span class="nav-text">3.3.3. 两个重要的方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Android%E4%B8%AD%E7%9A%84IPC%E6%96%B9%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">4. Android中的IPC方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E4%BD%BF%E7%94%A8Bundle"><span class="nav-number">4.1.</span> <span class="nav-text">4.1. 使用Bundle</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E4%BD%BF%E7%94%A8%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB"><span class="nav-number">4.2.</span> <span class="nav-text">4.2. 使用文件共享</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E4%BD%BF%E7%94%A8Messenger"><span class="nav-number">4.3.</span> <span class="nav-text">4.3. 使用Messenger</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-%E4%BD%BF%E7%94%A8AIDL"><span class="nav-number">4.4.</span> <span class="nav-text">4.4. 使用AIDL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-1-%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">4.4.1.</span> <span class="nav-text">4.4.1. 基本使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-2-AIDL%E4%B8%AD%E5%A2%9E%E5%8A%A0%E5%B9%B6%E5%88%A0%E9%99%A4Listener"><span class="nav-number">4.4.2.</span> <span class="nav-text">4.4.2. AIDL中增加并删除Listener</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-3-%E9%81%BF%E5%85%8DANR%E5%92%8C%E6%97%A0%E5%93%8D%E5%BA%94"><span class="nav-number">4.4.3.</span> <span class="nav-text">4.4.3. 避免ANR和无响应</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-4-Binder%E6%84%8F%E5%A4%96%E6%AD%BB%E4%BA%A1%E5%A4%84%E7%90%86%E6%96%B9%E5%BC%8F"><span class="nav-number">4.4.4.</span> <span class="nav-text">4.4.4. Binder意外死亡处理方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-5-%E6%9D%83%E9%99%90%E9%AA%8C%E8%AF%81"><span class="nav-number">4.4.5.</span> <span class="nav-text">4.4.5. 权限验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-%E4%BD%BF%E7%94%A8ContentProvider"><span class="nav-number">4.5.</span> <span class="nav-text">4.5. 使用ContentProvider</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-6-%E4%BD%BF%E7%94%A8Socket"><span class="nav-number">4.6.</span> <span class="nav-text">4.6. 使用Socket</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Binder%E8%BF%9E%E6%8E%A5%E6%B1%A0"><span class="nav-number">5.</span> <span class="nav-text">5. Binder连接池</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="nav-number">5.1.</span> <span class="nav-text">5.1. 工作机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="nav-number">5.2.</span> <span class="nav-text">5.2. 实现步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-Binder%E8%BF%9E%E6%8E%A5%E6%B1%A0%E5%9B%BE%E7%A4%BA"><span class="nav-number">5.3.</span> <span class="nav-text">5.3. Binder连接池图示</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E9%80%89%E7%94%A8%E5%90%88%E9%80%82%E7%9A%84IPC%E6%96%B9%E5%BC%8F"><span class="nav-number">6.</span> <span class="nav-text">6. 选用合适的IPC方式</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

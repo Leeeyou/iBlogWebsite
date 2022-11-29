@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 基本介绍1.1. 理解基本的GradleGradle是一种构建工具，Gradle脚本不是像传统的xml文件那样，而是一种基于Groovy的动态DSL。  DSL: 指的是用于一个特定领域的语言（功能领域、业务领域），可以简单理解成就是一个配置文件，或者说是面向领域的某种配置文件，如Ant的build.xml某种意义上就是Ant的DSL文件。 Groovy语言: 是一种基于jvm的动态语言.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gradle for Android">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2018/08/29/2018/2018-08-29-Gradle%20for%20Android/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="1. 基本介绍1.1. 理解基本的GradleGradle是一种构建工具，Gradle脚本不是像传统的xml文件那样，而是一种基于Groovy的动态DSL。  DSL: 指的是用于一个特定领域的语言（功能领域、业务领域），可以简单理解成就是一个配置文件，或者说是面向领域的某种配置文件，如Ant的build.xml某种意义上就是Ant的DSL文件。 Groovy语言: 是一种基于jvm的动态语言.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2018/images/githubpages/gradle/Gradle%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2018/images/githubpages/gradle/groovy-each.png">
+<meta property="article:published_time" content="2018-08-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-04-01T12:10:31.025Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Gradle">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeeyou.github.io/iBlogWebsite/2018/images/githubpages/gradle/Gradle%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2018/08/29/2018/2018-08-29-Gradle%20for%20Android/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Gradle for Android | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2018/08/29/2018/2018-08-29-Gradle%20for%20Android/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Gradle for Android
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-08-29 00:00:00" itemprop="dateCreated datePublished" datetime="2018-08-29T00:00:00+08:00">2018-08-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-01 20:10:31" itemprop="dateModified" datetime="2021-04-01T20:10:31+08:00">2021-04-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-基本介绍"><a href="#1-基本介绍" class="headerlink" title="1. 基本介绍"></a>1. 基本介绍</h1><h2 id="1-1-理解基本的Gradle"><a href="#1-1-理解基本的Gradle" class="headerlink" title="1.1. 理解基本的Gradle"></a>1.1. 理解基本的Gradle</h2><p>Gradle是一种构建工具，Gradle脚本不是像传统的xml文件那样，而是一种基于Groovy的动态DSL。</p>
+<ul>
+<li>DSL: 指的是用于一个特定领域的语言（功能领域、业务领域），可以简单理解成就是一个配置文件，或者说是面向领域的某种配置文件，如Ant的build.xml某种意义上就是Ant的DSL文件。</li>
+<li>Groovy语言: 是一种基于jvm的动态语言.</li>
+</ul>
+<p>当我们把Gradle作为构建工具使用时，我们只需要掌握它的配置脚本的基本写法就OK了；而当我们需要对构建流程进行高度定制时，就务必要掌握Groovy等相关知识了。如果想开始创建自己的tasks和插件，那么你最好对Groovy有一个较深的理解。</p>
+<h2 id="1-2-两个重要的概念"><a href="#1-2-两个重要的概念" class="headerlink" title="1.2. 两个重要的概念"></a>1.2. 两个重要的概念</h2><h3 id="1-2-1-Project"><a href="#1-2-1-Project" class="headerlink" title="1.2.1. Project"></a>1.2.1. Project</h3><p>每一个build.grade文件代表着一个project。每个project有至少一个tasks，一个apk文件的构建包含以下Task：Java源码编译、资源文件编译、Lint检查、打包以生成最终的apk文件等等。</p>
+<p>每一次构建都是有至少一个project来完成，所以Android studio中的project和Gradle中的project不是一个概念但可以简单理解为：Android Studio中的一个Module即为Gradle中的一个Project。</p>
+<h3 id="1-2-2-Tasks"><a href="#1-2-2-Tasks" class="headerlink" title="1.2.2. Tasks"></a>1.2.2. Tasks</h3><p>tasks在build.gradle中定义，当初始化构建进程时，gradle会基于build文件集合所有的project和tasks。一个tasks包含了一系列动作，然后它们将会按照顺序执行，一个动作就是一段被执行的代码，很像Java中的方法。</p>
+<h2 id="1-3-构建的生命周期"><a href="#1-3-构建的生命周期" class="headerlink" title="1.3. 构建的生命周期"></a>1.3. <a target="_blank" rel="noopener" href="https://docs.gradle.org/current/javadoc/org/gradle/api/Project.html">构建的生命周期</a></h2><p>初始化阶段：project实例在这儿创建，如果有多个模块，即有多个build.gradle文件，多个project将会被创建。</p>
+<p>配置阶段：在该阶段，build.gradle脚本将会执行，为每个project创建和配置所有的tasks。</p>
+<p>执行阶段：这一阶段，gradle会决定哪一个tasks会被执行，哪一个tasks会被执行完全依赖开始构建时传入的参数和当前所在的文件夹位置有关。</p>
+<h2 id="1-4-Gradle工作流程"><a href="#1-4-Gradle工作流程" class="headerlink" title="1.4. Gradle工作流程"></a>1.4. Gradle工作流程</h2><p><img src="../../../../images/githubpages/gradle/Gradle%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png" alt="gradle工作流程"></p>
+<p>首先是初始化阶段，就是执行settings.gradle。</p>
+<p>Configration阶段的目标是解析每个project中的build.gradle，解析每个子目录中的build.gradle。在这两个阶段之间，我们可以加一些定制化的Hook。这当然是通过API来添加的。</p>
+<p>Configuration阶段完了后，整个build的project以及内部的Task关系就确定了。前面说过一个Project包含很多Task，每个Task之间有依赖关系。Configuration会建立一个有向图来描述Task之间的依赖关系。所以我们可以添加一个HOOK，即当Task关系图建立好后，执行一些操作，另外不包含依赖的Tasks总是优先执行。</p>
+<p>最后一个阶段就是执行任务了，当然任务执行完后，我们还可以加Hook。</p>
+<h2 id="1-5-插件"><a href="#1-5-插件" class="headerlink" title="1.5. 插件"></a>1.5. 插件</h2><p>思考下为什么能在build.gradle中使用android标签？</p>
+<p>因为应用”com.android.application”这个插件来构建app模块，如下所示：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply plugin:<span class="string">&#x27;com.android.application&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>整个插件中定义了如下4个顶级任务</p>
+<ol>
+<li>assemble: 构建项目的输出（apk）</li>
+<li>check: 进行校验工作</li>
+<li>build: 执行assemble任务与check任务</li>
+<li>clean: 清除项目的输出</li>
+</ol>
+<p>还有一个插件是library，但不能同时使用他们2个，否则导致构建失败，一个模块要么使用Android application或者Android library插件，而不是二者。</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply plugin:<span class="string">&#x27;com.android.library&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="1-6-使用Gradle-Wrapper"><a href="#1-6-使用Gradle-Wrapper" class="headerlink" title="1.6. 使用Gradle Wrapper"></a>1.6. 使用Gradle Wrapper</h2><p>grade只是一个构建工具，而新版本总是在更迭，所以使用Gradle Wrapper将会是一个好的选择去避免由于gradle版本更新导致的问题。</p>
+<p>利用命令行./gradlew -v来查看当前gradle版本。</p>
+<ul>
+<li>gradlew是gradle wrapper的缩写，也就是说它对gradle的命令进行了包装</li>
+<li>解压gradle-wrapper.jar看看</li>
+</ul>
+<p>在gradle-wrapper.properties中可以改变该url来改变你的gradle版本，如导入github项目跑不起来，可以尝试修改url。<a target="_blank" rel="noopener" href="https://services.gradle.org/distributions">参考</a></p>
+<h1 id="2-基本配置"><a href="#2-基本配置" class="headerlink" title="2. 基本配置"></a>2. 基本配置</h1><h2 id="2-1-根目录的build-gradle"><a href="#2-1-根目录的build-gradle" class="headerlink" title="2.1. 根目录的build.gradle"></a>2.1. 根目录的build.gradle</h2><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">     repositories &#123;</span><br><span class="line">         jcenter()</span><br><span class="line">     &#125;</span><br><span class="line">      dependencies &#123;</span><br><span class="line">          classpath <span class="string">&#x27;com.android.tools.build:gradle:1.2.3&#x27;</span></span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br><span class="line">allprojects &#123;</span><br><span class="line">     repositories &#123;</span><br><span class="line">          jcenter()</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>buildscript方法是定义了全局的相关属性，repositories定义了jcenter作为仓库，一个仓库代表着你的依赖包的来源。</p>
+<p>allprojects方法可以用来定义各个模块的默认属性，你可以不仅仅局限于默认的配置，未来你可以自己创造tasks在allprojects方法体内，这些tasks将会在所有模块中可见。</p>
+<h2 id="2-2-模块内的build-gradle"><a href="#2-2-模块内的build-gradle" class="headerlink" title="2.2. 模块内的build.gradle"></a>2.2. <a target="_blank" rel="noopener" href="http://apdr.qiniudn.com/index.html">模块内的build.gradle</a></h2><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//加载用于构建Android项目的插件</span></span><br><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;com.android.application&#x27;</span></span><br><span class="line"></span><br><span class="line">android &#123; <span class="comment">//构建Android项目使用的配置</span></span><br><span class="line">    compileSdkVersion <span class="number">23</span> <span class="comment">//指定编译项目时使用的SDK版本</span></span><br><span class="line">    buildToolsVersion <span class="string">&quot;23.0.1&quot;</span> <span class="comment">//指定构建工具的版本</span></span><br><span class="line"></span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        applicationId <span class="string">&quot;com.absfree.debugframwork&quot;</span> <span class="comment">//包名</span></span><br><span class="line">        minSdkVersion <span class="number">15</span>  <span class="comment">//指定支持的最小SDK版本</span></span><br><span class="line">        targetSdkVersion <span class="number">23</span> <span class="comment">//针对的目标SDK版本</span></span><br><span class="line">        versionCode <span class="number">1</span></span><br><span class="line">        versionName <span class="string">&quot;1.0&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    buildTypes &#123; <span class="comment">//针对不同的构建版本进行一些设置</span></span><br><span class="line">        release &#123; <span class="comment">//对release版本进行的设置</span></span><br><span class="line">            minifyEnabled <span class="literal">false</span> <span class="comment">//是否开启混淆</span></span><br><span class="line">            proguardFiles getDefaultProguardFile(<span class="string">&#x27;proguard-android.txt&#x27;</span>), <span class="string">&#x27;proguard-rules.pro&#x27;</span>  <span class="comment">//指定混淆文件的位置</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123; <span class="comment">//指定当前模块的依赖</span></span><br><span class="line">    compile fileTree(<span class="attr">dir:</span> <span class="string">&#x27;libs&#x27;</span>, <span class="attr">include:</span> [<span class="string">&#x27;*.jar&#x27;</span>])</span><br><span class="line">    testCompile <span class="string">&#x27;junit:junit:4.12&#x27;</span></span><br><span class="line">    compile <span class="string">&#x27;com.android.support:appcompat-v7:23.1.1&#x27;</span></span><br><span class="line">    compile <span class="string">&#x27;com.android.support:design:23.1.1&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>属性applicationId复写了AndroidManifest文件中的包名packagename，但是关于applicationId和package name有一些不同。package name在AndroidManifest.xml有两个作用：其作为一个app的唯一标示，并且其被用在了R资源文件的包名。</p>
+<p>buildTypes方法定义了如何构建不同版本的app。<a target="_blank" rel="noopener" href="https://developer.android.com/studio/build/index.html">参考</a></p>
+<h2 id="2-3-依赖管理"><a href="#2-3-依赖管理" class="headerlink" title="2.3. 依赖管理"></a>2.3. 依赖管理</h2><p>依赖模块作为gradle默认的属性之一（这也是为什么其放在了Android的外面），为你的app定义了所有的依赖包。</p>
+<h3 id="2-3-1-依赖第三方库"><a href="#2-3-1-依赖第三方库" class="headerlink" title="2.3.1. 依赖第三方库"></a>2.3.1. 依赖第三方库</h3><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">       compile <span class="string">&#x27;com.google.code.gson:gson:2.3&#x27;</span></span><br><span class="line">       compile <span class="string">&#x27;com.squareup.retrofit:retrofit:1.9.0&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一个依赖需要定义三个元素：group，name和version。</p>
+<ul>
+<li>group意味着创建该library的组织名，通常这会是包名</li>
+<li>name是该library的唯一标示</li>
+<li>version是该library的版本号</li>
+</ul>
+<h3 id="2-3-2-依赖本地jar包"><a href="#2-3-2-依赖本地jar包" class="headerlink" title="2.3.2. 依赖本地jar包"></a>2.3.2. 依赖本地jar包</h3><p>默认情况下，我们依赖了所有在libs文件下的jar文件，同时包含了AppCompat这个aar文件。</p>
+<h3 id="2-3-3-依赖其它模块"><a href="#2-3-3-依赖其它模块" class="headerlink" title="2.3.3. 依赖其它模块"></a>2.3.3. 依赖其它模块</h3><p>compile project(‘:other’)</p>
+<h3 id="2-3-4-动态版本"><a href="#2-3-4-动态版本" class="headerlink" title="2.3.4. 动态版本"></a>2.3.4. 动态版本</h3><p>在一些情形中，在构建你的app或者library的时候通过动态版本能使用到最新的依赖包。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">       compile <span class="string">&#x27;com.android.support:support-v4:22.2.+&#x27;</span><span class="comment">//我们告诉gradle,得到最新的生产版本。  </span></span><br><span class="line">       compile <span class="string">&#x27;com.android.support:appcompat-v7:22.2+&#x27;</span><span class="comment">//我们告诉gradle，我们想得到最新的minor版本，并且其最小的版本号是2。</span></span><br><span class="line">       compile <span class="string">&#x27;com.android.support:recyclerview-v7:+&#x27;</span><span class="comment">//我们告诉gradle,得到最新的library。  </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你应该小心去使用动态版本，如果当你允许gradle去挑选最新版本，可能导致挑选的依赖版本并不是稳定版，这将会对构建产生很多问题，更糟糕的是你可能在你的服务器和私人pc上得到不同的依赖版本，这直接导致你的应用不同步。</p>
+<p>如果你在你的build.gradle中使用了动态版本，Android studio将会警告你关于动态版本的潜在问题。</p>
+<p>关于版本号的介绍</p>
+<ul>
+<li><p>Apache组织的目标是将APR独立出来形成单独的第三方库，因此对其而言稳定的API接口就成为一个非常重要的必须考虑的方面。不过由于APR需要不断的往前方展，因此API接口的变化又是必然的趋势，因此如何平衡稳定性和变化性是APR开发者面临的一个极需解决的问题。为此APR采用了严格的版本规则来实现这一点。用户只需要简单的判断APR版本号，就可以很容易确定当前版本的兼容性：向前兼容、向后兼容还是前后同时兼容。</p>
+</li>
+<li><p>APR中使用三个整数来记录APR版本号：MAJOR.MINOR.PATCH。MAJOR表示当前APR的主版本号，它的变化通常意味着APR的巨大的变化，比如体系结构的重新设计，API的重新设计等等，而且这种变化通常会导致APR版本的向前不兼容。</p>
+</li>
+<li><p>MINOR称之为APR的次版本号，它通常只反映了一些较大的更改，比如APR的API的增加等等，但是这些更改并不影响与旧版本源代码和二进制代码之间的兼容性。</p>
+</li>
+<li><p>PATCH通常称之为补丁版本，通常情况下如果只是对APR函数的修改而不影响API接口的话都会导致PATCH的变化。</p>
+</li>
+</ul>
+<h2 id="2-4-全局设置"><a href="#2-4-全局设置" class="headerlink" title="2.4. 全局设置"></a>2.4. 全局设置</h2><p>更好的做法是你在全局的gradle文件中定义一些属性，然后在模块中运用它们。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ext &#123;</span><br><span class="line">       compileSdkVersion = <span class="number">22</span></span><br><span class="line">       buildToolsVersion = <span class="string">&quot;22.0.1&quot;</span></span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">android &#123;</span><br><span class="line">       compileSdkVersion rootProject.ext.compileSdkVersion</span><br><span class="line">       buildToolsVersion rootProject.ext.buildToolsVersion</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-5-aar文件"><a href="#2-5-aar文件" class="headerlink" title="2.5. aar文件"></a>2.5. aar文件</h2><p>如果你想分享一个library，该依赖包使用了Android api，或者包含了Android资源文件，那么aar文件适合你。</p>
+<p>应用工程和依赖工程的区别在于输出文件，应用工程会生成APK文件，并且其可以安装在Android设备上，而依赖工程会生成.aar文件，该文件可以被Android应用工程当做依赖来使用。</p>
+<h1 id="3-构建变体"><a href="#3-构建变体" class="headerlink" title="3. 构建变体"></a>3. 构建变体</h1><h2 id="3-1-构建版本"><a href="#3-1-构建版本" class="headerlink" title="3.1. 构建版本"></a>3.1. 构建版本</h2><h3 id="3-1-1-创建自己的构建版本"><a href="#3-1-1-创建自己的构建版本" class="headerlink" title="3.1.1. 创建自己的构建版本"></a>3.1.1. 创建自己的构建版本</h3><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">staging.initWith(buildTypes.debug)</span><br><span class="line">staging &#123;</span><br><span class="line">    applicationIdSuffix <span class="string">&quot;.staging&quot;</span></span><br><span class="line">    versionNameSuffix <span class="string">&quot;-staging&quot;</span></span><br><span class="line">    debuggable = <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>initWith()方法创建了一个新版本的同时，复制所有存在的构建版本，类似继承。我们也可以复写该存在版本的所有属性。</p>
+<h3 id="3-1-2-Source-sets"><a href="#3-1-2-Source-sets" class="headerlink" title="3.1.2. Source sets"></a>3.1.2. Source sets</h3><p>nothing to show</p>
+<h2 id="3-2-product-flavors"><a href="#3-2-product-flavors" class="headerlink" title="3.2. product flavors"></a>3.2. product flavors</h2><p>和构建版本不同，product flavors用来为一个app创建不同版本。典型的例子是，一个app有付费和免费版。</p>
+<p>如果你不确定是否需要一个新的构建版本或者product flavors，你应该问你自己，你是否需要内部使用和外部使用的apk。如果你需要一个完全新的app去发布，和之前的版本完全隔离开，那么你需要product flavors，否则你只是需要构建版本。</p>
+<p>创建product flavors</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    productFlavors &#123;</span><br><span class="line">        red &#123;</span><br><span class="line">             applicationId <span class="string">&#x27;com.gradleforandroid.red&#x27;</span></span><br><span class="line">             versionCode <span class="number">3</span></span><br><span class="line">        &#125;</span><br><span class="line">        blue &#123;</span><br><span class="line">             applicationId <span class="string">&#x27;com.gradleforandroid.blue&#x27;</span></span><br><span class="line">             minSdkVersion <span class="number">14</span></span><br><span class="line">             versionCode <span class="number">4</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-Groovy入门介绍"><a href="#4-Groovy入门介绍" class="headerlink" title="4. Groovy入门介绍"></a>4. <a target="_blank" rel="noopener" href="http://www.groovy-lang.org/api.html">Groovy入门介绍</a></h1><h2 id="4-1-前提知识"><a href="#4-1-前提知识" class="headerlink" title="4.1. 前提知识"></a>4.1. 前提知识</h2><p>Groovy语句可以不用分号结尾。</p>
+<p>Groovy中支持动态类型，即定义变量的时候可以不指定其类型。变量定义可以使用关键字def，注意虽然def不是必须的，但是为了代码清晰，建议还是使用def关键字。  </p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> variable1 = <span class="number">1</span>   <span class="comment">//可以不使用分号结尾  </span></span><br><span class="line"><span class="keyword">def</span> varable2 = <span class="string">&quot;I ama person&quot;</span>  </span><br><span class="line"><span class="keyword">def</span>  <span class="keyword">int</span> x = <span class="number">1</span>  <span class="comment">//变量定义时，也可以直接指定类型  </span></span><br></pre></td></tr></table></figure>
+
+<p>函数定义时，参数的类型也可以不指定。比如:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String testFunction(arg1,arg2)&#123;<span class="comment">//无需指定参数类型  </span></span><br><span class="line">  ...  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+
+<p>除了变量定义可以不指定类型外，Groovy中函数的返回值也可以是无类型的。比如:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//无类型的函数定义，必须使用def关键字  </span></span><br><span class="line"><span class="keyword">def</span>  nonReturnTypeFunc()&#123;  </span><br><span class="line">    last_line   <span class="comment">//最后一行代码的执行结果就是本函数的返回值  </span></span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line"><span class="comment">//如果指定了函数返回类型，则可不必加def关键字来定义函数  </span></span><br><span class="line">String getString()&#123;  </span><br><span class="line">   <span class="keyword">return</span><span class="string">&quot;I am a string&quot;</span>  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Groovy对字符串支持相当强大，充分吸收了一些脚本语言的优点。</p>
+<p>单引号’’中的内容严格对应Java中的String，不对$符号进行转义：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">defsingleQuote=<span class="string">&#x27;I am $ dolloar&#x27;</span>  <span class="comment">//输出就是I am $ dolloar </span></span><br></pre></td></tr></table></figure>
+
+<p>双引号””的内容则和脚本语言的处理有点像，如果字符中有$号的话，则它会$表达式先求值：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">defdoubleQuoteWithoutDollar = <span class="string">&quot;I am one dollar&quot;</span> <span class="comment">//输出 I am one dollar  </span></span><br><span class="line"><span class="keyword">def</span> x = <span class="number">1</span>  </span><br><span class="line">defdoubleQuoteWithDollar = <span class="string">&quot;I am $x dolloar&quot;</span> <span class="comment">//输出I am 1 dolloar</span></span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">三个引号<span class="string">&#x27;&#x27;&#x27;xxx&#x27;&#x27;&#x27;</span>中的字符串支持随意换行 比如</span><br><span class="line"></span><br><span class="line">```groovy</span><br><span class="line">defmultieLines = <span class="string">&#x27;&#x27;&#x27; begin  </span></span><br><span class="line"><span class="string">line  1  </span></span><br><span class="line"><span class="string">line  2  </span></span><br><span class="line"><span class="string">end &#x27;&#x27;&#x27;</span>  </span><br></pre></td></tr></table></figure>
+
+<p>最后，除了每行代码不用加分号外，Groovy中函数调用的时候还可以不加括号。比如：  </p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">println(<span class="string">&quot;test&quot;</span>) ---&gt; println<span class="string">&quot;test&quot;</span>  </span><br></pre></td></tr></table></figure>
+
+<p>注意，虽然写代码的时候，对于函数调用可以不带括号，但是Groovy经常把属性和函数调用混淆。比如:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> getSomething()&#123;  </span><br><span class="line">  <span class="string">&quot;hello&quot;</span>  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用函数要不要带括号，我个人意见是如果这个函数是Groovy API或者Gradle API中比较常用的，比如println，就可以不带括号，否则还是带括号。</p>
+<h2 id="4-2-Collections"><a href="#4-2-Collections" class="headerlink" title="4.2. Collections"></a>4.2. Collections</h2><p>List：链表，其底层对应Java中的List接口，一般用ArrayList作为真正的实现类。</p>
+<p>Map：键-值表，其底层对应Java中的LinkedHashMap。</p>
+<p>Range：范围，它其实是List的一种拓展。</p>
+<h2 id="4-3-方法"><a href="#4-3-方法" class="headerlink" title="4.3. 方法"></a>4.3. 方法</h2><h3 id="4-3-1-闭包"><a href="#4-3-1-闭包" class="headerlink" title="4.3.1. 闭包"></a>4.3.1. 闭包</h3><p>闭包，英文叫Closure，是Groovy中非常重要的一个数据类型或者说一种概念了。</p>
+<p>闭包，是一种数据类型，它代表了一段可执行的代码。其外形如下：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> aClosure = &#123;<span class="comment">//闭包是一段代码，所以需要用花括号括起来..  </span></span><br><span class="line">    String param1, <span class="keyword">int</span> param2 -&gt;  <span class="comment">//这个箭头很关键。箭头前面是参数定义，箭头后面是代码  </span></span><br><span class="line">    println<span class="string">&quot;this is code&quot;</span> <span class="comment">//这是代码，最后一句是返回值，  </span></span><br><span class="line">   <span class="comment">//也可以使用return，和Groovy中普通函数一样  </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果闭包没定义参数的话，则隐含有一个参数，这个参数名字叫it，和this的作用类似。it代表闭包的参数。比如：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> greeting = &#123; <span class="string">&quot;Hello, $it!&quot;</span> &#125;</span><br><span class="line"><span class="keyword">assert</span> greeting(<span class="string">&#x27;Patrick&#x27;</span>) == <span class="string">&#x27;Hello, Patrick!&#x27;</span></span><br><span class="line"></span><br><span class="line">等同于：</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> greeting = &#123; it -&gt; <span class="string">&quot;Hello, $it!&quot;</span>&#125;</span><br><span class="line"><span class="keyword">assert</span> greeting(<span class="string">&#x27;Patrick&#x27;</span>) == <span class="string">&#x27;Hello, Patrick!&#x27;</span></span><br><span class="line"></span><br><span class="line">但是，如果在闭包定义时，采用下面这种写法，则表示闭包没有参数！</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> noParamClosure = &#123; -&gt; <span class="literal">true</span> &#125;</span><br><span class="line">这个时候，我们就不能给noParamClosure传参数了！</span><br><span class="line">noParamClosure (<span class="string">&quot;test&quot;</span>)  &lt;==报错喔！</span><br></pre></td></tr></table></figure>
+
+<p>Closure使用中的注意如下两点</p>
+<ol>
+<li>省略圆括号</li>
+</ol>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; List&lt;T&gt;each(List&lt;T&gt; self, Closure closure)</span><br></pre></td></tr></table></figure>
+
+<p>上面这个函数表示针对List的每一个元素都会调用closure做一些处理。这里的closure，就有点回调函数的感觉。但是在使用这个each函数的时候，我们传递一个怎样的Closure进去呢？比如：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> iamList = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>]  <span class="comment">//定义一个List</span></span><br><span class="line">iamList.each&#123; <span class="comment">//调用它的each，这段代码的格式看不懂了吧？each是个函数，圆括号去哪了？</span></span><br><span class="line">      println it</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面代码有两个知识点：</p>
+<p>each函数调用的圆括号不见了! 原来，Groovy中，当函数的最后一个参数是闭包的话，可以省略圆括号。比如</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> testClosure(<span class="keyword">int</span> a1,String b1, Closure closure)&#123;</span><br><span class="line">      <span class="comment">//dosomething</span></span><br><span class="line">     closure() <span class="comment">//调用闭包</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么调用的时候，就可以免括号！</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">testClosure (<span class="number">4</span>, <span class="string">&quot;test&quot;</span>, &#123;</span><br><span class="line">   println<span class="string">&quot;i am in closure&quot;</span></span><br><span class="line">&#125; )  <span class="comment">//圆括号可以不写</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>如何确定Closure的参数</li>
+</ol>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; List&lt;T&gt; each(List&lt;T&gt;self, Closure closure)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> iamList = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>]  <span class="comment">//定义一个List变量</span></span><br><span class="line">iamList.each&#123; <span class="comment">//调用它的each函数，只要传入一个Closure就可以了。</span></span><br><span class="line">  println it</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于each所需要的Closure，它的参数是什么？有多少个参数？返回值是什么？</p>
+<p>Closure虽然很方便，但是它一定会和使用它的上下文有极强的关联。要不作为类似回调这样的东西，我如何知道调用者传递什么参数给Closure呢？<a target="_blank" rel="noopener" href="http://www.groovy-lang.org/api.html">只能通过查询API文档才能了解上下文语义</a>。</p>
+<p><img src="../../../../images/githubpages/gradle/groovy-each.png" alt="groovy-each"></p>
+<h1 id="5-其他实践"><a href="#5-其他实践" class="headerlink" title="5. 其他实践"></a>5. 其他实践</h1><h2 id="5-1-加速模块构建"><a href="#5-1-加速模块构建" class="headerlink" title="5.1. 加速模块构建"></a>5.1. 加速模块构建</h2><p><a target="_blank" rel="noopener" href="https://developer.android.com/studio/build/optimize-your-build.html">https://developer.android.com/studio/build/optimize-your-build.html</a></p>
+<h2 id="5-2-集成签名配置"><a href="#5-2-集成签名配置" class="headerlink" title="5.2. 集成签名配置"></a>5.2. 集成签名配置</h2><p>nothing to show</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Gradle/" rel="tag"># Gradle</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2018/08/28/2018/2018-08-28-Java%E4%B9%8B%E5%86%85%E9%83%A8%E7%B1%BB/" rel="prev" title="Java之内部类">
+      <i class="fa fa-chevron-left"></i> Java之内部类
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2018/09/14/2018/2018-09-14-JVM%E7%B3%BB%E5%88%97%E4%B9%8B%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/" rel="next" title="JVM系列之内存区域">
+      JVM系列之内存区域 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">1. 基本介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E7%90%86%E8%A7%A3%E5%9F%BA%E6%9C%AC%E7%9A%84Gradle"><span class="nav-number">1.1.</span> <span class="nav-text">1.1. 理解基本的Gradle</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.</span> <span class="nav-text">1.2. 两个重要的概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-Project"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.2.1. Project</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-Tasks"><span class="nav-number">1.2.2.</span> <span class="nav-text">1.2.2. Tasks</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E6%9E%84%E5%BB%BA%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.3.</span> <span class="nav-text">1.3. 构建的生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-Gradle%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">1.4.</span> <span class="nav-text">1.4. Gradle工作流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-%E6%8F%92%E4%BB%B6"><span class="nav-number">1.5.</span> <span class="nav-text">1.5. 插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-6-%E4%BD%BF%E7%94%A8Gradle-Wrapper"><span class="nav-number">1.6.</span> <span class="nav-text">1.6. 使用Gradle Wrapper</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">2. 基本配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E6%A0%B9%E7%9B%AE%E5%BD%95%E7%9A%84build-gradle"><span class="nav-number">2.1.</span> <span class="nav-text">2.1. 根目录的build.gradle</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E6%A8%A1%E5%9D%97%E5%86%85%E7%9A%84build-gradle"><span class="nav-number">2.2.</span> <span class="nav-text">2.2. 模块内的build.gradle</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86"><span class="nav-number">2.3.</span> <span class="nav-text">2.3. 依赖管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-%E4%BE%9D%E8%B5%96%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93"><span class="nav-number">2.3.1.</span> <span class="nav-text">2.3.1. 依赖第三方库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-%E4%BE%9D%E8%B5%96%E6%9C%AC%E5%9C%B0jar%E5%8C%85"><span class="nav-number">2.3.2.</span> <span class="nav-text">2.3.2. 依赖本地jar包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-3-%E4%BE%9D%E8%B5%96%E5%85%B6%E5%AE%83%E6%A8%A1%E5%9D%97"><span class="nav-number">2.3.3.</span> <span class="nav-text">2.3.3. 依赖其它模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-4-%E5%8A%A8%E6%80%81%E7%89%88%E6%9C%AC"><span class="nav-number">2.3.4.</span> <span class="nav-text">2.3.4. 动态版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E5%85%A8%E5%B1%80%E8%AE%BE%E7%BD%AE"><span class="nav-number">2.4.</span> <span class="nav-text">2.4. 全局设置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-aar%E6%96%87%E4%BB%B6"><span class="nav-number">2.5.</span> <span class="nav-text">2.5. aar文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%9E%84%E5%BB%BA%E5%8F%98%E4%BD%93"><span class="nav-number">3.</span> <span class="nav-text">3. 构建变体</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E6%9E%84%E5%BB%BA%E7%89%88%E6%9C%AC"><span class="nav-number">3.1.</span> <span class="nav-text">3.1. 构建版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-%E5%88%9B%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E6%9E%84%E5%BB%BA%E7%89%88%E6%9C%AC"><span class="nav-number">3.1.1.</span> <span class="nav-text">3.1.1. 创建自己的构建版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-Source-sets"><span class="nav-number">3.1.2.</span> <span class="nav-text">3.1.2. Source sets</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-product-flavors"><span class="nav-number">3.2.</span> <span class="nav-text">3.2. product flavors</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Groovy%E5%85%A5%E9%97%A8%E4%BB%8B%E7%BB%8D"><span class="nav-number">4.</span> <span class="nav-text">4. Groovy入门介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E5%89%8D%E6%8F%90%E7%9F%A5%E8%AF%86"><span class="nav-number">4.1.</span> <span class="nav-text">4.1. 前提知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Collections"><span class="nav-number">4.2.</span> <span class="nav-text">4.2. Collections</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E6%96%B9%E6%B3%95"><span class="nav-number">4.3.</span> <span class="nav-text">4.3. 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-1-%E9%97%AD%E5%8C%85"><span class="nav-number">4.3.1.</span> <span class="nav-text">4.3.1. 闭包</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%85%B6%E4%BB%96%E5%AE%9E%E8%B7%B5"><span class="nav-number">5.</span> <span class="nav-text">5. 其他实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E5%8A%A0%E9%80%9F%E6%A8%A1%E5%9D%97%E6%9E%84%E5%BB%BA"><span class="nav-number">5.1.</span> <span class="nav-text">5.1. 加速模块构建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-%E9%9B%86%E6%88%90%E7%AD%BE%E5%90%8D%E9%85%8D%E7%BD%AE"><span class="nav-number">5.2.</span> <span class="nav-text">5.2. 集成签名配置</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

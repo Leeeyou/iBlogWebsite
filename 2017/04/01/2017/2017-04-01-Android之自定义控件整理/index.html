@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. view的绘制过程首先还是有必要谈下view的绘制过程，这里不得不提ViewRoot，ViewRoot对应ViewRootImpl类，是连接WindowManager和DecorView的纽带。View的三大流程均是通过ViewRoot来完成的。 同时View的绘制流程从ViewRoot的performTraversals开始，经过measure，layout，draw三个过程才能最终将一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android之自定义控件整理">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2017/04/01/2017/2017-04-01-Android%E4%B9%8B%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6%E6%95%B4%E7%90%86/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="1. view的绘制过程首先还是有必要谈下view的绘制过程，这里不得不提ViewRoot，ViewRoot对应ViewRootImpl类，是连接WindowManager和DecorView的纽带。View的三大流程均是通过ViewRoot来完成的。 同时View的绘制流程从ViewRoot的performTraversals开始，经过measure，layout，draw三个过程才能最终将一个">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-03-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.376Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="知识汇总">
+<meta property="article:tag" content="自定义控件">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2017/04/01/2017/2017-04-01-Android%E4%B9%8B%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6%E6%95%B4%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Android之自定义控件整理 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2017/04/01/2017/2017-04-01-Android%E4%B9%8B%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6%E6%95%B4%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android之自定义控件整理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-04-01 00:00:00" itemprop="dateCreated datePublished" datetime="2017-04-01T00:00:00+08:00">2017-04-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-view的绘制过程"><a href="#1-view的绘制过程" class="headerlink" title="1. view的绘制过程"></a>1. view的绘制过程</h1><p>首先还是有必要谈下view的绘制过程，这里不得不提ViewRoot，ViewRoot对应ViewRootImpl类，是连接WindowManager和DecorView的纽带。View的三大流程均是通过ViewRoot来完成的。</p>
+<p>同时View的绘制流程从ViewRoot的performTraversals开始，经过measure，layout，draw三个过程才能最终将一个View绘制出来。简单来说measure用来测量View的宽和高，layout用来确定View在父容器中放置的位置，而draw则负责将View绘制在屏幕上。</p>
+<p>总体绘制流程如下：</p>
+<ul>
+<li>measure过程决定了View的宽/高，measure完成以后，可以通过getMeasureWidth和getMeasureHeight方法来获取到View测量后的宽/高，<strong>在几乎所有情况下它都等同于View的最终宽高</strong>，但是特殊情况下后面讨论。  </li>
+<li>layout过程决定了view的四个顶点的坐标和实际的view的宽高，完成以后，可以通过getTop，getBottom,getLeft,getRight来拿到view的四个顶点的位置，并可以通过getWidth和getHeight方法来拿到view的最终宽高。</li>
+<li>draw过程则决定了view的显示，只有draw方法完成以后view的内容才能呈现在屏幕上。</li>
+</ul>
+<p>上面提及的特殊情况如下：</p>
+<ul>
+<li>重写view的onLayout方法，就能使测量宽高不等于最终宽高</li>
+<li>另一种情况，view需要多次measure才能确定自己的测量宽高，在前几次的测量过程中，其得出的测量宽高有可能和最终宽高不一致，但最终来说，测量宽高还是和最终宽高一致</li>
+</ul>
+<h1 id="2-measure过程"><a href="#2-measure过程" class="headerlink" title="2. measure过程"></a>2. measure过程</h1><p>几乎所有情况下view的测量大小和最终大小相等</p>
+<h2 id="2-1-View的measure"><a href="#2-1-View的measure" class="headerlink" title="2.1. View的measure"></a>2.1. View的measure</h2><p>需重写onMeasure同时设置wrap_content时自身的大小，否则在布局中wrap_content相当于match_parent。同时考虑paddig的影响。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onMeasure</span><span class="params">(<span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightMeasureSpec)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> resultWidth;</span><br><span class="line">    <span class="keyword">int</span> modeWidth = MeasureSpec.getMode(widthMeasureSpec);</span><br><span class="line">    <span class="keyword">int</span> sizeWidth = MeasureSpec.getSize(widthMeasureSpec);</span><br><span class="line">    <span class="keyword">if</span> (modeWidth == MeasureSpec.EXACTLY) &#123;</span><br><span class="line">        resultWidth = sizeWidth;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        resultWidth = mBitmap.getWidth() + getPaddingLeft() + getPaddingRight();</span><br><span class="line">        <span class="keyword">if</span> (modeWidth == MeasureSpec.AT_MOST) &#123;</span><br><span class="line">            resultWidth = Math.min(resultWidth, sizeWidth);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> resultHeight;</span><br><span class="line">    <span class="keyword">int</span> modeHeight = MeasureSpec.getMode(heightMeasureSpec);</span><br><span class="line">    <span class="keyword">int</span> sizeHeight = MeasureSpec.getSize(heightMeasureSpec);</span><br><span class="line">    <span class="keyword">if</span> (modeHeight == MeasureSpec.EXACTLY) &#123;</span><br><span class="line">        resultHeight = sizeHeight;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        resultHeight = mBitmap.getHeight() + getPaddingTop() + getPaddingBottom();</span><br><span class="line">        <span class="keyword">if</span> (modeHeight == MeasureSpec.AT_MOST) &#123;</span><br><span class="line">            resultHeight = Math.min(resultHeight, sizeHeight);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    setMeasuredDimension(resultWidth, resultHeight);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-ViewGroup的measure"><a href="#2-2-ViewGroup的measure" class="headerlink" title="2.2. ViewGroup的measure"></a>2.2. ViewGroup的measure</h2><p>1 由于不同的viewgroup子类有不同的布局特性，所以交由子类实现测量细节<br>2 measureChildren();<br>3 自定义ViewGroup时，需要考虑测量以及布局子View，同时需要考虑ViewGroup的margin</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onMeasure</span><span class="params">(<span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightMeasureSpec)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onMeasure(widthMeasureSpec, heightMeasureSpec);</span><br><span class="line">    <span class="keyword">int</span> parentDesireWidth = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> parentDesireHeight = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (getChildCount() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; getChildCount(); i++) &#123;</span><br><span class="line">            View childAt = getChildAt(i);</span><br><span class="line">            CustomLayoutParams layoutParams = (CustomLayoutParams) childAt.getLayoutParams();</span><br><span class="line">            measureChildWithMargins(childAt, widthMeasureSpec, <span class="number">0</span>, heightMeasureSpec, <span class="number">0</span>);</span><br><span class="line">            parentDesireWidth += childAt.getMeasuredWidth()</span><br><span class="line">                    + layoutParams.leftMargin</span><br><span class="line">                    + layoutParams.rightMargin;</span><br><span class="line">            parentDesireHeight += childAt.getMeasuredHeight()</span><br><span class="line">                    + layoutParams.topMargin</span><br><span class="line">                    + layoutParams.bottomMargin;</span><br><span class="line">        &#125;</span><br><span class="line">        parentDesireWidth += getPaddingLeft() + getPaddingRight();</span><br><span class="line">        parentDesireHeight += getPaddingTop() + getPaddingBottom();</span><br><span class="line">        parentDesireWidth = Math.max(parentDesireWidth, getSuggestedMinimumWidth());</span><br><span class="line">        parentDesireHeight = Math.max(parentDesireHeight, getSuggestedMinimumHeight());</span><br><span class="line">        setMeasuredDimension(resolveSize(parentDesireWidth, widthMeasureSpec),</span><br><span class="line">                resolveSize(parentDesireHeight, heightMeasureSpec));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onLayout</span><span class="params">(<span class="keyword">boolean</span> changed, <span class="keyword">int</span> l, <span class="keyword">int</span> t, <span class="keyword">int</span> r, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> parentPaddingTop = getPaddingTop();</span><br><span class="line">    <span class="keyword">int</span> parentPaddingLeft = getPaddingLeft();</span><br><span class="line">    <span class="keyword">if</span> (getChildCount() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">int</span> mutilHeight = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; getChildCount(); i++) &#123;</span><br><span class="line">            View child = getChildAt(i);</span><br><span class="line">            CustomLayoutParams childLayoutParams = (CustomLayoutParams) child.getLayoutParams();</span><br><span class="line">            child.layout(parentPaddingLeft + childLayoutParams.leftMargin,</span><br><span class="line">                    mutilHeight + parentPaddingTop + childLayoutParams.topMargin,</span><br><span class="line">                    child.getMeasuredWidth() + parentPaddingLeft + childLayoutParams.leftMargin,</span><br><span class="line">                    child.getMeasuredHeight() + mutilHeight + parentPaddingTop + childLayoutParams.topMargin);</span><br><span class="line">            mutilHeight += child.getMeasuredHeight()</span><br><span class="line">                    + childLayoutParams.topMargin</span><br><span class="line">                    + childLayoutParams.bottomMargin;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时需要注意的是在处理margin时，可以自己定义一个CustomLayoutParams类继承LayoutParams，此后在onMeasure和onLayout中都强制转换成CustomLayoutParams。</p>
+<h2 id="2-3-view的mearsure过程和activity的生命周期不是同步执行的！"><a href="#2-3-view的mearsure过程和activity的生命周期不是同步执行的！" class="headerlink" title="2.3. view的mearsure过程和activity的生命周期不是同步执行的！"></a>2.3. view的mearsure过程和activity的生命周期不是同步执行的！</h2><p>1 onWindowFocusChanged()<br>2 view.post(Runnable)<br>3 ViewTreeObserver</p>
+<h1 id="3-layout过程"><a href="#3-layout过程" class="headerlink" title="3. layout过程"></a>3. layout过程</h1><p>1 通过setFrame设定view的l、t、r、b；四点确定，则view在父容器中的位置也确定了<br>2 调用onLayout，是父容器确定子容器的位置<br>3 onLayout具体实现同样和具体布局有关，所以view和viewgroup均没有真正实现onlayout</p>
+<h1 id="4-draw过程"><a href="#4-draw过程" class="headerlink" title="4. draw过程"></a>4. draw过程</h1><p>1 绘制背景 background.draw(canvas)<br>2 绘制自己 onDraw<br>3 绘制children dispatchDraw<br>4 绘制装饰 onDrawScrollBars<br>5 setWillNotDraw设置为true，系统会进行相应优化。view默认不启用，viewgroup默认启用</p>
+<h1 id="5-自定义View须知"><a href="#5-自定义View须知" class="headerlink" title="5. 自定义View须知"></a>5. 自定义View须知</h1><p>1 处理好滑动冲突<br>2 处理好线程和动画，当view不可见时停止线程和动画<br>3 不要在View中使用handler，用post<br>4 让view支持padding和wrap_content</p>
+<h1 id="6-自定义view实践"><a href="#6-自定义view实践" class="headerlink" title="6. 自定义view实践"></a>6. 自定义view实践</h1><p>以下是自己过去两年内写过的关于自定义控件的日志，方便以后查阅。每当Android提供的控件不能满足你的需求时，首先你应该想想是否可以在现有控件的基础上修改一下来达到你的目的，而不是盲目地直接重写View或ViewGroup类，你可以提供不同的接口方法来修改你复合控件中的各类元素。</p>
+<p><a href="https://leeeyou.github.io/2016/01/22/blog-2016-01-22-Android%E4%B9%8B%E5%BC%80%E5%8F%91%E4%B8%AD%E5%BF%85%E5%A4%87%E7%9A%84%E5%9D%90%E6%A0%87%E4%BD%93%E7%B3%BB%E7%9F%A5%E8%AF%86/">Android之开发中必备的坐标体系知识</a></p>
+<p><a href="https://leeeyou.github.io/2016/04/29/blog-2016-04-29-Android%E4%B9%8BPaint%E7%9A%84%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/">Android之Paint的使用总结</a><br><a href="https://leeeyou.github.io/2016/01/04/blog-2016-01-04-Android%E4%B9%8BDrawable%E3%80%81Bitmap%E3%80%81Canvas%E3%80%81Paint%E4%B9%8B%E9%97%B4%E5%8C%BA%E5%88%AB/">Android之Drawable、Bitmap、Canvas、Paint之间区别</a><br><a href="https://leeeyou.github.io/2016/01/20/blog-2016-01-20-Android%E4%B9%8B%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6%E4%B9%8B%E7%94%BB%E7%AC%94/">Android之自定义控件之画笔</a><br><a href="https://leeeyou.github.io/2016/01/11/blog-2016-01-11-Android%E4%B9%8B%E7%BB%98%E5%9B%BE%E5%9F%BA%E7%A1%80Path%E7%B1%BB/">Android之绘图基础Path类</a><br><a href="https://leeeyou.github.io/2016/01/01/blog-2016-01-01-Android%E4%B9%8B%E5%9B%BE%E5%83%8F%E7%9A%84%E8%89%B2%E5%BD%A9%E5%8F%98%E6%8D%A2/">Android之图像的色彩变换</a></p>
+<p><a href="https://leeeyou.github.io/2016/02/29/blog-2016-02-29-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%AC3%E7%AB%A0-View%E7%9A%84%E4%BA%8B%E4%BB%B6%E4%BD%93%E7%B3%BB/">Android艺术探索 第3章 View的事件体系</a><br><a href="https://leeeyou.github.io/2016/03/01/blog-2016-03-01-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%AC4%E7%AB%A0-View%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/">Android艺术探索 第4章 View的工作原理</a><br><a href="https://leeeyou.github.io/2016/03/02/blog-2016-03-02-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2-%E7%AC%AC5%E7%AB%A0-%E7%90%86%E8%A7%A3RemoteViews/">Android艺术探索 第5章 理解RemoteViews</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Android/" rel="tag"># Android</a>
+              <a href="/iBlogWebsite/tags/%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" rel="tag"># 知识汇总</a>
+              <a href="/iBlogWebsite/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/" rel="tag"># 自定义控件</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2017/03/28/2017/2017-03-28-%20%E6%A8%A1%E6%9D%BF/" rel="prev" title="Markdown模板">
+      <i class="fa fa-chevron-left"></i> Markdown模板
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2017/04/14/2017/2017-04-14-Java%E4%B9%8B%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" rel="next" title="Java之基础知识汇总">
+      Java之基础知识汇总 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-view%E7%9A%84%E7%BB%98%E5%88%B6%E8%BF%87%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">1. view的绘制过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-measure%E8%BF%87%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">2. measure过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-View%E7%9A%84measure"><span class="nav-number">2.1.</span> <span class="nav-text">2.1. View的measure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-ViewGroup%E7%9A%84measure"><span class="nav-number">2.2.</span> <span class="nav-text">2.2. ViewGroup的measure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-view%E7%9A%84mearsure%E8%BF%87%E7%A8%8B%E5%92%8Cactivity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8D%E6%98%AF%E5%90%8C%E6%AD%A5%E6%89%A7%E8%A1%8C%E7%9A%84%EF%BC%81"><span class="nav-number">2.3.</span> <span class="nav-text">2.3. view的mearsure过程和activity的生命周期不是同步执行的！</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-layout%E8%BF%87%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">3. layout过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-draw%E8%BF%87%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">4. draw过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E8%87%AA%E5%AE%9A%E4%B9%89View%E9%A1%BB%E7%9F%A5"><span class="nav-number">5.</span> <span class="nav-text">5. 自定义View须知</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E8%87%AA%E5%AE%9A%E4%B9%89view%E5%AE%9E%E8%B7%B5"><span class="nav-number">6.</span> <span class="nav-text">6. 自定义view实践</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="示例项目地址：https:&#x2F;&#x2F;github.com&#x2F;Leeeyou&#x2F;SampleOfKotlin-InDepth 1. 操作符1.1 集合操作符元素相关的  + 、 - ：往集合中增加或者删除某元素 groupBy：按照闭包条件分组 slice ：按照入参将集合切分 take：从前往后拿取集合中的前n个元素，n是入参 takeLast：从后往前拿取集合中的前n个元素，n是入参 drop：从前往后丢">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin高级入门">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2019/10/21/2019/2019-10-21-Kotlin%E9%AB%98%E7%BA%A7%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="示例项目地址：https:&#x2F;&#x2F;github.com&#x2F;Leeeyou&#x2F;SampleOfKotlin-InDepth 1. 操作符1.1 集合操作符元素相关的  + 、 - ：往集合中增加或者删除某元素 groupBy：按照闭包条件分组 slice ：按照入参将集合切分 take：从前往后拿取集合中的前n个元素，n是入参 takeLast：从后往前拿取集合中的前n个元素，n是入参 drop：从前往后丢">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-10-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-17T13:17:18.674Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="分享系列">
+<meta property="article:tag" content="Kotlin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2019/10/21/2019/2019-10-21-Kotlin%E9%AB%98%E7%BA%A7%E5%85%A5%E9%97%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Kotlin高级入门 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2019/10/21/2019/2019-10-21-Kotlin%E9%AB%98%E7%BA%A7%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kotlin高级入门
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-10-21 00:00:00" itemprop="dateCreated datePublished" datetime="2019-10-21T00:00:00+08:00">2019-10-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-06-17 21:17:18" itemprop="dateModified" datetime="2021-06-17T21:17:18+08:00">2021-06-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>示例项目地址：<a target="_blank" rel="noopener" href="https://github.com/Leeeyou/SampleOfKotlin-InDepth">https://github.com/Leeeyou/SampleOfKotlin-InDepth</a></p>
+<h1 id="1-操作符"><a href="#1-操作符" class="headerlink" title="1. 操作符"></a>1. 操作符</h1><h2 id="1-1-集合操作符"><a href="#1-1-集合操作符" class="headerlink" title="1.1 集合操作符"></a>1.1 集合操作符</h2><p>元素相关的</p>
+<ul>
+<li>+ 、 - ：往集合中增加或者删除某元素</li>
+<li>groupBy：按照闭包条件分组</li>
+<li><a target="_blank" rel="noopener" href="https://kotlinlang.org/docs/reference/collection-parts.html#slice">slice</a> ：按照入参将集合切分</li>
+<li>take：从前往后拿取集合中的前n个元素，n是入参</li>
+<li>takeLast：从后往前拿取集合中的前n个元素，n是入参</li>
+<li>drop：从前往后丢弃集合中的前n个元素，n是入参</li>
+<li>dropLast：从后往前丢弃集合中的前n个元素，n是入参</li>
+<li>takeWhile：按照lambda表达式条件，从前往后拿取元素，直到第一个不符合条件的元素出现为止</li>
+<li>takeLastWhile：按照lambda表达式条件，从后往前拿取元素，直到第一个不符合条件的元素出现为止</li>
+<li>dropWhile：按照lambda表达式条件，从前往后丢弃元素，直到第一个不符合条件的元素出现为止</li>
+<li>dropLastWhile：按照lambda表达式条件，从后往前丢弃元素，直到第一个不符合条件的元素出现为止</li>
+<li>chunked：将集合按照n分块，n是入参，被分块的元素不在参与下一次分块</li>
+<li>windowed：将集合按照n分块，n是入参，被分块的元素可能继续参与下一次分块，类似滑动窗口</li>
+<li>zipWithNext：将集合两两一组切分</li>
+<li>elementAt：返回对应的元素，越界会抛IndexOutOfBoundsException</li>
+<li>first：返回符合条件的第一个元素，没有不返回任何内容</li>
+<li>firstOrNull：返回符合条件的第一个元素，没有返回null</li>
+<li>last：返回符合条件的最后一个元素，没有不返回任何内容</li>
+<li>lastOrNull：返回符合条件的最后一个元素，没有返回null</li>
+<li>elementAtOrNull：返回对应的元素，越界返回null</li>
+<li>elementAtOrElse：返回对应的元素，越界则执行lambda表达式</li>
+<li>find：同firstOrNull</li>
+<li>findLast：同lastOrNull</li>
+<li>contains：判断是否有指定元素</li>
+<li>containsAll：判断是否包含指定的元素集</li>
+</ul>
+<p>排序相关的</p>
+<ul>
+<li>sortedWith：接受一个Comparator对象</li>
+<li>sorted：升序</li>
+<li>sortedDescending：降序</li>
+<li>sortedBy：自定义顺序排列</li>
+<li>sortedByDescending：自定义逆序排列</li>
+<li>asReversed：反序</li>
+<li>shuffled：随机排序</li>
+</ul>
+<span id="more"></span>
+
+<p>过滤相关的</p>
+<ul>
+<li>filter：过滤掉所有满足条件的元素</li>
+<li>filterNot：过滤所有不满足条件的元素</li>
+<li>filterIndexed：与filter不同的是可以引入元素索引作为入参</li>
+<li>filterNotNull：过滤null</li>
+<li>filterIsInstance：过滤掉不是指定类型的元素</li>
+<li><a target="_blank" rel="noopener" href="https://kotlinlang.org/docs/reference/collection-filtering.html#partitioning">partition</a>：按照lambda表达式条件，将集合分成两部分</li>
+<li><a target="_blank" rel="noopener" href="https://kotlinlang.org/docs/reference/collection-filtering.html#testing-predicates">any 、none、all</a>：判断集合中是否有满足条件的元素、是否都不满足条件、是否都满足条件</li>
+</ul>
+<p>转换相关的</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://kotlinlang.org/docs/reference/collection-transformations.html#mapping">map</a>：按照lambda表达式条件，作用于集合中的每个元素，并返回结果列表</li>
+<li>mapIndexed：与map不同的是可以引入元素索引作为入参</li>
+<li>mapNotNull：在map的基础上，结果列表中产生了null</li>
+<li>mapIndexedNotNull：与mapNotNull不同的是可以引入元素索引作为入参</li>
+<li>mapKeys：用于转换Map类型集合中的key</li>
+<li>mapValues：用于转换Map类型集合中的value</li>
+<li>zip：用于在两个集合中，构建相同位置的元素对，两个集合元素长度不一致以短的集合为基准</li>
+<li>unzip：zip的反操作，将集合对展开为两个集合</li>
+<li><a target="_blank" rel="noopener" href="https://kotlinlang.org/docs/reference/collection-transformations.html#flattening">flatten</a>：将多个集合扁平化成一个集合，不关心每个集合的长度是否一致</li>
+<li>flatMap：可以理解为map操作之后，再调用flatten，它的返回值是一个结果列表</li>
+</ul>
+<p>特定集合类型相关的</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://kotlinlang.org/docs/reference/list-operations.html">getOrNull</a></li>
+<li>getOrElse</li>
+<li>subList</li>
+<li>indexOf</li>
+<li>lastIndexOf</li>
+<li>indexOfFirst</li>
+<li>indexOfLast</li>
+<li><a target="_blank" rel="noopener" href="https://kotlinlang.org/docs/reference/map-operations.html">filterKeys</a></li>
+<li>filterValues</li>
+</ul>
+<h2 id="1-2-作用域函数"><a href="#1-2-作用域函数" class="headerlink" title="1.2 作用域函数"></a>1.2 作用域函数</h2><p>Kotlin内置的一系列可以对数据做变换的函数，与集合的操作符非常相似，但集合操作符只能用于集合，而作用域函数可以用于对所有对象做一系列操作。</p>
+<ul>
+<li>let {…}</li>
+<li>run {…}</li>
+<li>also {…}</li>
+<li>apply {…}</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">-</th>
+<th align="center">有闭包参数</th>
+<th align="center">无闭包参数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">返回闭包结果</td>
+<td align="center">let</td>
+<td align="center">run</td>
+</tr>
+<tr>
+<td align="center">不返回闭包结果</td>
+<td align="center">also</td>
+<td align="center">apply</td>
+</tr>
+</tbody></table>
+<p>takeIf的闭包返回一个判断结果，为false时，takeIf函数会返回空；takeUnless 与 takeIf 刚好相反， 闭包的判断结果，为true时函数会返回空。</p>
+<ul>
+<li>takeIf {…}</li>
+<li>takeUnless {…}</li>
+</ul>
+<p>with比较特殊，不是以扩展方法的形式存在的，而是一个顶级函数。</p>
+<ul>
+<li>with(T) {…}</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> user = UserInfo(<span class="number">9802830</span>, <span class="string">&quot;Rose&quot;</span>, <span class="string">&quot;http://oioe.i/23.png&quot;</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="string">&quot;17789876555&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> letResult = user.let &#123; <span class="string">&quot;let::<span class="subst">$&#123;it.nickname&#125;</span>&quot;</span> &#125;</span><br><span class="line">    println(letResult)</span><br><span class="line">    <span class="keyword">val</span> runResult = user.run &#123; <span class="string">&quot;run::<span class="subst">$&#123;this.mobile&#125;</span>&quot;</span> &#125;</span><br><span class="line">    println(runResult)</span><br><span class="line">    println(<span class="string">&quot;---&quot;</span>)</span><br><span class="line"></span><br><span class="line">    user.also &#123;</span><br><span class="line">        println(<span class="string">&quot;also::<span class="subst">$&#123;it.uid&#125;</span>&quot;</span>)</span><br><span class="line">    &#125;.apply &#123;</span><br><span class="line">        println(<span class="string">&quot;apply::<span class="subst">$&#123;this.gender&#125;</span>&quot;</span>)</span><br><span class="line">    &#125;.nickname = <span class="string">&quot;hello&quot;</span></span><br><span class="line">    println(user.nickname)</span><br><span class="line">    println(<span class="string">&quot;---&quot;</span>)</span><br><span class="line"></span><br><span class="line">    user.nickname = <span class="string">&quot;Lily&quot;</span></span><br><span class="line">    user.takeIf &#123; it.nickname?.length!! &gt; <span class="number">0</span> &#125;?.also &#123; println(<span class="string">&quot;姓名为<span class="subst">$&#123;it.nickname&#125;</span>&quot;</span>) &#125; ?: println(<span class="string">&quot;姓名为空&quot;</span>)</span><br><span class="line">    user.takeUnless &#123; it.nickname?.length!! &gt; <span class="number">0</span> &#125;?.also &#123; println(<span class="string">&quot;姓名为空&quot;</span>) &#125; ?: println(<span class="string">&quot;姓名为<span class="subst">$&#123;user.nickname&#125;</span>&quot;</span>)</span><br><span class="line">    println(<span class="string">&quot;---&quot;</span>)</span><br><span class="line"></span><br><span class="line">    with(user) &#123;</span><br><span class="line">        <span class="keyword">this</span>.head = <span class="string">&quot;http://oioe.i/25.png&quot;</span></span><br><span class="line">        <span class="keyword">this</span>.mobile = <span class="string">&quot;17789876558&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    println(user)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-3-操作符的实现原理"><a href="#1-3-操作符的实现原理" class="headerlink" title="1.3 操作符的实现原理"></a>1.3 操作符的实现原理</h2><p>本质上都是扩展函数或者是扩展函数的形式为代码做一系列的扩展操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//map操作示例</span></span><br><span class="line"><span class="keyword">public</span> inline fun &lt;T, R&gt; Iterable&lt;T&gt;.map(transform: (T) -&gt; R): List&lt;R&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> mapTo(ArrayList&lt;R&gt;(collectionSizeOrDefault(<span class="number">10</span>)), transform)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> inline fun &lt;T, R, C : MutableCollection&lt;in R&gt;&gt; Iterable&lt;T&gt;.mapTo(destination: C, transform: (T) -&gt; R): C &#123;</span><br><span class="line">    <span class="keyword">for</span> (item in <span class="keyword">this</span>)</span><br><span class="line">        destination.add(transform(item))</span><br><span class="line">    <span class="keyword">return</span> destination</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//flatMap操作示例</span></span><br><span class="line"><span class="keyword">public</span> inline fun &lt;T, R&gt; Iterable&lt;T&gt;.flatMap(transform: (T) -&gt; Iterable&lt;R&gt;): List&lt;R&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> flatMapTo(ArrayList&lt;R&gt;(), transform)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> inline fun &lt;T, R, C : MutableCollection&lt;in R&gt;&gt; Iterable&lt;T&gt;.flatMapTo(destination: C, transform: (T) -&gt; Iterable&lt;R&gt;): C &#123;</span><br><span class="line">    <span class="keyword">for</span> (element in <span class="keyword">this</span>) &#123;</span><br><span class="line">        val list = transform(element)</span><br><span class="line">        destination.addAll(list)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> destination</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="2-高级特性"><a href="#2-高级特性" class="headerlink" title="2. 高级特性"></a>2. 高级特性</h1><h2 id="2-1-解构声明"><a href="#2-1-解构声明" class="headerlink" title="2.1 解构声明"></a>2.1 解构声明</h2><p>就是将一个对象拆解成若干个变量，其本质将对象解析成一组属性，然后通过调用与之对应的component()方法得到属性的值，再赋值给各自的局部变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fun <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    val map = mapOf(<span class="string">&quot;深圳&quot;</span> to <span class="string">&quot;中国&quot;</span>, <span class="string">&quot;孟加拉&quot;</span> to <span class="string">&quot;印度&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> ((city, country) in map) &#123;</span><br><span class="line">        println(<span class="string">&quot;$city belongs $country&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    val (uid2, nickname, _, _, _, mobile) = UserInfo(<span class="number">9802830</span>, <span class="string">&quot;Rose&quot;</span>, <span class="string">&quot;http://oioe.i/23.png&quot;</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="string">&quot;17789876555&quot;</span>)</span><br><span class="line">    println(<span class="string">&quot;My nickname is $nickname，uid is $uid2 ， my mobile phone is $mobile&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-中缀表达式"><a href="#2-2-中缀表达式" class="headerlink" title="2.2 中缀表达式"></a>2.2 中缀表达式</h2><p>所谓中缀表达式就是不需要点和括号的方法调用，其本质还是函数调用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">class</span> <span class="title">CompareResult</span> </span>&#123;</span><br><span class="line">    MORE, LESS, EQUAL</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">infix fun Int.vs(num: Int): CompareResult =</span><br><span class="line">    when &#123;</span><br><span class="line">        <span class="keyword">this</span> - num &gt; <span class="number">0</span> -&gt; CompareResult.MORE</span><br><span class="line">        <span class="keyword">this</span> - num &lt; <span class="number">0</span> -&gt; CompareResult.LESS</span><br><span class="line">        <span class="keyword">else</span> -&gt; CompareResult.EQUAL</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="function">fun <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//自定义示例</span></span><br><span class="line">    println(<span class="number">1</span> vs <span class="number">6</span>)</span><br><span class="line">    println(<span class="number">9</span> vs <span class="number">6</span>)</span><br><span class="line">    println(<span class="number">6</span> vs <span class="number">6</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">//库自带中缀示例 to、step</span></span><br><span class="line">    mapOf(<span class="string">&quot;深圳&quot;</span> to <span class="string">&quot;中国&quot;</span>, <span class="string">&quot;孟加拉&quot;</span> to <span class="string">&quot;印度&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i in <span class="number">1.</span><span class="number">.10</span> step <span class="number">2</span>) &#123;</span><br><span class="line">        println(i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>中缀表达式实际上就是函数调用，如果把infix关键字去掉，那么跟纯粹函数调用方式没有任何区别。比如5.vs(6)、1.to(“A”)、element.into(list)等。只有加了infix关键字后，才可以使用中缀的调用方式：例如 1 to “A”, 5 vs 6。</li>
+<li>中缀表达式让我们的代码更加接近自然语言，但不是所有的函数都能写成中缀调用，首先必须满足一个条件就是函数的参数只有一个。然后再看这个函数的参与者是不是只有两个元素，这两个元素可以是两个数，可以是两个对象，可以是集合等。</li>
+</ul>
+<h2 id="2-3-内联函数的特殊性"><a href="#2-3-内联函数的特殊性" class="headerlink" title="2.3 内联函数的特殊性"></a>2.3 <a target="_blank" rel="noopener" href="http://kotlinlang.org/docs/reference/inline-functions.html">内联函数的特殊性</a></h2><p>Lambda 表达式最大的特点是可以作为参数传递。当定义一个闭包作为参数的函数，称这个函数为高阶函数。在使用高阶函数时，为了大幅提升高阶函数的性能，使用了内联函数，在编译阶段，编译器将会把内联函数拆分，直接插入到调用出。（ps：如果一个 inline 函数是很大的，那他会大幅增加调用它的那个函数的体积。）</p>
+<ul>
+<li>在Kotlin中，内部Lambda是不允许中断外部函数执行的</li>
+<li>inline 的 Lambda 可以中断外部函数调用。（思考下为什么可以中断外部调用？）<ul>
+<li>因为内联是将代码平铺，平铺以后就不存在Lambda内外代码块之分了</li>
+</ul>
+</li>
+<li><a target="_blank" rel="noopener" href="http://kotlinlang.org/docs/reference/inline-functions.html#non-local-returns">crossinline</a> 不允许 inline 的Lambda中断外部函数执行</li>
+<li><a target="_blank" rel="noopener" href="http://kotlinlang.org/docs/reference/inline-functions.html#noinline">noinline</a> 拒绝内联（思考下test2函数使用了inline后为什么还需要使用noinline来修饰第二个lambda表达式？）<ul>
+<li>因为需要返回的lambda高阶函数是不能被平铺开的，当它被内联以后，平铺开后会修改外部函数的返回值类型</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">val</span> runnable = Runnable &#123;</span><br><span class="line">    println(<span class="string">&quot;runnable task...&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> successCallback: () -&gt; <span class="built_in">Int</span> = &#123;</span><br><span class="line">    println(<span class="string">&quot;do something task...&quot;</span>)</span><br><span class="line">    <span class="number">100</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">//内部Lambda是不允许中断外部函数执行的</span></span><br><span class="line">    test4(runnable::run, runnable::run)</span><br><span class="line">    println(<span class="string">&quot;--- ---&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">//inline函数的return直接中断了外部函数的调用</span></span><br><span class="line">    <span class="keyword">val</span> userInfo = UserInfo(<span class="number">9802830</span>, <span class="string">&quot;Rose&quot;</span>, <span class="string">&quot;http://oioe.i/23.png&quot;</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="string">&quot;17789876555&quot;</span>)</span><br><span class="line">    userInfo.let &#123;</span><br><span class="line">        it.mobile?.apply &#123;</span><br><span class="line">            println(<span class="string">&quot;<span class="variable">$this</span> do something background task...&quot;</span>)</span><br><span class="line">            <span class="comment">//return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">&quot;--- ---&quot;</span>)</span><br><span class="line"></span><br><span class="line">    test1 &#123;</span><br><span class="line">        println(<span class="string">&quot;hello 1-1&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span><span class="symbol">@test1</span> <span class="comment">//可以根据实际的情况来决定是不是要执行后面的代码</span></span><br><span class="line">        println(<span class="string">&quot;hello 1-1-1&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">&quot;--- ---&quot;</span>)</span><br><span class="line"></span><br><span class="line">    test2(successCallback) &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">        println(<span class="string">&quot;hello 2-1&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">&quot;--- ---&quot;</span>)</span><br><span class="line"></span><br><span class="line">    test3(&#123;</span><br><span class="line">        println(<span class="string">&quot;hello 3-1&quot;</span>)</span><br><span class="line">    &#125;, runnable::run)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="title">test1</span><span class="params">(<span class="keyword">crossinline</span> block: () -&gt; <span class="type">Unit</span>)</span></span> &#123;</span><br><span class="line">    block()</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="title">test2</span><span class="params">(<span class="keyword">noinline</span> block1: () -&gt; <span class="type">Int</span>, block2: () -&gt; <span class="type">Unit</span>)</span></span>: () -&gt; <span class="built_in">Int</span> &#123;</span><br><span class="line">    block1.invoke()</span><br><span class="line">    block2()</span><br><span class="line">    println(<span class="string">&quot;test 2&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> block1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="title">test3</span><span class="params">(block: () -&gt; <span class="type">Unit</span>, block2: () -&gt; <span class="type">Unit</span>)</span></span> &#123;</span><br><span class="line">    block.invoke()</span><br><span class="line">    block2.invoke()</span><br><span class="line">    println(<span class="string">&quot;test 3&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">test4</span><span class="params">(block: () -&gt; <span class="type">Unit</span>, block2: () -&gt; <span class="type">Unit</span>)</span></span> &#123;</span><br><span class="line">    block.invoke()</span><br><span class="line">    block2.invoke()</span><br><span class="line">    println(<span class="string">&quot;test 4&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-4-操作符重载"><a href="#2-4-操作符重载" class="headerlink" title="2.4 操作符重载"></a>2.4 <a target="_blank" rel="noopener" href="https://kotlinlang.org/docs/reference/operator-overloading.html">操作符重载</a></h2><p>运算符重载需要使用关键字operator修饰，其余定义与函数相同。 运算符的数量毕竟是有限的，有时并不一定有合适的，此时可以考虑前面的中缀表达式，要是觉得麻烦，可以直接考虑扩展函数。</p>
+<ul>
+<li>一元前缀操作：+ - !</li>
+<li>递增与递减：++ –</li>
+<li>二元操作：+ - * / % ..</li>
+<li>In操作：contains</li>
+<li>索引访问操作：get/set</li>
+<li>调用操作：invoke</li>
+<li>广义赋值：+= -+ *= /= %=</li>
+<li>相等与不等操作符：== !=</li>
+<li>比较操作符：&gt; &lt; &gt;= &lt;=</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Point</span></span>(<span class="keyword">val</span> x: <span class="built_in">Int</span>, <span class="keyword">val</span> y: <span class="built_in">Int</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> Point.<span class="title">unaryMinus</span><span class="params">()</span></span> = Point(-x, -y)</span><br><span class="line"><span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> Point.<span class="title">unaryPlus</span><span class="params">()</span></span> = Point(+x, +y)</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> point = Point(<span class="number">10</span>, <span class="number">20</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    println(-point)  <span class="comment">// prints &quot;Point(x=-10, y=-20)&quot;</span></span><br><span class="line">    println(+point)  <span class="comment">// prints &quot;Point(x=-10, y=-20)&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> listOf = listOf(<span class="string">&quot;深圳&quot;</span>, <span class="string">&quot;孟加拉&quot;</span>, <span class="string">&quot;拉斯维加斯&quot;</span>)</span><br><span class="line">    <span class="keyword">val</span> myCity = <span class="string">&quot;拉斯维加斯&quot;</span></span><br><span class="line">    println(myCity <span class="keyword">in</span> listOf)</span><br><span class="line"></span><br><span class="line">    println(listOf.<span class="keyword">get</span>(<span class="number">0</span>))</span><br><span class="line">    println(listOf[<span class="number">1</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-必须掌握的命令"><a href="#3-必须掌握的命令" class="headerlink" title="3. 必须掌握的命令"></a>3. 必须掌握的命令</h1><p><strong>javap [option] xxx.class</strong></p>
+<p>这个命令可以反编译一个class文件，可以方便的让我们知道Kt代码在编译以后处于怎样的状态，以及帮助我们分析自己的代码。</p>
+<ul>
+<li>-help  –help  -?        输出此用法消息</li>
+<li>-version                 版本信息</li>
+<li>-v  -verbose             输出附加信息</li>
+<li>-l                       输出行号和本地变量表</li>
+<li>-public                  仅显示公共类和成员</li>
+<li>-protected               显示受保护的/公共类和成员</li>
+<li>-package                 显示程序包/受保护的/公共类和成员 (默认)</li>
+<li>-p  -private             显示所有类和成员</li>
+<li><strong>-c</strong>                   对代码进行反汇编</li>
+<li>-s                       输出内部类型签名</li>
+<li>-sysinfo                 显示正在处理的类的系统信息 (路径, 大小, 日期, MD5 散列)</li>
+<li>-constants               显示最终常量</li>
+<li>-classpath <path>        指定查找用户类文件的位置</li>
+<li>-cp <path>               指定查找用户类文件的位置</li>
+<li>-bootclasspath <path>    覆盖引导类文件的位置</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/%E5%88%86%E4%BA%AB%E7%B3%BB%E5%88%97/" rel="tag"># 分享系列</a>
+              <a href="/iBlogWebsite/tags/Kotlin/" rel="tag"># Kotlin</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2019/05/07/2019/2019-05-07-Kotlin%E5%9F%BA%E7%A1%80%E5%85%A5%E9%97%A8/" rel="prev" title="Kotlin基础入门">
+      <i class="fa fa-chevron-left"></i> Kotlin基础入门
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2020/04/03/2020/2020-04-03-%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E8%AE%B0%E5%BD%951%EF%BC%9A%E5%85%B3%E4%BA%8EKotlin%20aar%E6%96%87%E4%BB%B6%E4%B8%8D%E8%83%BDdebug%E7%9A%84%E9%97%AE%E9%A2%98/" rel="next" title="疑难杂症记录1：关于Kotlin aar文件不能debug的问题">
+      疑难杂症记录1：关于Kotlin aar文件不能debug的问题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-number">1.</span> <span class="nav-text">1. 操作符</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E9%9B%86%E5%90%88%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 集合操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E4%BD%9C%E7%94%A8%E5%9F%9F%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 作用域函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 操作符的实现原理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">2. 高级特性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E8%A7%A3%E6%9E%84%E5%A3%B0%E6%98%8E"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 解构声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E4%B8%AD%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 中缀表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E7%9A%84%E7%89%B9%E6%AE%8A%E6%80%A7"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 内联函数的特殊性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E6%93%8D%E4%BD%9C%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 操作符重载</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E5%BF%85%E9%A1%BB%E6%8E%8C%E6%8F%A1%E7%9A%84%E5%91%BD%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">3. 必须掌握的命令</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Paint的效果：ColorMatrixColorFilter、PorterDuffXfermode ...">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android之自定义控件之画笔">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2016/01/20/2016/2016-01-20-Android%E4%B9%8B%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6%E4%B9%8B%E7%94%BB%E7%AC%94/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="Paint的效果：ColorMatrixColorFilter、PorterDuffXfermode ...">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/colormatrix_%E5%8F%98%E6%9A%97.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/colormatrix_%E5%8F%98%E7%81%B0.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/colormatrix_%E5%8F%8D%E7%9B%B8.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/colormatrix_%E7%BA%A2%E8%93%9D%E8%89%B2%E4%BA%92%E7%9B%B8%E5%8F%98%E6%8D%A2.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/colormatrix_%E8%80%81%E7%85%A7%E7%89%87.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/colormatrix_%E5%8E%BB%E8%89%B2%E5%90%8E%E9%AB%98%E5%BA%A6%E5%AF%B9%E6%AF%94.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/colormatrix_%E9%A5%B1%E5%92%8C%E5%BA%A6%E5%AF%B9%E6%AF%94%E5%BA%A6%E5%8A%A0%E5%BC%BA.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/lightcolorfilter.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/porterduffcolorfilter.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/porterduffxfermode2.jpg">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/porterduffxfermode.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/dst_in_%E7%BE%8E%E5%A5%B3%E7%BB%83%E4%B9%A0_%E5%89%8D.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/dst_in_%E7%BE%8E%E5%A5%B3%E7%BB%83%E4%B9%A0_%E5%90%8E.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/eraserview.png">
+<meta property="article:published_time" content="2016-01-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.312Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="自定义控件">
+<meta property="article:tag" content="Paint">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeeyou.github.io/iBlogWebsite/2016/images/githubpages/colormatrix_%E5%8F%98%E6%9A%97.png">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2016/01/20/2016/2016-01-20-Android%E4%B9%8B%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6%E4%B9%8B%E7%94%BB%E7%AC%94/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Android之自定义控件之画笔 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2016/01/20/2016/2016-01-20-Android%E4%B9%8B%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6%E4%B9%8B%E7%94%BB%E7%AC%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android之自定义控件之画笔
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-01-20 00:00:00" itemprop="dateCreated datePublished" datetime="2016-01-20T00:00:00+08:00">2016-01-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Paint的效果：ColorMatrixColorFilter、PorterDuffXfermode ...</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>踉踉跄跄中，终于完成了对Paint各种效果的练习。收获非常多，对于Paint的各种过滤和混合效果，不再那么含糊和模棱两可，同时加深了对于矩阵的理解。</p>
+<p>Demo中的各种示例均是在练习【aige】写的<a target="_blank" rel="noopener" href="http://blog.csdn.net/aigestudio/article/details/41316141">文章</a>的基础上进行的整理。<a target="_blank" rel="noopener" href="https://github.com/LeeeYou/DemoCustomView2">源码走你</a> 。 下面简单罗列下Demo中涉及到的知识点：</p>
+<h2 id="矩阵"><a href="#矩阵" class="headerlink" title="矩阵"></a>矩阵</h2><p>关于矩阵不清楚的童鞋可以转到<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%9F%A9%E9%98%B5">wiki</a></p>
+<h2 id="ColorMatrixColorFilter"><a href="#ColorMatrixColorFilter" class="headerlink" title="ColorMatrixColorFilter"></a>ColorMatrixColorFilter</h2><p>色彩矩阵过滤器，利用它可以实现很多美图秀秀中的效果，比如：变灰、变暗、颜色反转、老照片、高度对比等<br><img src="../../../../images/githubpages/colormatrix_%E5%8F%98%E6%9A%97.png" alt="变暗"><br><img src="../../../../images/githubpages/colormatrix_%E5%8F%98%E7%81%B0.png" alt="变灰"><br><img src="../../../../images/githubpages/colormatrix_%E5%8F%8D%E7%9B%B8.png" alt="反相效果"><br><img src="../../../../images/githubpages/colormatrix_%E7%BA%A2%E8%93%9D%E8%89%B2%E4%BA%92%E7%9B%B8%E5%8F%98%E6%8D%A2.png" alt="红蓝色相互变换"><br><img src="../../../../images/githubpages/colormatrix_%E8%80%81%E7%85%A7%E7%89%87.png" alt="老照片效果"><br><img src="../../../../images/githubpages/colormatrix_%E5%8E%BB%E8%89%B2%E5%90%8E%E9%AB%98%E5%BA%A6%E5%AF%B9%E6%AF%94.png" alt="去色后高度对比"><br><img src="../../../../images/githubpages/colormatrix_%E9%A5%B1%E5%92%8C%E5%BA%A6%E5%AF%B9%E6%AF%94%E5%BA%A6%E5%8A%A0%E5%BC%BA.png" alt="饱和度对比度加强"></p>
+<h2 id="LightingColorFilter"><a href="#LightingColorFilter" class="headerlink" title="LightingColorFilter"></a>LightingColorFilter</h2><p>光照颜色过滤器，利用它可以实现的效果就像有色光照在物体上染色一样。如过滤掉绿色：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mPaint.setColorFilter(<span class="keyword">new</span> LightingColorFilter(<span class="number">0xFFFF00FF</span>, <span class="number">0x00000000</span>));</span><br></pre></td></tr></table></figure>
+<p><img src="../../../../images/githubpages/lightcolorfilter.png" alt="lightcolorfilter"></p>
+<h2 id="PorterDuffColorFilter"><a href="#PorterDuffColorFilter" class="headerlink" title="PorterDuffColorFilter"></a>PorterDuffColorFilter</h2><p>混合颜色过滤器，可以通过指定一个颜色和一种模式，进行混合从而产生相应的效果。</p>
+<p>红色+加深 混合：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mPaint.setColorFilter(<span class="keyword">new</span> PorterDuffColorFilter(Color.RED, PorterDuff.Mode.DARKEN));</span><br></pre></td></tr></table></figure>
+<p><img src="../../../../images/githubpages/porterduffcolorfilter.png" alt="porterduffcolorfilter"></p>
+<h2 id="PorterDuffXfermode"><a href="#PorterDuffXfermode" class="headerlink" title="PorterDuffXfermode"></a>PorterDuffXfermode</h2><p>这个是 <strong>最重量级 最重量级 最重量级</strong> 的东东了。ProterDuff是两个人名的组合: Tomas Proter和 Tom Duff. 他们是最早在SIGGRAPH上提出图形混合概念的大神级人物。有兴趣的童靴们可以自己查下并深入了解，在此不再做过多描述。<br>PorterDuffXfermode是一个非常强大的转换模式，通过它可以使用图像合成的16条Porter-Duff规则的任意一条来控制Paint如何与已有的Canvas图像进行交互。<br><img src="../../../../images/githubpages/porterduffxfermode2.jpg" alt="PorterDuffXfermode"></p>
+<p>Demo中花了大量的篇幅练习和体会PorterDuffXfermode的强大，包括如下自定义view:  </p>
+<blockquote>
+<p>PorterDuffView :基本练习<br>DstInView：抠出美女轮廓<br>DstOutView：挖出美女轮廓<br>EraserView：橡皮擦练习</p>
+</blockquote>
+<p>基本练习<br><img src="../../../../images/githubpages/porterduffxfermode.png" alt="DST_IN效果"></p>
+<p>使用DST_IN抠出美女图像，去掉了周围的黄色和顶部的文字<br><img src="../../../../images/githubpages/dst_in_%E7%BE%8E%E5%A5%B3%E7%BB%83%E4%B9%A0_%E5%89%8D.png" alt="DST_IN美女练习前"><br><img src="../../../../images/githubpages/dst_in_%E7%BE%8E%E5%A5%B3%E7%BB%83%E4%B9%A0_%E5%90%8E.png" alt="DST_IN美女练习后"></p>
+<p>利用Path绘制路径，采用DST_IN混合模式，完成橡皮擦效果<br><img src="../../../../images/githubpages/eraserview.png" alt="eraserview"></p>
+<hr>
+<p>最后感谢<a target="_blank" rel="noopener" href="http://blog.csdn.net/aigestudio/article/details/41316141">【aige】</a> 的高质量文章</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Android/" rel="tag"># Android</a>
+              <a href="/iBlogWebsite/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/" rel="tag"># 自定义控件</a>
+              <a href="/iBlogWebsite/tags/Paint/" rel="tag"># Paint</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/01/11/2016/2016-01-11-Android%E4%B9%8B%E7%BB%98%E5%9B%BE%E5%9F%BA%E7%A1%80Path%E7%B1%BB/" rel="prev" title="Android之绘图基础Path类">
+      <i class="fa fa-chevron-left"></i> Android之绘图基础Path类
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/01/22/2016/2016-01-22-Android%E4%B9%8B%E5%BC%80%E5%8F%91%E4%B8%AD%E5%BF%85%E5%A4%87%E7%9A%84%E5%9D%90%E6%A0%87%E4%BD%93%E7%B3%BB%E7%9F%A5%E8%AF%86/" rel="next" title="Android之开发中必备的坐标体系知识">
+      Android之开发中必备的坐标体系知识 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5"><span class="nav-number">1.</span> <span class="nav-text">矩阵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ColorMatrixColorFilter"><span class="nav-number">2.</span> <span class="nav-text">ColorMatrixColorFilter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LightingColorFilter"><span class="nav-number">3.</span> <span class="nav-text">LightingColorFilter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PorterDuffColorFilter"><span class="nav-number">4.</span> <span class="nav-text">PorterDuffColorFilter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PorterDuffXfermode"><span class="nav-number">5.</span> <span class="nav-text">PorterDuffXfermode</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

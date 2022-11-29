@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 密码学的三大作用 加密：防止坏人获取你的数据 认证：防止坏人修改了你的数据而你却并没有发现 鉴权：防止坏人假冒你的身份  2. 数据摘要一个数据源进行一个算法之后得到一个摘要，也叫作数据指纹。著名的摘要算法有RSA公司的MD5算法和SHA-1算法及其大量的变体。 消息摘要的主要特点  无论输入的消息有多长，计算出来的消息摘要的长度总是固定的。例如应用MD5算法摘要的消息有128个比特位，用S">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据摘要、签名和证书，了解一下">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2017/01/06/2017/2017-01-06-%E6%95%B0%E6%8D%AE%E6%91%98%E8%A6%81%E3%80%81%E7%AD%BE%E5%90%8D%E5%92%8C%E8%AF%81%E4%B9%A6%EF%BC%8C%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8B/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="1. 密码学的三大作用 加密：防止坏人获取你的数据 认证：防止坏人修改了你的数据而你却并没有发现 鉴权：防止坏人假冒你的身份  2. 数据摘要一个数据源进行一个算法之后得到一个摘要，也叫作数据指纹。著名的摘要算法有RSA公司的MD5算法和SHA-1算法及其大量的变体。 消息摘要的主要特点  无论输入的消息有多长，计算出来的消息摘要的长度总是固定的。例如应用MD5算法摘要的消息有128个比特位，用S">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E5%92%8C%E7%AD%BE%E5%90%8D%E9%AA%8C%E8%AF%81%E7%9A%84%E5%A4%A7%E4%BD%93%E6%B5%81%E7%A8%8B.png">
+<meta property="article:published_time" content="2017-01-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.373Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="签名机制">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeeyou.github.io/images/githubpages/%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E5%92%8C%E7%AD%BE%E5%90%8D%E9%AA%8C%E8%AF%81%E7%9A%84%E5%A4%A7%E4%BD%93%E6%B5%81%E7%A8%8B.png">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2017/01/06/2017/2017-01-06-%E6%95%B0%E6%8D%AE%E6%91%98%E8%A6%81%E3%80%81%E7%AD%BE%E5%90%8D%E5%92%8C%E8%AF%81%E4%B9%A6%EF%BC%8C%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>数据摘要、签名和证书，了解一下 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2017/01/06/2017/2017-01-06-%E6%95%B0%E6%8D%AE%E6%91%98%E8%A6%81%E3%80%81%E7%AD%BE%E5%90%8D%E5%92%8C%E8%AF%81%E4%B9%A6%EF%BC%8C%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据摘要、签名和证书，了解一下
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-01-06 00:00:00" itemprop="dateCreated datePublished" datetime="2017-01-06T00:00:00+08:00">2017-01-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-密码学的三大作用"><a href="#1-密码学的三大作用" class="headerlink" title="1. 密码学的三大作用"></a>1. 密码学的三大作用</h1><ol>
+<li>加密：防止坏人获取你的数据</li>
+<li>认证：防止坏人修改了你的数据而你却并没有发现</li>
+<li>鉴权：防止坏人假冒你的身份</li>
+</ol>
+<h1 id="2-数据摘要"><a href="#2-数据摘要" class="headerlink" title="2. 数据摘要"></a>2. 数据摘要</h1><p>一个数据源进行一个算法之后得到一个摘要，也叫作数据指纹。著名的摘要算法有RSA公司的MD5算法和SHA-1算法及其大量的变体。</p>
+<p>消息摘要的主要特点</p>
+<ul>
+<li>无论输入的消息有多长，计算出来的消息摘要的长度总是固定的。例如应用MD5算法摘要的消息有128个比特位，用SHA-1算法摘要的消息最终有160比特位的输出。</li>
+<li>一般来说（不考虑碰撞的情况下），只要输入的原始数据不同，对其进行摘要以后产生的消息摘要也必不相同，即使原始数据稍有改变，输出的消息摘要便完全不同。但是，相同的输入必会产生相同的输出。</li>
+<li>具有不可逆性，即只能进行正向的信息摘要，而无法从摘要中恢复出任何的原始消息。</li>
+</ul>
+<p>下面是Java中采用MD5和SHA-1进行摘要计算的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.other;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.UnsupportedEncodingException;</span><br><span class="line"><span class="keyword">import</span> java.math.BigInteger;</span><br><span class="line"><span class="keyword">import</span> java.security.MessageDigest;</span><br><span class="line"><span class="keyword">import</span> java.security.NoSuchAlgorithmException;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestDigitalSummary</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String s1 = <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">        String s2 = <span class="string">&quot;curriculum&quot;</span>;</span><br><span class="line"></span><br><span class="line">        md5(<span class="keyword">null</span>);</span><br><span class="line">        md5(s1);</span><br><span class="line">        md5(s2);</span><br><span class="line"></span><br><span class="line">        sha1(<span class="keyword">null</span>);</span><br><span class="line">        sha1(s1);</span><br><span class="line">        sha1(s2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">md5</span><span class="params">(String plainText)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (plainText == <span class="keyword">null</span> || plainText.length() == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            MessageDigest md5 = MessageDigest.getInstance(<span class="string">&quot;md5&quot;</span>);</span><br><span class="line">            md5.reset();</span><br><span class="line">            md5.update(plainText.getBytes(<span class="string">&quot;UTF-8&quot;</span>));</span><br><span class="line">            <span class="keyword">byte</span>[] digestByteArray = md5.digest();</span><br><span class="line">            System.out.println(<span class="string">&quot;the plain text is : &quot;</span> + plainText);</span><br><span class="line">            System.out.println(<span class="string">&quot;the length is : &quot;</span> + digestByteArray.length);<span class="comment">//16 bytes represent 128 bits</span></span><br><span class="line">            System.out.println(<span class="string">&quot;the plain byte array is : &quot;</span> + Arrays.toString(digestByteArray));</span><br><span class="line">            System.out.println(<span class="string">&quot;the digital summary after md5 is : &quot;</span> + byteArrayTo32Md5String(digestByteArray));</span><br><span class="line">            System.out.println();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException | UnsupportedEncodingException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">byteArrayTo32Md5String</span><span class="params">(<span class="keyword">byte</span>[] byteArray)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (byteArray == <span class="keyword">null</span> || byteArray.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        BigInteger bigInteger = <span class="keyword">new</span> BigInteger(<span class="number">1</span>, byteArray);</span><br><span class="line">        StringBuilder s = <span class="keyword">new</span> StringBuilder(bigInteger.toString(<span class="number">16</span>));</span><br><span class="line">        <span class="keyword">while</span> (s.length() &lt; <span class="number">32</span>) &#123;</span><br><span class="line">            s.append(<span class="string">&quot;0&quot;</span>).append(s);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> s.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sha1</span><span class="params">(String plainText)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (plainText == <span class="keyword">null</span> || plainText.length() == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            MessageDigest sha1 = MessageDigest.getInstance(<span class="string">&quot;SHA-1&quot;</span>);</span><br><span class="line">            sha1.reset();</span><br><span class="line">            sha1.update(plainText.getBytes(<span class="string">&quot;UTF-8&quot;</span>));</span><br><span class="line">            <span class="keyword">byte</span>[] digestByteArray = sha1.digest();</span><br><span class="line">            System.out.println(<span class="string">&quot;the plain text is : &quot;</span> + plainText);</span><br><span class="line">            System.out.println(<span class="string">&quot;the length is : &quot;</span> + digestByteArray.length);<span class="comment">//20 bytes represent 128 bits</span></span><br><span class="line">            System.out.println(<span class="string">&quot;the plain byte array is : &quot;</span> + Arrays.toString(digestByteArray));</span><br><span class="line">            System.out.println(<span class="string">&quot;the digital summary after SHA-1 is : &quot;</span> + byteArrayToSha1String(digestByteArray));</span><br><span class="line">            System.out.println();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException | UnsupportedEncodingException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">byteArrayToSha1String</span><span class="params">(<span class="keyword">byte</span>[] byteArray)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (byteArray == <span class="keyword">null</span> || byteArray.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        BigInteger bigInteger = <span class="keyword">new</span> BigInteger(<span class="number">1</span>, byteArray);</span><br><span class="line">        <span class="keyword">return</span> bigInteger.toString(<span class="number">16</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其结果如下所示，可以看到md5之后得到了一个长度为32的字符串，而byte数组的长度是16，即128比特。而SHA-1之后得到了一个长度为40的字符串，而byte数组的长度为20，即160比特。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">the plain text is : abc</span><br><span class="line">the length is : <span class="number">16</span></span><br><span class="line">the plain <span class="keyword">byte</span> array is : [-<span class="number">112</span>, <span class="number">1</span>, <span class="number">80</span>, -<span class="number">104</span>, <span class="number">60</span>, -<span class="number">46</span>, <span class="number">79</span>, -<span class="number">80</span>, -<span class="number">42</span>, -<span class="number">106</span>, <span class="number">63</span>, <span class="number">125</span>, <span class="number">40</span>, -<span class="number">31</span>, <span class="number">127</span>, <span class="number">114</span>]</span><br><span class="line">the digital summary after md5 is : 900150983cd24fb0d6963f7d28e17f72</span><br><span class="line"></span><br><span class="line">the plain text is : curriculum</span><br><span class="line">the length is : <span class="number">16</span></span><br><span class="line">the plain <span class="keyword">byte</span> array is : [-<span class="number">69</span>, <span class="number">99</span>, <span class="number">119</span>, <span class="number">60</span>, -<span class="number">83</span>, -<span class="number">105</span>, -<span class="number">1</span>, -<span class="number">49</span>, -<span class="number">45</span>, -<span class="number">97</span>, <span class="number">92</span>, -<span class="number">4</span>, <span class="number">102</span>, -<span class="number">19</span>, <span class="number">18</span>, -<span class="number">26</span>]</span><br><span class="line">the digital summary after md5 is : bb63773cad97ffcfd39f5cfc66ed12e6</span><br><span class="line"></span><br><span class="line">the plain text is : abc</span><br><span class="line">the length is : <span class="number">20</span></span><br><span class="line">the plain <span class="keyword">byte</span> array is : [-<span class="number">87</span>, -<span class="number">103</span>, <span class="number">62</span>, <span class="number">54</span>, <span class="number">71</span>, <span class="number">6</span>, -<span class="number">127</span>, <span class="number">106</span>, -<span class="number">70</span>, <span class="number">62</span>, <span class="number">37</span>, <span class="number">113</span>, <span class="number">120</span>, <span class="number">80</span>, -<span class="number">62</span>, <span class="number">108</span>, -<span class="number">100</span>, -<span class="number">48</span>, -<span class="number">40</span>, -<span class="number">99</span>]</span><br><span class="line">the digital summary after SHA-<span class="number">1</span> is : a9993e364706816aba3e25717850c26c9cd0d89d</span><br><span class="line"></span><br><span class="line">the plain text is : curriculum</span><br><span class="line">the length is : <span class="number">20</span></span><br><span class="line">the plain <span class="keyword">byte</span> array is : [<span class="number">74</span>, <span class="number">19</span>, <span class="number">10</span>, -<span class="number">20</span>, <span class="number">7</span>, <span class="number">4</span>, -<span class="number">59</span>, -<span class="number">94</span>, -<span class="number">113</span>, -<span class="number">70</span>, <span class="number">8</span>, -<span class="number">111</span>, <span class="number">127</span>, <span class="number">3</span>, <span class="number">40</span>, <span class="number">21</span>, -<span class="number">54</span>, -<span class="number">35</span>, -<span class="number">85</span>, -<span class="number">14</span>]</span><br><span class="line">the digital summary after SHA-<span class="number">1</span> is : 4a130aec0704c5a28fba08917f032815caddabf2</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-签名文件和证书"><a href="#3-签名文件和证书" class="headerlink" title="3. 签名文件和证书"></a>3. 签名文件和证书</h1><p>要确保通信安全，需要确保两个问题：① 要确定<strong>消息的来源</strong>确实是其申明的那个人，② 要保证信息在传递的过程中<strong>不被第三方篡改，即使被篡改了，也可以发觉出来</strong>。</p>
+<p>对于消息的发送者来说，先要生成一对公私钥对，将公钥给消息的接收者。</p>
+<p>发送方：发送者发消息给接收者，对要发送的原始消息提取<strong>消息摘要</strong>，对提取的<strong>消息摘要</strong>用自己的私钥加密，这里就是原始信息的<strong>数字签名</strong>。<br>接收方：对原始消息部分提取<strong>消息摘要</strong>，注意这里使用的消息摘要算法要和发送方使用的一致；对附加上的那段<strong>数字签名</strong>，使用预先得到的公钥解密；比较前两步所得到的两段消息是否一致。如果一致，则表明消息确实是期望的发送者发的，且内容没有被篡改过；相反，如果不一致，则表明传送的过程中一定出了问题，消息不可信。</p>
+<p>通过这种所谓的数字签名技术，确实可以有效解决可靠通信的问题。如果原始消息在传送的过程中被篡改了，那么在接收者那里，对被篡改的消息提取的<strong>消息摘要</strong>肯定和原始的不一样。并且，由于篡改者没有消息发送方的私钥，即使他可以重新算出被篡改消息的摘要，也不能伪造出<strong>数字签名</strong>。</p>
+<p>数字签名和签名验证的大体流程</p>
+<p><img src="/images/githubpages/%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E5%92%8C%E7%AD%BE%E5%90%8D%E9%AA%8C%E8%AF%81%E7%9A%84%E5%A4%A7%E4%BD%93%E6%B5%81%E7%A8%8B.png" alt="数字签名和签名验证的大体流程"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/%E7%AD%BE%E5%90%8D%E6%9C%BA%E5%88%B6/" rel="tag"># 签名机制</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2017/01/04/2017/2017-01-04-Android%E4%B9%8B%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%95%B4%E7%90%86/" rel="prev" title="Android之性能优化整理">
+      <i class="fa fa-chevron-left"></i> Android之性能优化整理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2017/01/16/2017/2017-01-16-%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%AE%97%E6%B3%95%EF%BC%8C%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8B/" rel="next" title="加解密算法，了解一下">
+      加解密算法，了解一下 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%AF%86%E7%A0%81%E5%AD%A6%E7%9A%84%E4%B8%89%E5%A4%A7%E4%BD%9C%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">1. 密码学的三大作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%95%B0%E6%8D%AE%E6%91%98%E8%A6%81"><span class="nav-number">2.</span> <span class="nav-text">2. 数据摘要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E7%AD%BE%E5%90%8D%E6%96%87%E4%BB%B6%E5%92%8C%E8%AF%81%E4%B9%A6"><span class="nav-number">3.</span> <span class="nav-text">3. 签名文件和证书</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

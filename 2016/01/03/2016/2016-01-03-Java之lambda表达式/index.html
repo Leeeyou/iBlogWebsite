@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="还不知道Lambda!?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java之Lambda表达式">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2016/01/03/2016/2016-01-03-Java%E4%B9%8Blambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="还不知道Lambda!?">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-01-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.308Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Lambda">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2016/01/03/2016/2016-01-03-Java%E4%B9%8Blambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Java之Lambda表达式 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2016/01/03/2016/2016-01-03-Java%E4%B9%8Blambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java之Lambda表达式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-01-03 00:00:00" itemprop="dateCreated datePublished" datetime="2016-01-03T00:00:00+08:00">2016-01-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">还不知道Lambda!?</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Lambda表达式的引入给开发者带来了不少优点：在Java8之前，匿名内部类，监听器和事件处理器的使用都显得很冗长，代码可读性差，Lambda表达式的应用使代码变得紧凑，可读性增强，同时 <strong>Lambda表达式使并行操作大集合变得很方便，可以充分发挥多核 CPU 的优势，更易于为多核处理器编写代码。</strong><br>官方文档：<a target="_blank" rel="noopener" href="http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html#overview">http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html#overview</a></p>
+<h2 id="Lambda表达式的基本组成"><a href="#Lambda表达式的基本组成" class="headerlink" title="Lambda表达式的基本组成"></a>Lambda表达式的基本组成</h2><p>Lambda表达式由三个部分组成：<br>第一部分为一个括号内用逗号分隔的形式参数，参数是函数式接口里面方法的参数<br>第二部分为一个箭头符号：-&gt;<br>第三部分为方法体，可以是表达式和代码块  </p>
+<blockquote>
+<ol>
+<li>方法体为表达式，该表达式的值作为返回值返回。</li>
+</ol>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(parameters) -&gt; expression</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol start="2">
+<li>方法体为代码块，必须用 {} 来包裹起来，且需要一个 return 返回值，如果函数式接口里面方法返回值是 void，则无需返回值。  </li>
+</ol>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(parameters) -&gt; &#123; statements; &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="函数式通用接口"><a href="#函数式通用接口" class="headerlink" title="函数式通用接口"></a>函数式通用接口</h2><p>下面是用匿名内部类的示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">button.addActionListener(<span class="keyword">new</span> ActionListener() &#123;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">actionPerformed</span><span class="params">(ActionEvent e)</span> </span>&#123;</span><br><span class="line">    System.out.print(<span class="string">&quot;Helllo Lambda in actionPerformed&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>下面是使用 Lambda 表达式后：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">button.addActionListener((ActionEvent e)-&gt;</span><br><span class="line">    System.out.print(<span class="string">&quot;Helllo Lambda in actionPerformed&quot;</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>从上面两段代码可以看出，要使用Lambda表达式，需要定义一个函数式接口(类似ActionListener)，这样往往会让程序充斥着过量的仅为Lambda表达式服务的函数式接口。为了减少这样过量的函数式接口，Java8在 <strong><a target="_blank" rel="noopener" href="https://developer.android.com/reference/java/util/function/package-summary.html">java.util.function</a></strong> 中增加了不少新的函数式通用接口。  </p>
+<blockquote>
+<p>Function&lt;T, R&gt;：将 T 作为输入，返回 R 作为输出，他还包含了和其他函数组合的默认方法。<br>Predicate<T> ：将 T 作为输入，返回一个布尔值作为输出，该接口包含多种默认方法来将Predicate组合成其他复杂的逻辑（与、或、非）。<br>Consumer<T> ：将 T 作为输入，不返回任何内容，表示在单个参数上的操作。  </p>
+</blockquote>
+<p>例如 People 类中有一个方法 getMaleList 需要获取男性的列表，这里需要定义一个函数式接口 PersonInterface：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">PersonInterface</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">test</span><span class="params">(Person person)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">People</span> </span>&#123;</span><br><span class="line"> <span class="keyword">private</span> List&lt;Person&gt; persons= <span class="keyword">new</span> ArrayList&lt;Person&gt;();</span><br><span class="line"> <span class="function"><span class="keyword">public</span> List&lt;Person&gt; <span class="title">getMaleList</span><span class="params">(PersonInterface filter)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"> List&lt;Person&gt; res = <span class="keyword">new</span> ArrayList&lt;Person&gt;();</span><br><span class="line"></span><br><span class="line"> persons.forEach(</span><br><span class="line"> (Person person) -&gt;</span><br><span class="line">  &#123;</span><br><span class="line">   <span class="keyword">if</span> (filter.test(person)) &#123;<span class="comment">//调用 PersonInterface 的方法</span></span><br><span class="line">     res.add(person);</span><br><span class="line">  &#125;</span><br><span class="line"> &#125;);</span><br><span class="line"></span><br><span class="line"> <span class="keyword">return</span> res;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">为了去除 PersonInterface 这个函数式接口，可以用通用函数式接口 Predicate 替代如下：</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">People2</span></span>&#123;</span><br><span class="line"> <span class="keyword">private</span> List&lt;Person&gt; persons= <span class="keyword">new</span> ArrayList&lt;Person&gt;();</span><br><span class="line"> <span class="function"><span class="keyword">public</span> List&lt;Person&gt; <span class="title">getMaleList</span><span class="params">(Predicate&lt;Person&gt; predicate)</span> </span>&#123;</span><br><span class="line"> List&lt;Person&gt; res = <span class="keyword">new</span> ArrayList&lt;Person&gt;();</span><br><span class="line"> persons.forEach(</span><br><span class="line"></span><br><span class="line"> person -&gt; &#123;</span><br><span class="line">   <span class="keyword">if</span> (predicate.test(person)) &#123;<span class="comment">//调用 Predicate 的抽象方法 test</span></span><br><span class="line">     res.add(person);</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;);</span><br><span class="line"></span><br><span class="line"> <span class="keyword">return</span> res;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="集合的流式操作"><a href="#集合的流式操作" class="headerlink" title="集合的流式操作"></a>集合的流式操作</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lambda;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestPredicate</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        List&lt;Person&gt; mPerson = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">            Person p = <span class="keyword">new</span> Person();</span><br><span class="line">            p.setAge(i);</span><br><span class="line">            p.setName(<span class="string">&quot;person num&quot;</span> + i);</span><br><span class="line">            mPerson.add(p);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Predicate&lt;Person&gt; mPredicate = person -&gt; person.getAge()&gt;25;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//过滤年龄大于25岁，姓名包含&quot;8&quot;的用户，并且按照姓名降序排列，将符合条件的每个用户打印出来</span></span><br><span class="line">        mPerson.stream()</span><br><span class="line">                .filter(person -&gt; person.getAge() &gt; <span class="number">25</span>)</span><br><span class="line">                .filter(person -&gt; person.getName().contains(<span class="string">&quot;8&quot;</span>))</span><br><span class="line">                .sorted((Person p1, Person p2) -&gt; p2.getName().compareTo(p1.getName()))<span class="comment">//name Desc</span></span><br><span class="line">                .forEach(p -&gt; System.out.println(<span class="string">&quot;年龄：&quot;</span> + p.getAge() + <span class="string">&quot; \t姓名：&quot;</span> + p.getName()));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>集合的流式操作和函数式编程非常相似，配合上面讲到的Lambda表达式以及其中的Predicate和Consumer，可以用简短的几行代码写出复杂的过滤条件来过滤集合数据。<br>感觉使用过之后，一个字：真爽！  </p>
+<p>Java8引入了流式操作（Stream），通过该操作可以实现对集合（Collection）的并行处理和函数式操作。<strong>根据操作返回的结果不同，流式操作分为中间操作和最终操作两种。</strong> 最终操作返回特定类型的结果，而中间操作返回流本身，这样就可以将多个操作依次串联起来。根据流的并发性，流又可以分为串行和并行两种。流式操作实现了集合的过滤、排序、映射等功能。<br></p>
+<p>另外，Stream 和 Collection 集合的区别：Collection 是一种静态的内存数据结构，而 Stream 是有关计算的。前者是主要面向内存，存储在内存中，后者主要是面向 CPU，通过 CPU 实现计算。<br></p>
+<h3 id="串行和并行的流"><a href="#串行和并行的流" class="headerlink" title="串行和并行的流"></a>串行和并行的流</h3><p>流有串行和并行两种，串行流上的操作在一个线程中依次完成，而并行流则是在多个线程上同时执行。并行与串行的流可以相互切换：通过stream.sequential()返回串行的流，通过stream.parallel()返回并行的流。<strong>相比较串行的流，并行的流可以很大程度上提高程序的执行效率。</strong> 下面是分别用串行和并行的方式对集合进行排序。  </p>
+<h4 id="串行排序"><a href="#串行排序" class="headerlink" title="串行排序"></a>串行排序</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000000</span>;i++)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">double</span> d = Math.random()*<span class="number">1000</span>;</span><br><span class="line">  list.add(d+<span class="string">&quot;&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">long</span> start = System.nanoTime();<span class="comment">//获取系统开始排序的时间点</span></span><br><span class="line"><span class="keyword">int</span> count= (<span class="keyword">int</span>) ((Stream) list.stream().sequential()).sorted().count();</span><br><span class="line"><span class="keyword">long</span> end = System.nanoTime();<span class="comment">//获取系统结束排序的时间点</span></span><br><span class="line"><span class="keyword">long</span> ms = TimeUnit.NANOSECONDS.toMillis(end-start);<span class="comment">//得到串行排序所用的时间</span></span><br><span class="line">System.out.println(ms+”ms”);</span><br></pre></td></tr></table></figure>
+
+<h4 id="并行排序"><a href="#并行排序" class="headerlink" title="并行排序"></a>并行排序</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000000</span>;i++)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">double</span> d = Math.random()*<span class="number">1000</span>;</span><br><span class="line">  list.add(d+<span class="string">&quot;&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">long</span> start = System.nanoTime();<span class="comment">//获取系统开始排序的时间点</span></span><br><span class="line"><span class="keyword">int</span> count = (<span class="keyword">int</span>)((Stream) list.stream().parallel()).sorted().count();</span><br><span class="line"><span class="keyword">long</span> end = System.nanoTime();<span class="comment">//获取系统结束排序的时间点</span></span><br><span class="line"><span class="keyword">long</span> ms = TimeUnit.NANOSECONDS.toMillis(end-start);<span class="comment">//得到并行排序所用的时间</span></span><br><span class="line">System.out.println(ms+”ms”);</span><br></pre></td></tr></table></figure>
+<p>串行输出为 1200ms，并行输出为 800ms,可见并行排序的时间相比较串行排序时间要少很多。</p>
+<h3 id="中间操作"><a href="#中间操作" class="headerlink" title="中间操作"></a>中间操作</h3><p>该操作会保持stream处于中间状态，允许做进一步的操作。它返回的还是的Stream，允许更多的链式操作。常见的中间操作有：<br>filter()：对元素进行过滤<br>sorted()：对元素排序<br>map()：元素的映射<br>distinct()：去除重复元素<br>subStream()：获取子 Stream 等  </p>
+<h3 id="终止操作"><a href="#终止操作" class="headerlink" title="终止操作"></a>终止操作</h3><p>该操作必须是流的最后一个操作，一旦被调用，Stream 就到了一个终止状态，而且不能再使用了。常见的终止操作有：<br>forEach()：对每个元素做处理<br>toArray()：把元素导出到数组<br>findFirst()：返回第一个匹配的元素<br>anyMatch()：是否有匹配的元素等  </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Java/" rel="tag"># Java</a>
+              <a href="/iBlogWebsite/tags/Lambda/" rel="tag"># Lambda</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/01/02/2016/2016-01-02-%E4%BD%8D%E3%80%81%E5%AD%97%E8%8A%82%E3%80%81%E8%BF%9B%E5%88%B6%E7%9A%84%E5%85%B3%E7%B3%BB/" rel="prev" title="位、字节、进制的关系">
+      <i class="fa fa-chevron-left"></i> 位、字节、进制的关系
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/01/04/2016/2016-01-04-Android%E4%B9%8BDrawable%E3%80%81Bitmap%E3%80%81Canvas%E3%80%81Paint%E4%B9%8B%E9%97%B4%E5%8C%BA%E5%88%AB/" rel="next" title="Android之Drawable、Bitmap、Canvas、Paint之间区别">
+      Android之Drawable、Bitmap、Canvas、Paint之间区别 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lambda%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%84%E6%88%90"><span class="nav-number">1.</span> <span class="nav-text">Lambda表达式的基本组成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%BC%8F%E9%80%9A%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.</span> <span class="nav-text">函数式通用接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E5%90%88%E7%9A%84%E6%B5%81%E5%BC%8F%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">集合的流式操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%B2%E8%A1%8C%E5%92%8C%E5%B9%B6%E8%A1%8C%E7%9A%84%E6%B5%81"><span class="nav-number">3.1.</span> <span class="nav-text">串行和并行的流</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%B2%E8%A1%8C%E6%8E%92%E5%BA%8F"><span class="nav-number">3.1.1.</span> <span class="nav-text">串行排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B9%B6%E8%A1%8C%E6%8E%92%E5%BA%8F"><span class="nav-number">3.1.2.</span> <span class="nav-text">并行排序</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E9%97%B4%E6%93%8D%E4%BD%9C"><span class="nav-number">3.2.</span> <span class="nav-text">中间操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%88%E6%AD%A2%E6%93%8D%E4%BD%9C"><span class="nav-number">3.3.</span> <span class="nav-text">终止操作</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

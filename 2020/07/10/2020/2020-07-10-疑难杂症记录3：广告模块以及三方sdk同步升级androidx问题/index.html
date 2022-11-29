@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 现象广告模块引入了很多三方sdk，这里的问题体现在google的admob上，期望是将admob升级到18.3.0版本，结果主工程中由于引入了firebase，具体来讲就是admob和firebase都引入了google的基础服务gms，但版本没统一导致了Duplicate class的错误。 2. 解决过程2.1 先处理广告SDK问题期望将admob升级到18.3.0版本 1com.go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="疑难杂症记录3：广告模块以及三方sdk同步升级androidx问题">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2020/07/10/2020/2020-07-10-%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E8%AE%B0%E5%BD%953%EF%BC%9A%E5%B9%BF%E5%91%8A%E6%A8%A1%E5%9D%97%E4%BB%A5%E5%8F%8A%E4%B8%89%E6%96%B9sdk%E5%90%8C%E6%AD%A5%E5%8D%87%E7%BA%A7androidx%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="1. 现象广告模块引入了很多三方sdk，这里的问题体现在google的admob上，期望是将admob升级到18.3.0版本，结果主工程中由于引入了firebase，具体来讲就是admob和firebase都引入了google的基础服务gms，但版本没统一导致了Duplicate class的错误。 2. 解决过程2.1 先处理广告SDK问题期望将admob升级到18.3.0版本 1com.go">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/wallpaper/2020-07-10.jpg?raw=true">
+<meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-ad-androidx-synchronization-third-sdk.png?raw=true">
+<meta property="article:published_time" content="2020-07-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.419Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="疑难杂症">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/Leeeyou/blog/blob/master/images/2020/wallpaper/2020-07-10.jpg?raw=true">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2020/07/10/2020/2020-07-10-%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E8%AE%B0%E5%BD%953%EF%BC%9A%E5%B9%BF%E5%91%8A%E6%A8%A1%E5%9D%97%E4%BB%A5%E5%8F%8A%E4%B8%89%E6%96%B9sdk%E5%90%8C%E6%AD%A5%E5%8D%87%E7%BA%A7androidx%E9%97%AE%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>疑难杂症记录3：广告模块以及三方sdk同步升级androidx问题 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2020/07/10/2020/2020-07-10-%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E8%AE%B0%E5%BD%953%EF%BC%9A%E5%B9%BF%E5%91%8A%E6%A8%A1%E5%9D%97%E4%BB%A5%E5%8F%8A%E4%B8%89%E6%96%B9sdk%E5%90%8C%E6%AD%A5%E5%8D%87%E7%BA%A7androidx%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          疑难杂症记录3：广告模块以及三方sdk同步升级androidx问题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-10 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-10T00:00:00+08:00">2020-07-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/wallpaper/2020-07-10.jpg?raw=true" alt="2020-07-10"></p>
+<h1 id="1-现象"><a href="#1-现象" class="headerlink" title="1. 现象"></a>1. 现象</h1><p>广告模块引入了很多三方sdk，这里的问题体现在google的admob上，期望是将admob升级到18.3.0版本，结果主工程中由于引入了firebase，具体来讲就是admob和firebase都引入了google的基础服务gms，但版本没统一导致了Duplicate class的错误。</p>
+<h1 id="2-解决过程"><a href="#2-解决过程" class="headerlink" title="2. 解决过程"></a>2. 解决过程</h1><h2 id="2-1-先处理广告SDK问题"><a href="#2-1-先处理广告SDK问题" class="headerlink" title="2.1 先处理广告SDK问题"></a>2.1 先处理广告SDK问题</h2><p>期望将admob升级到18.3.0版本</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.google.android.gms:play-services-ads:18.3.0</span><br></pre></td></tr></table></figure>
+<p>这个版本里面使用了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.google.android.gms:play-services-measurement-base:17.1.0</span><br></pre></td></tr></table></figure>
+
+<p>我们项目中还使用了两个google的服务框架，分别如下（已是最高版本了）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">com.google.android.gms:play-services-gcm:17.0.0</span><br><span class="line">com.google.firebase:firebase-core:17.0.0</span><br></pre></td></tr></table></figure>
+
+<p>这两个包里面使用了com.google.android.gms:play-services-measurement-base:17.0.0，导致工程现在编译时报错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Duplicate class com.google.android.gms.internal.measurement.zzio found <span class="keyword">in</span> modules classes.jar (com.google.android.gms:play-services-measurement-base:17.1.0) and classes.jar (com.google.android.gms:play-services-measurement:17.0.0)</span><br></pre></td></tr></table></figure>
+
+<p>解决方法：将admob18.3.0降到18.0.0，因为这个版本里面是play-services-measurement-base:17.0.0</p>
+<span id="more"></span>
+
+<h2 id="2-2-再处理主工程中的问题"><a href="#2-2-再处理主工程中的问题" class="headerlink" title="2.2 再处理主工程中的问题"></a>2.2 再处理主工程中的问题</h2><p>上面已经定调了admob使用18.0.0，内部的play-services-measurement-base是17.0.0，更内部的firebase-iid是19.0.0。这个依赖是确定下来的了。</p>
+<p>而在主工程中报错日志如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">In project <span class="string">&#x27;app&#x27;</span> a resolved Google Play services library dependency depends on another at an exact version (e.g. <span class="string">&quot;[17.0.4]&quot;</span>, but isn<span class="string">&#x27;t being resolved to that version. Behavior exhibited by the library will be unknown.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Dependency failing: com.google.firebase:firebase-messaging:17.3.4 -&gt; com.google.firebase:firebase-iid@[17.0.4], but firebase-iid version was 19.0.0.</span></span><br></pre></td></tr></table></figure>
+
+<p>日志中说的也很清楚了，要将firebase-iid 17.0.4 升级到 19.0.0。下面要解决的问题是将com.google.firebase:firebase-messaging:17.3.4这个升级到内部依赖了firebase-iid version19.0.0的版本，通过在 <a target="_blank" rel="noopener" href="https://mvnrepository.com/">https://mvnrepository.com/</a> 上查询搜索关键词：firebase-messaging，定位到firebase-messaging:19.0.0内部依赖了firebase-iid version19.0.0，那么在主工程中将firebase-messaging升级到19.0.0就将问题解决了。</p>
+<p><img src="https://github.com/Leeeyou/blog/blob/master/images/2020/code/record-ad-androidx-synchronization-third-sdk.png?raw=true" alt="record-ad-androidx-synchronization-third-sdk"></p>
+<h1 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a>3. 总结</h1><p>说实话，google下面的各类服务框架包纷繁复杂，版本又不统一，在同时引入多个google的服务框架时势必会遇到这种问题，那么后续解决该类问题的思路是怎样呢？<strong>总的思路是：先定一个核心服务的目标版本，然后其他服务适配该核心服务版本。</strong>比如确定了要将admob升级到18.3.0，那么非核心的服务就需要将其内部依赖的paly-service-base保持一致，基本上就不出现Duplicate class的问题。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" rel="tag"># 疑难杂症</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2020/07/08/2020/2020-07-08-%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87%E8%AE%B0%E5%BD%952%EF%BC%9A%E5%9C%A8%E7%BC%93%E5%AD%98%E5%A5%BD%E4%B8%A4%E4%B8%AAmtg%E6%8F%92%E5%B1%8F%E5%B9%BF%E5%91%8A%E5%90%8E%EF%BC%8C%E6%98%BE%E7%A4%BA%E9%98%B6%E6%AE%B5%E6%8A%A5%E9%94%99/" rel="prev" title="疑难杂症记录2：在缓存好两个mtg插屏广告后，显示阶段报错isNotReady">
+      <i class="fa fa-chevron-left"></i> 疑难杂症记录2：在缓存好两个mtg插屏广告后，显示阶段报错isNotReady
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2020/07/12/2020/2020-07-12-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8BKotlin%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B/" rel="next" title="读书笔记之《Kotlin核心编程》">
+      读书笔记之《Kotlin核心编程》 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%8E%B0%E8%B1%A1"><span class="nav-number">1.</span> <span class="nav-text">1. 现象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E8%A7%A3%E5%86%B3%E8%BF%87%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">2. 解决过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E5%85%88%E5%A4%84%E7%90%86%E5%B9%BF%E5%91%8ASDK%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 先处理广告SDK问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E5%86%8D%E5%A4%84%E7%90%86%E4%B8%BB%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 再处理主工程中的问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">3. 总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

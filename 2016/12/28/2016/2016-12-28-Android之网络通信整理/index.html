@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="花了将近7、8个小时粗略整理了自己遇到的一些关于网络通信的问题，也算是对这一大块内容的一个交代。这节的内容非常多，主要包括如下几个主题：网络各层的结构、TCP和UDP、Http协议的理解和用法、Socket编程、以及一些扩展，包括访问一个网页的流程、ping的整个过程等。当然一些常见的问题：三次握手四次挥手以及Socket与Http、Socket与TCP&#x2F;IP的纠缠在文档中都有说明。 1. 网络各">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android之网络通信整理">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2016/12/28/2016/2016-12-28-Android%E4%B9%8B%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%95%B4%E7%90%86/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="花了将近7、8个小时粗略整理了自己遇到的一些关于网络通信的问题，也算是对这一大块内容的一个交代。这节的内容非常多，主要包括如下几个主题：网络各层的结构、TCP和UDP、Http协议的理解和用法、Socket编程、以及一些扩展，包括访问一个网页的流程、ping的整个过程等。当然一些常见的问题：三次握手四次挥手以及Socket与Http、Socket与TCP&#x2F;IP的纠缠在文档中都有说明。 1. 网络各">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/tcp%E6%8A%A5%E6%96%87%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E7%A4%BA%E6%84%8F.jpg">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%A4%BA%E6%84%8F.jpg">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6.jpg">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95%E7%A4%BA%E6%84%8F.jpg">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E5%BF%AB%E6%81%A2%E5%A4%8D%E7%AE%97%E6%B3%95%E7%A4%BA%E6%84%8F.jpg">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87.jpg">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E5%93%8D%E5%BA%94%E6%8A%A5%E6%96%87.jpg">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/http%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3%E8%AF%B7%E6%B1%82%E5%A4%B4.png">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6.png">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/icmp%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F.jpg">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E5%B7%AE%E9%94%99%E9%80%9A%E7%9F%A5%E5%92%8C%E4%BF%A1%E6%81%AF%E6%9F%A5%E8%AF%A2.jpg">
+<meta property="og:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/ping%E5%91%BD%E4%BB%A4.jpg">
+<meta property="article:published_time" content="2016-12-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.335Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="知识汇总">
+<meta property="article:tag" content="网络通信">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeeyou.github.io/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/tcp%E6%8A%A5%E6%96%87%E7%BB%93%E6%9E%84.jpg">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2016/12/28/2016/2016-12-28-Android%E4%B9%8B%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%95%B4%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Android之网络通信整理 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2016/12/28/2016/2016-12-28-Android%E4%B9%8B%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%95%B4%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android之网络通信整理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-12-28 00:00:00" itemprop="dateCreated datePublished" datetime="2016-12-28T00:00:00+08:00">2016-12-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>花了将近7、8个小时粗略整理了自己遇到的一些关于网络通信的问题，也算是对这一大块内容的一个交代。这节的内容非常多，主要包括如下几个主题：网络各层的结构、TCP和UDP、Http协议的理解和用法、Socket编程、以及一些扩展，包括访问一个网页的流程、ping的整个过程等。当然一些常见的问题：三次握手四次挥手以及Socket与Http、Socket与TCP/IP的纠缠在文档中都有说明。</p>
+<h1 id="1-网络各层的结构"><a href="#1-网络各层的结构" class="headerlink" title="1. 网络各层的结构"></a>1. 网络各层的结构</h1><h2 id="1-1-OSI模型"><a href="#1-1-OSI模型" class="headerlink" title="1.1. OSI模型"></a>1.1. OSI模型</h2><p>物理层、数据链路层、网络层、传输层、会话层、表示层、应用层</p>
+<h2 id="1-2-层模型"><a href="#1-2-层模型" class="headerlink" title="1.2. 层模型"></a>1.2. 层模型</h2><p>1.2.1 物理层、数据链路层、网络层、运输层、 应用层</p>
+<h2 id="1-3-各层协议与作用"><a href="#1-3-各层协议与作用" class="headerlink" title="1.3. 各层协议与作用"></a>1.3. 各层协议与作用</h2><p>物理层</p>
+<ul>
+<li>RJ45、CLOCK、IEEE802.3 （中继器，集线器，网关）</li>
+<li>通过媒介传输比特,确定机械及电气规范（比特Bit）</li>
+</ul>
+<p>数据链路</p>
+<ul>
+<li>PPP、FR、HDLC、VLAN、MAC  （网桥，交换机）</li>
+<li>将比特组装成帧和点到点的传递（帧Frame）</li>
+</ul>
+<p>网络层</p>
+<ul>
+<li>IP、ICMP、ARP、RARP、OSPF、IPX、RIP、IGRP、 （路由器）</li>
+<li>负责数据包从源到宿的传递和网际互连（包PackeT）</li>
+</ul>
+<p>传输层</p>
+<ul>
+<li>TCP、UDP、SPX</li>
+<li>提供端到端的可靠报文传递和错误恢复（段Segment）</li>
+</ul>
+<p>会话层</p>
+<ul>
+<li>NFS、SQL、NETBIOS、RPC</li>
+<li>建立、管理和终止会话（会话协议数据单元SPDU）</li>
+</ul>
+<p>表示层</p>
+<ul>
+<li>JPEG、MPEG、ASII</li>
+<li>对数据进行翻译、加密和压缩（表示协议数据单元PPDU）</li>
+</ul>
+<p>应用层</p>
+<ul>
+<li>FTP、DNS、Telnet、SMTP、HTTP、WWW、NFS</li>
+<li>允许访问OSI环境的手段（应用协议数据单元APDU）</li>
+</ul>
+<h1 id="2-UDP协议"><a href="#2-UDP协议" class="headerlink" title="2. UDP协议"></a>2. UDP协议</h1><h1 id="3-TCP协议"><a href="#3-TCP协议" class="headerlink" title="3. TCP协议"></a>3. TCP协议</h1><h2 id="3-1-TCP-UDP的区别"><a href="#3-1-TCP-UDP的区别" class="headerlink" title="3.1. TCP/UDP的区别"></a>3.1. TCP/UDP的区别</h2><ul>
+<li><p>TCP提供面向连接的、可靠的数据流传输，而UDP提供的是非面向连接的、不可靠的数据流传输。TCP需要建立连接，而UDP不需要建立连接（无连接传输）</p>
+</li>
+<li><p>TCP传输单位称为TCP报文段，UDP传输单位称为用户数据报。</p>
+</li>
+<li><p>是否建立真实连接的特性，造成了双方可靠性的差距。</p>
+<ul>
+<li><p>TCP属于可靠的传输协议：因为传输前双方建立好了连接，相当于买卖双方建立好了交易合同，传输中一般不会出现意外，直到连接终止；</p>
+</li>
+<li><p>UDP属于不可靠的传输协议：UDP的所谓连接相当于一种映射，UDP单方面的认为目标地址（端口）是可用的，从而进行收发数据，而实际上目标地址（端口）未必可用，所以传输数据不可靠</p>
+</li>
+</ul>
+</li>
+<li><p>由于TCP需要建立真实的连接，所以需要消耗服务器的负载要大于UDP</p>
+</li>
+</ul>
+<h2 id="3-2-TCP报文结构"><a href="#3-2-TCP报文结构" class="headerlink" title="3.2. TCP报文结构"></a>3.2. TCP报文结构</h2><p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/tcp%E6%8A%A5%E6%96%87%E7%BB%93%E6%9E%84.jpg" alt="tcp报文结构"></p>
+<p>源端口、目标端口</p>
+<ul>
+<li>计算机上的进程要和其他进程通信是要通过计算机端口的，而一个计算机端口某个时刻只能被一个进程占用，所以通过指定源端口和目标端口，就可以知道是哪两个进程需要通信。源端口、目标端口是用16位表示的，可推算计算机的端口个数为2^16个。</li>
+</ul>
+<p>序列号</p>
+<ul>
+<li><p>表示本报文段所发送数据的第一个字节的编号。在TCP连接中所传送的字节流的每一个字节都会按顺序编号。由于序列号由32位表示，所以每2^32个字节，就会出现序列号回绕，再次从 0 开始。</p>
+</li>
+<li><p>那如何区分两个相同序列号的不同TCP报文段就是一个问题了，后面会有答案，暂时可以不管。</p>
+</li>
+</ul>
+<p>确认号</p>
+<ul>
+<li>表示接收方期望收到发送方下一个报文段的第一个字节数据的编号。也就是告诉发送发：我希望你（指发送方）下次发送的数据的第一个字节数据的编号是这个确认号。也就是告诉发送方：我希望你（指发送方）下次发送给我的TCP报文段的序列号字段的值是这个确认号。</li>
+</ul>
+<p>TCP首部长度</p>
+<ul>
+<li>由于TCP首部包含一个长度可变的选项部分，所以需要这么一个值来指定这个TCP报文段到底有多长。或者可以这么理解：就是表示TCP报文段中数据部分在整个TCP报文段中的位置。该字段的单位是32位字，即：4个字节。</li>
+</ul>
+<p>URG</p>
+<ul>
+<li>表示本报文段中发送的数据是否包含紧急数据。URG=1，表示有紧急数据。后面的紧急指针字段只有当URG=1时才有效。</li>
+</ul>
+<p>ACK</p>
+<ul>
+<li>表示是否前面的确认号字段是否有效。ACK=1，表示有效。只有当ACK=1时，前面的确认号字段才有效。TCP规定，连接建立后，ACK必须为1。</li>
+</ul>
+<p>PSH</p>
+<ul>
+<li>告诉对方收到该报文段后是否应该立即把数据推送给上层。如果为1，则表示对方应当立即把数据提交给上层，而不是缓存起来。</li>
+</ul>
+<p>RST</p>
+<ul>
+<li>只有当RST=1时才有用。如果你收到一个RST=1的报文，说明你与主机的连接出现了严重错误（如主机崩溃），必须释放连接，然后再重新建立连接。或者说明你上次发送给主机的数据有问题，主机拒绝响应。</li>
+</ul>
+<p>SYN</p>
+<ul>
+<li>在建立连接时使用，用来同步序号。当SYN=1，ACK=0时，表示这是一个请求建立连接的报文段；当SYN=1，ACK=1时，表示对方同意建立连接。SYN=1，说明这是一个请求建立连接或同意建立连接的报文。只有在前两次握手中SYN才置为1。</li>
+</ul>
+<p>FIN</p>
+<ul>
+<li>标记数据是否发送完毕。如果FIN=1，就相当于告诉对方：“我的数据已经发送完毕，你可以释放连接了”</li>
+</ul>
+<p>窗口大小</p>
+<ul>
+<li>表示现在运行对方发送的数据量。也就是告诉对方，从本报文段的确认号开始允许对方发送的数据量。</li>
+</ul>
+<p>校验和</p>
+<ul>
+<li>提供额外的可靠性。具体如何校验，参考其他资料。</li>
+</ul>
+<p>紧急指针</p>
+<ul>
+<li>标记紧急数据在数据字段中的位置。</li>
+</ul>
+<p>选项部分</p>
+<ul>
+<li>其最大长度可根据TCP首部长度进行推算。TCP首部长度用4位表示，那么选项部分最长为：(2^4-1)*4-20=40字节。</li>
+</ul>
+<h2 id="3-3-三次握手"><a href="#3-3-三次握手" class="headerlink" title="3.3. 三次握手"></a>3.3. 三次握手</h2><ul>
+<li><p>第一次握手：Client将标志位SYN置为1，随机产生一个值seq=J，并将该数据包发送给Server，Client进入SYN_SENT状态，等待Server确认。</p>
+</li>
+<li><p>第二次握手：Server收到数据包后由标志位SYN=1知道Client请求建立连接，Server将标志位SYN和ACK都置为1，ack=J+1，随机产生一个值seq=K，并将该数据包发送给Client以确认连接请求，Server进入SYN_RCVD状态。</p>
+</li>
+<li><p>第三次握手：Client收到确认后，检查ack是否为J+1，ACK是否为1，如果正确则将标志位ACK置为1，ack=K+1，并将该数据包发送给Server，Server检查ack是否为K+1，ACK是否为1，如果正确则连接建立成功，Client和Server进入ESTABLISHED状态，完成三次握手，随后Client与Server之间可以开始传输数据了。</p>
+</li>
+</ul>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E7%A4%BA%E6%84%8F.jpg" alt="三次握手示意"></p>
+<ul>
+<li><p>SYN攻击</p>
+<ul>
+<li><p>在三次握手过程中，Server发送SYN-ACK之后，收到Client的ACK之前的TCP连接称为半连接（half-open connect），此时Server处于SYN_RCVD状态，当收到ACK后，Server转入ESTABLISHED状态。</p>
+</li>
+<li><p>SYN攻击就是Client在短时间内伪造大量不存在的IP地址，并向Server不断地发送SYN包，Server回复确认包，并等待Client的确认，由于源地址是不存在的，因此，Server需要不断重发直至超时，这些伪造的SYN包将产时间占用未连接队列，导致正常的SYN请求因为队列满而被丢弃，从而引起网络堵塞甚至系统瘫痪。</p>
+</li>
+<li><p>SYN攻击时一种典型的DDOS攻击，检测SYN攻击的方式非常简单，即当Server上有大量半连接状态且源IP地址是随机的，则可以断定遭到SYN攻击了，使用如下命令可以让之现行：#netstat -nap | grep SYN_RECV</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-4-四次挥手"><a href="#3-4-四次挥手" class="headerlink" title="3.4. 四次挥手"></a>3.4. 四次挥手</h2><ul>
+<li><p>第一次挥手：Client发送一个FIN，用来关闭Client到Server的数据传送，Client进入FIN_WAIT_1状态。</p>
+</li>
+<li><p>第二次挥手：Server收到FIN后，发送一个ACK给Client，确认序号为收到序号+1（与SYN相同，一个FIN占用一个序号），Server进入CLOSE_WAIT状态。</p>
+</li>
+<li><p>第三次挥手：Server发送一个FIN，用来关闭Server到Client的数据传送，Server进入LAST_ACK状态。</p>
+</li>
+<li><p>第四次挥手：Client收到FIN后，Client进入TIME_WAIT状态，接着发送一个ACK给Server，确认序号为收到序号+1，Server进入CLOSED状态，完成四次挥手。</p>
+</li>
+<li><p>由于TCP连接是全双工的，因此每个方向都必须要单独进行关闭，这一原则是当一方完成数据发送任务后，发送一个FIN来终止这一方向的连接，收到一个FIN只是意味着这一方向上没有数据流动了，即不会再收到数据了，但是在这个TCP连接上仍然能够发送数据，直到这一方向也发送了FIN。首先进行关闭的一方将执行主动关闭，而另一方则执行被动关闭。</p>
+</li>
+</ul>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%A4%BA%E6%84%8F.jpg" alt="四次挥手示意"></p>
+<p>为什么建立连接是三次而关闭连接却要四次呢？</p>
+<ul>
+<li>这是因为服务端在LISTEN状态下，收到建立连接请求的SYN报文后，把ACK和SYN放在一个报文里发送给客户端。而关闭连接时，当收到对方的FIN报文时，仅仅表示对方不再发送数据了但是还能接收数据，己方也未必全部数据都发送给对方了，所以己方可以立即close，也可以发送一些数据给对方后，再发送FIN报文给对方来表示同意现在关闭连接，因此，己方ACK和FIN一般都会分开发送。</li>
+</ul>
+<h2 id="3-5-流量控制"><a href="#3-5-流量控制" class="headerlink" title="3.5. 流量控制"></a>3.5. 流量控制</h2><p>如果发送方把数据发送得过快，接收方可能会来不及接收，这就会造成数据的丢失。所谓流量控制就是让发送方的发送速率不要太快，要让接收方来得及接收。</p>
+<p>设A向B发送数据。在连接建立时，B告诉了A：“我的接收窗口是 rwnd = 400 ”(这里的 rwnd 表示 receiver window) 。因此，发送方的发送窗口不能超过接收方给出的接收窗口的数值。请注意，TCP的窗口单位是字节，不<br>是报文段。TCP连接建立时的窗口协商过程在图中没有显示出来。再设每一个报文段为100字节长，而数据报文段序号的初始值设为1。大写ACK表示首部中的确认位ACK，小写ack表示确认字段的值ack。</p>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6.jpg" alt="流量控制"></p>
+<p>从图中可以看出，B进行了三次流量控制。第一次把窗口减少到 rwnd = 300 ，第二次又减到了 rwnd = 100 ，最后减到 rwnd = 0 ，即不允许发送方再发送数据了。这种使发送方暂停发送的状态将持续到主机B重新发出一个新的窗口值为止。B向A发送的三个报文段都设置了 ACK = 1 ，只有在ACK=1时确认号字段才有意义。</p>
+<p>TCP为每一个连接设有一个持续计时器(persistence timer)。只要TCP连接的一方收到对方的零窗口通知，就启动持续计时器。若持续计时器设置的时间到期，就发送一个零窗口控测报文段（携1字节的数据），那么收到这个报文段的一方就重新设置持续计时器。</p>
+<h2 id="3-6-拥塞控制"><a href="#3-6-拥塞控制" class="headerlink" title="3.6. 拥塞控制"></a>3.6. 拥塞控制</h2><p>拥塞</p>
+<ul>
+<li>即对资源的需求超过了可用的资源。若网络中许多资源同时供应不足，网络的性能就要明显变坏，整个网络的吞吐量随之负荷的增大而下降。</li>
+</ul>
+<p>拥塞控制</p>
+<ul>
+<li>防止过多的数据注入到网络中，这样可以使网络中的路由器或链路不致过载。拥塞控制所要做的都有一个前提：网络能够承受现有的网络负荷。拥塞控制是一个全局性的过程，涉及到所有的主机、路由器，以及与降低网络传输性能有关的所有因素。</li>
+</ul>
+<p>流量控制</p>
+<ul>
+<li>指点对点通信量的控制，是端到端正的问题。流量控制所要做的就是抑制发送端发送数据的速率，以便使接收端来得及接收。</li>
+</ul>
+<p>拥塞控制代价</p>
+<ul>
+<li>需要获得网络内部流量分布的信息。在实施拥塞控制之前，还需要在结点之间交换信息和各种命令，以便选择控制的策略和实施控制。这样就产生了额外的开销。拥塞控制还需要将一些资源分配给各个用户单独使用，使得网络资源不能更好地实现共享。</li>
+</ul>
+<p>几种拥塞控制方法</p>
+<ul>
+<li><p>慢开始算法</p>
+<ul>
+<li>当主机开始发送数据时，如果立即所大量数据字节注入到网络，那么就有可能引起网络拥塞，因为现在并不清楚网络的负荷情况。因此，较好的方法是先探测一下，即由小到大逐渐增大发送窗口，也就是说，由小到大逐渐增大拥塞窗口数值。通常在刚刚开始发送报文段时，先把拥塞窗口 cwnd 设置为一个最大报文段MSS的数值。而在每收到一个对新的报文段的确认后，把拥塞窗口增加至多一个MSS的数值。用这样的方法逐步增大发送方的拥塞窗口 cwnd ，可以使分组注入到网络的速率更加合理。</li>
+</ul>
+</li>
+<li><p>拥塞控制算法</p>
+<ul>
+<li><p>当TCP连接进行初始化时，把拥塞窗口cwnd置为1。前面已说过，为了便于理解，图中的窗口单位不使用字节而使用报文段的个数。慢开始门限的初始值设置为16个报文段，即 cwnd = 16 。</p>
+</li>
+<li><p>在执行慢开始算法时，拥塞窗口 cwnd 的初始值为1。以后发送方每收到一个对新报文段的确认ACK，就把拥塞窗口值另1，然后开始下一轮的传输（图中横坐标为传输轮次）。因此拥塞窗口cwnd随着传输轮次按指数规律增长。当拥塞窗口cwnd 增长到慢开始门限值ssthresh时（即当cwnd=16时），就改为执行拥塞控制算法，拥塞窗口按线性规律增长。</p>
+</li>
+<li><p>假定拥塞窗口的数值增长到24时，网络出现超时（这很可能就是网络发生拥塞了）。更新后的ssthresh值变为12（即变为出现超时时的拥塞窗口数值24的一半），拥塞窗口再重新设置为1，并执行慢开始算法。当cwnd=ssthresh=12时改为执行拥塞避免算法，拥塞窗口按线性规律增长，每经过一个往返时间增加一个MSS的大小。</p>
+</li>
+<li><p>强调：“拥塞避免”并非指完全能够避免了拥塞。利用以上的措施要完全避免网络拥塞还是不可能的。“拥塞避免”是说在拥塞避免阶段将拥塞窗口控制为按线性规律增长，使网络比较不容易出现拥塞。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95%E7%A4%BA%E6%84%8F.jpg" alt="拥塞控制算法示意"></p>
+<ul>
+<li><p>快重传算法</p>
+<ul>
+<li>如果发送方设置的超时计时器时限已到但还没有收到确认，那么很可能是网络出现了拥塞，致使报文段在网络中的某处被丢弃。这时，TCP马上把拥塞窗口 cwnd 减小到1，并执行慢开始算法，同时把慢开始门限值ssthresh减半。这是不使用快重传的情况。快重传算法首先要求接收方每收到一个失序的报文段后就立即发出重复确认（为的是使发送方及早知道有报文段没有到达对方）而不要等到自己发送数据时才进行捎带确认。</li>
+</ul>
+</li>
+<li><p>快恢复算法</p>
+<ul>
+<li><p>当发送方连续收到三个重复确认，就执行“乘法减小”算法，把慢开始门限ssthresh减半。这是为了预防网络发生拥塞。请注意：接下去不执行慢开始算法。</p>
+</li>
+<li><p>由于发送方现在认为网络很可能没有发生拥塞，因此与慢开始不同之处是现在不执行慢开始算法（即拥塞窗口cwnd现在不设置为1），而是把cwnd值设置为慢开始门限ssthresh减半后的数值，然后开始执行拥塞避免算法（“加法增大”），使拥塞窗口缓慢地线性增大。下图给出了快重传和快恢复的示意图，并标明了“TCP Reno版本”。区别：新的 TCP Reno 版本在快重传之后采用快恢复算法而不是采用慢开始算法。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E5%BF%AB%E6%81%A2%E5%A4%8D%E7%AE%97%E6%B3%95%E7%A4%BA%E6%84%8F.jpg" alt="快恢复算法示意"></p>
+<ul>
+<li><p>发送方维持一个拥塞窗口 cwnd ( congestion window )的状态变量。拥塞窗口的大小取决于网络的拥塞程度，并且动态地在变化。发送方让自己的发送窗口等于拥塞。</p>
+</li>
+<li><p>发送方控制拥塞窗口的原则是：只要网络没有出现拥塞，拥塞窗口就再增大一些，以便把更多的分组发送出去。但只要网络出现拥塞，拥塞窗口就减小一些，以减少注入到网络中的分组数。</p>
+</li>
+</ul>
+<h1 id="4-Http协议"><a href="#4-Http协议" class="headerlink" title="4. Http协议"></a>4. Http协议</h1><h2 id="4-1-报文结构"><a href="#4-1-报文结构" class="headerlink" title="4.1. 报文结构"></a>4.1. 报文结构</h2><p>请求报文</p>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87.jpg" alt="请求报文"></p>
+<p>响应报文</p>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E5%93%8D%E5%BA%94%E6%8A%A5%E6%96%87.jpg" alt="响应报文"></p>
+<h2 id="4-2-状态说明"><a href="#4-2-状态说明" class="headerlink" title="4.2. 状态说明"></a>4.2. 状态说明</h2><p>状态代码有三位数字组成，第一个数字定义了响应的类别，且有五种可能取值</p>
+<ul>
+<li>100~199：指示信息，表示请求已接收，继续处理</li>
+<li>200~299：请求成功，表示请求已被成功接收、理解、接受</li>
+<li>300~399：重定向，要完成请求必须进行更进一步的操作</li>
+<li>400~499：客户端错误，请求有语法错误或请求无法实现</li>
+<li>500~599：服务器端错误，服务器未能实现合法的请求</li>
+</ul>
+<p>常见的状态码如下</p>
+<ul>
+<li>200 OK 客户端请求成功</li>
+<li>400 Bad Request 客户端请求有语法错误，不能被服务器所理解</li>
+<li>401 Unauthorized 请求未经授权，这个状态代码必须和WWW-Authenticate报头域一起使用</li>
+<li>403 Forbidden 服务器收到请求，但是拒绝提供服务</li>
+<li>500 Internal Server Error 服务器发生不可预期的错误</li>
+<li>503 Server Unavailable 服务器当前不能处理客户端的请求，一段时间后可能恢复正常</li>
+</ul>
+<h2 id="4-3-Request的几种类型"><a href="#4-3-Request的几种类型" class="headerlink" title="4.3. Request的几种类型"></a>4.3. Request的几种类型</h2><p>OPTIONS</p>
+<ul>
+<li>返回服务器针对特定资源所支持的HTTP请求方法。也可以利用向Web服务器发送’*’的请求来测试服务器的功能性。</li>
+</ul>
+<p>HEAD</p>
+<ul>
+<li>向服务器索要与GET请求相一致的响应，只不过响应体将不会被返回。这一方法可以在不必传输整个响应内容的情况下，就可以获取包含在响应消息头中的元信息。</li>
+</ul>
+<p>GET</p>
+<ul>
+<li>向特定的资源发出请求。</li>
+</ul>
+<p>POST</p>
+<ul>
+<li>向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST请求可能会导致新的资源的创建和 / 或已有资源的修改。</li>
+</ul>
+<p>PUT</p>
+<ul>
+<li>向指定资源位置上传其最新内容。</li>
+</ul>
+<p>DELETE</p>
+<ul>
+<li>请求服务器删除Request-URI所标识的资源。</li>
+</ul>
+<p>TRACE</p>
+<ul>
+<li>回显服务器收到的请求，主要用于测试或诊断。</li>
+</ul>
+<h2 id="4-4-Http1-1和Http1-0的区别"><a href="#4-4-Http1-1和Http1-0的区别" class="headerlink" title="4.4. Http1.1和Http1.0的区别"></a>4.4. Http1.1和Http1.0的区别</h2><p>HTTP连接最显著的特点是客户端发送的每次请求都需要服务器回送响应，在请求结束后，会主动释放连接。从建立连接到关闭连接的过程称为“一次连接”。</p>
+<ul>
+<li><p>HTTP 1.0规定浏览器与服务器只保持短暂的连接，而HTTP 1.1 支持长连接。</p>
+<ul>
+<li><p>在HTTP 1.0中，客户端的每次请求都要求建立一次单独的连接，在处理完本次请求后，就自动释放连接。</p>
+</li>
+<li><p>在HTTP 1.1中则可以在一次连接中处理多个请求，并且多个请求可以重叠进行，不需要等待一个请求结束后再发送下一个请求。</p>
+</li>
+</ul>
+</li>
+<li><p>HTTP 1.1支持持久连接，在一个TCP连接上可以传送多个HTTP请求和响应，减少了建立和关闭连接的消耗和延迟。HTTP1.1还允许客户端不用等待上一次请求结果返回，就可以发出下一次请求，但服务器端必须按照接收到客户端请求的先后顺序依次回送响应结果，以保证客户端能够区分出每次请求的响应内容，这样也显著地减少了整个下载过程所需要的时间。</p>
+</li>
+<li><p>HTTP 1.1还提供了与身份认证、状态管理和Cache缓存等机制相关的请求头和响应头。</p>
+</li>
+<li><p>HTTP 1.1中增加Host请求头字段后，WEB浏览器可以使用主机头名来明确表示要访问服务器上的哪个WEB站点，这才实现了在一台WEB服务器上可以在同一个IP地址和端口号上使用不同的主机名来创建多个虚拟WEB站点。</p>
+</li>
+</ul>
+<h2 id="4-5-Http怎么处理长连接"><a href="#4-5-Http怎么处理长连接" class="headerlink" title="4.5. Http怎么处理长连接"></a>4.5. Http怎么处理长连接</h2><p>http长连接即持久连接是http1.1版本的一个特性，即一个http连接建立完成一个请求-回应后，可以不需要立刻关闭，可以重复使用。http的长连接是可以发送多个请求而不用等待每个响应的。</p>
+<h2 id="4-6-HTTP缓存机制"><a href="#4-6-HTTP缓存机制" class="headerlink" title="4.6. HTTP缓存机制"></a>4.6. HTTP缓存机制</h2><p>缓存对于移动端是非常重要的存在。</p>
+<p>优点</p>
+<ul>
+<li>减少请求次数，减小服务器压力.</li>
+<li>本地数据读取速度更快，让页面不会空白几百毫秒。</li>
+<li>在无网络的情况下提供数据。</li>
+</ul>
+<p>具体实施</p>
+<ul>
+<li>缓存一般由服务器控制(通过某些方式可以本地控制缓存，比如向过滤器添加缓存控制信息)。</li>
+</ul>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/http%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3%E8%AF%B7%E6%B1%82%E5%A4%B4.png" alt="http缓存相关请求头"></p>
+<ul>
+<li>客户端发起请求的时候要检查缓存。遵循下面步骤，注意服务器返回304意思是数据没有变动滚去读缓存信息。</li>
+</ul>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6.png" alt="浏览器缓存机制"></p>
+<h1 id="5-Socket"><a href="#5-Socket" class="headerlink" title="5. Socket"></a>5. Socket</h1><h2 id="5-1-套接字的概念"><a href="#5-1-套接字的概念" class="headerlink" title="5.1. 套接字的概念"></a>5.1. 套接字的概念</h2><p>套接字（socket）是通信的基石，是支持TCP/IP协议的网络通信的基本操作单元。它是网络通信过程中端点的抽象表示，包含进行网络通信必须的五种信息：连接使用的协议，本地主机的IP地址，本地进程的协议端口，远地主机的IP地址，远地进程的协议端口。</p>
+<p>应用层通过传输层进行数据通信时，TCP会遇到同时为多个应用程序进程提供并发服务的问题。多个TCP连接或多个应用程序进程可能需要通过同一个TCP协议端口传输数据。为了区别不同的应用程序进程和连接，许多计算机操作系统为应用程序与TCP／IP协议交互提供了套接字(Socket)接口。应用层可以和传输层通过Socket接口，区分来自不同应用程序进程或网络连接的通信，实现数据传输的并发服务。</p>
+<h2 id="5-2-建立socket连接"><a href="#5-2-建立socket连接" class="headerlink" title="5.2. 建立socket连接"></a>5.2. 建立socket连接</h2><p>建立Socket连接至少需要一对套接字，其中一个运行于客户端，称为ClientSocket ，另一个运行于服务器端，称为ServerSocket 。套接字之间的连接过程分为三个步骤：服务器监听，客户端请求，连接确认。</p>
+<p>服务器监听：服务器端套接字并不定位具体的客户端套接字，而是处于等待连接的状态，实时监控网络状态，等待客户端的连接请求。</p>
+<p>客户端请求：指客户端的套接字提出连接请求，要连接的目标是服务器端的套接字。为此，客户端的套接字必须首先描述它要连接的服务器的套接字，指出服务器端套接字的地址和端口号，然后就向服务器端套接字提出连接请求。</p>
+<p>连接确认：当服务器端套接字监听到或者说接收到客户端套接字的连接请求时，就响应客户端套接字的请求，建立一个新的线程，把服务器端套接字的描述发给客户端，一旦客户端确认了此描述，双方就正式建立连接。而服务器端套接字继续处于监听状态，继续接收其他客户端套接字的连接请求。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 与服务端建立Socket连接</span></span><br><span class="line">Socket client = <span class="keyword">new</span> Socket(GlobalParams.HOST, GlobalParams.PORT);</span><br><span class="line">Log.e(TAG, <span class="string">&quot;开始发送Socket请求&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 往服务端写数据</span></span><br><span class="line">writer = <span class="keyword">new</span> PrintWriter(client.getOutputStream());</span><br><span class="line">writer.write(packageJSON());<span class="comment">// 将封装好的 JSON传递到服务端</span></span><br><span class="line">writer.flush();<span class="comment">// 字节流需要flush</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取服务端传回的数据</span></span><br><span class="line"><span class="keyword">if</span> (client.isConnected()) &#123;</span><br><span class="line">  Log.e(TAG, <span class="string">&quot;socket已连接成功&quot;</span>)</span><br><span class="line">  reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(client.getInputStream()));</span><br><span class="line">  String line = <span class="keyword">null</span>;</span><br><span class="line">  <span class="keyword">while</span> ((line = reader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">    Log.e(TAG, <span class="string">&quot;接收到了服务端传来的数据：&quot;</span> + line + <span class="string">&quot;----长度：&quot;</span> + line.length());</span><br><span class="line">    result.append(line);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">IOUtils.close(reader, writer);</span><br><span class="line">client.close();</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-3-短线重连怎么实现"><a href="#5-3-短线重连怎么实现" class="headerlink" title="5.3. 短线重连怎么实现"></a>5.3. 短线重连怎么实现</h2><p>利用心跳检测客户端是否与服务端连接正常，如断开了就发起重连</p>
+<h2 id="5-4-心跳机制又是怎样实现"><a href="#5-4-心跳机制又是怎样实现" class="headerlink" title="5.4. 心跳机制又是怎样实现"></a>5.4. 心跳机制又是怎样实现</h2><p>介绍</p>
+<ul>
+<li><p>心跳信息是单方向的，只有终端发到应用服务器；</p>
+</li>
+<li><p>心跳信息的周期比较长，比如旧版QQ的心跳周期为30s，新版QQ为180s，微信为300s，Google原生应用为1680s左右。</p>
+</li>
+<li><p>另外，互联网应用的心跳包除了宣告终端在线外，还有一项重要的任务，就是提供终端的即时地址，方便应用服务器的寻址。</p>
+</li>
+<li><p>有了互联网应用的心跳机制，应用服务器可以及时下发(Push)用户相关的信息，比如微信中的短消息、图片或者语音等。</p>
+</li>
+<li><p>心跳包也会带来很多副作用，比如终端更为费电，还可能给移动通信网络带来信令风暴。</p>
+</li>
+</ul>
+<p>实现</p>
+<ul>
+<li><p>轮询：定时去server查询数据</p>
+</li>
+<li><p>推送：使用XMPP长连接</p>
+</li>
+</ul>
+<p>移动无线网络的特点</p>
+<ul>
+<li><p>因IPv4的数量有限，运营商分配给手机终端的 IP 是运营商内网的 IP，手机要连接 Internet，就需要通过运营商的网关做一个网络地址转换（Network Address Translation，NAT）。简单的说运营商的网关需要维护一个外网 IP、端口到内网 IP、端口的对应关系，以确保内网的手机可以跟 Internet 的服务器通讯</p>
+</li>
+<li><p>我们知道移动端要和Internet进行通信，必须通过运营商的网关，所以，为了不让NAT映射表失效，我们需要定时向Internet发送数据，因为只是为了不然NAT映射表失效，所以只需发送长度为0的数据即可。</p>
+</li>
+</ul>
+<h1 id="6-扩展"><a href="#6-扩展" class="headerlink" title="6. 扩展"></a>6. 扩展</h1><h2 id="6-1-Socket、TCP-IP与HTTP"><a href="#6-1-Socket、TCP-IP与HTTP" class="headerlink" title="6.1. Socket、TCP/IP与HTTP"></a>6.1. Socket、TCP/IP与HTTP</h2><h3 id="6-1-1-Socket连接与TCP-IP连接"><a href="#6-1-1-Socket连接与TCP-IP连接" class="headerlink" title="6.1.1. Socket连接与TCP/IP连接"></a>6.1.1. Socket连接与TCP/IP连接</h3><p>创建Socket连接时，可以指定使用的传输层协议，Socket可以支持不同的传输层协议（TCP或UDP），当使用TCP协议进行连接时，该Socket连接就是一个TCP连接。</p>
+<p>Socket是对TCP/IP协议的封装和应用（程序员层面上）。也可以说，TPC/IP协议是传输层协议，主要解决数据如何在网络中传输，而HTTP是应用层协议，主要解决如何包装数据。</p>
+<p>我们在传输数据时，可以只使用（传输层）TCP/IP协议，但是那样的话，如果没有应用层，便无法识别数据内容，如果想要使传输的数据有意义，则必须使用到应用层协议，应用层协议有很多，比如HTTP、FTP、TELNET等，也可以自己定义应用层协议。WEB使用HTTP协议作应用层协议，以封装HTTP文本信息，然后使用TCP/IP做传输层协议将它发到网络上。</p>
+<p>实际上socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个调用接口（API），通过Socket我们才能使用TCP/IP协议。Socket跟TCP/IP协议没有必然的联系。Socket编程接口在设计的时候，就希望也能适应其他的网络协议。所以说，Socket的出现只是使得程序员更方便地使用TCP/IP协议栈而已，是对TCP/IP协议的抽象，从而形成了我们知道的一些最基本的函数接口，比如create、listen、connect、accept、send、read和write等等。</p>
+<p>实际上，传输层的TCP是基于网络层的IP协议的，而应用层的HTTP协议又是基于传输层的TCP协议的，而Socket本身不算是协议，就像上面所说，它只是提供了一个针对TCP或者UDP编程的接口。Socket是对端口通信开发的工具,它要更底层一些。</p>
+<h3 id="6-1-2-Socket连接与HTTP连接"><a href="#6-1-2-Socket连接与HTTP连接" class="headerlink" title="6.1.2. Socket连接与HTTP连接"></a>6.1.2. Socket连接与HTTP连接</h3><p>由于通常情况下Socket连接就是TCP连接，因此Socket连接一旦建立，通信双方即可开始相互发送数据内容，直到双方连接断开。但在实际网络应用中，客户端到服务器之间的通信往往需要穿越多个中间节点，例如路由器、网关、防火墙等，大部分防火墙默认会关闭长时间处于非活跃状态的连接而导致 Socket 连接断连，因此需要通过轮询告诉网络，该连接处于活跃状态。</p>
+<p>而HTTP连接使用的是“请求—响应”的方式，不仅在请求时需要先建立连接，而且需要客户端向服务器发出请求后，服务器端才能回复数据。</p>
+<p>很多情况下，需要服务器端主动向客户端推送数据，保持客户端与服务器数据的实时与同步。此时若双方建立的是Socket连接，服务器就可以直接将数据传送给客户端；若双方建立的是HTTP连接，则服务器需要等到客户端发送一次请求后才能将数据传回给客户端，因此，客户端定时向服务器端发送连接请求，不仅可以保持在线，同时也是在“询问”服务器是否有新的数据，如果有就将数据传给客户端。</p>
+<p>有个比较形象的描述：HTTP是轿车，提供了封装或者显示数据的具体形式；Socket是发动机，提供了网络通信的能力。</p>
+<p>两个计算机之间的交流无非是两个端口之间的数据通信，具体的数据会以什么样的形式展现，是以不同的应用层协议来定义的：如HTTP，FTP…</p>
+<h2 id="6-2-Cookie与Session的作用与原理"><a href="#6-2-Cookie与Session的作用与原理" class="headerlink" title="6.2. Cookie与Session的作用与原理"></a>6.2. Cookie与Session的作用与原理</h2><h3 id="6-2-1-Cookie"><a href="#6-2-1-Cookie" class="headerlink" title="6.2.1. Cookie"></a>6.2.1. Cookie</h3><p>具体来说cookie机制采用的是在客户端保持状态的方案，而session机制采用的是在服务器端保持状态的方案。同时我们也看到，由于在服务器端保持状态的方案在客户端也需要保存一个标识，所以session机制可能需要借助于cookie机制来达到保存标识的目的，但实际上还有其他选择。  </p>
+<p>会话cookie和持久cookie的区别</p>
+<ul>
+<li><p>如果不设置过期时间，则表示这个cookie生命周期为浏览器会话期间，只要关闭浏览器窗口，cookie就消失了。这种生命期为浏览会话期的cookie被称为会话cookie。会话cookie一般不保存在硬盘上而是保存在内存里。  </p>
+</li>
+<li><p>如果设置了过期时间，浏览器就会把cookie保存到硬盘上，关闭后再次打开浏览器，这些cookie依然有效直到超过设定的过期时间。  </p>
+</li>
+<li><p>存储在硬盘上的cookie可以在不同的浏览器进程间共享，比如两个IE窗口。而对于保存在内存的cookie，不同的浏览器有不同的处理方式。</p>
+</li>
+</ul>
+<h3 id="6-2-2-Sessioin"><a href="#6-2-2-Sessioin" class="headerlink" title="6.2.2. Sessioin"></a>6.2.2. Sessioin</h3><p>session机制是一种服务器端的机制，服务器使用一种类似于散列表的结构（也可能就是使用散列表）来保存信息。当程序需要为某个客户端的请求创建一个session的时候，服务器首先检查这个客户端的请求里是否已包含了一个session标识 - 称为session id，如果已包含一个session id则说明以前已经为此客户端创建过session，服务器就按照session id把这个session检索出来使用（如果检索不到，可能会新建一个），如果客户端请求不包含session id，则为此客户端创建一个session并且生成一个与此session相关联的session id，session id的值应该是一个既不会重复，又不容易被找到规律以仿造的字符串，这个session id将被在本次响应中返回给客户端保存。</p>
+<p>保存这个session id的方式可以采用cookie，这样在交互过程中浏览器可以自动的按照规则把这个标识发挥给服务器。一般这个cookie的名字都是类似于SEEESIONID，而。比如weblogic对于web应用程序生成的cookie，JSESSIONID=ByOK3vjFD75aPnrF7C2HmdnV6QZcEbzWoWiBYEnLerjQ99zWpBng!-145788764，它的名字就是JSESSIONID。 由于cookie可以被人为的禁止，必须有其他机制以便在cookie被禁止时仍然能够把session id传递回服务器。经常被使用的一种技术叫做URL重写，就是把session id直接附加在URL路径的后面，附加方式也有两种，一种是作为URL路径的附加信息，表现形式为http://…../xxx;jsessionid=ByOK … 99zWpBng!-145788764。另一种是作为查询字符串附加在URL后面，表现形式为http://…../xxx?jsessionid=ByOK …99zWpBng!-145788764</p>
+<p>另一种技术叫做表单隐藏字段。就是服务器会自动修改表单，添加一个隐藏字段，以便在表单提交时能够把session id传递回服务器。这种技术现在已较少应用，笔者接触过的很古老的iPlanet6(SunONE应用服务器的前身)就使用了这种技术。 实际上这种技术可以简单的用对action应用URL重写来代替。这两种方式对于用户来说是没有区别的，只是服务器在解析的时候处理的方式不同，采用第一种方式也有利于把session id的信息和正常程序参数区分开来。 为了在整个交互过程中始终保持状态，就必须在每个客户端可能请求的路径后面都包含这个session id。</p>
+<p>在谈论session机制的时候，常常听到这样一种误解“只要关闭浏览器，session就消失了”。其实可以想象一下会员卡的例子，除非顾客主动对店家提出销卡，否则店家绝对不会轻易删除顾客的资料。对session来说也是一样的，除非程序通知服务器删除一个session，否则服务器会一直保留，程序一般都是在用户做log off的时候发个指令去删除session。然而浏览器从来不会主动在关闭之前通知服务器它将要关闭，因此服务器根本不会有机会知道浏览器已经关闭，之所以会有这种错觉，是大部分session机制都使用会话cookie来保存session id，而关闭浏览器后这个session id就消失了，再次连接服务器时也就无法找到原来的session。如果服务器设置的cookie被保存到硬盘上，或者使用某种手段改写浏览器发出的HTTP请求头，把原来的session id发送给服务器，则再次打开浏览器仍然能够找到原来的session。</p>
+<p>恰恰是由于关闭浏览器不会导致session被删除，迫使服务器为seesion设置了一个失效时间，当距离客户端上一次使用session的时间超过这个失效时间时，服务器就可以认为客户端已经停止了活动，才会把session删除以节省存储空间。</p>
+<h2 id="6-3-访问一个网页其整个过程是怎样的？"><a href="#6-3-访问一个网页其整个过程是怎样的？" class="headerlink" title="6.3. 访问一个网页其整个过程是怎样的？"></a>6.3. 访问一个网页其整个过程是怎样的？</h2><p>浏览器先尝试从Host文件中获取 <a target="_blank" rel="noopener" href="http://www.baidu.com/">http://www.baidu.com/</a> 对应的IP地址，如果能取到当然万事大吉大家都能嗨，如果不能，就使用DNS协议来获取IP咯。</p>
+<p>得到百度的IP，下一步是使用TCP协议，建立TCP连接。（在TCP协议中，建立TCP需要与百度服务器握手三次，你先告诉服务器你要给服务器发东西（SYN），服务器应答你并告诉你它也要给你发东西（SYN、ACK），然后你应答服务器（ACK），总共来回了3次，称为3次握手。）</p>
+<p>不过，建立TCP连接有个前提，为了将消息从你的PC上传到服务器上，需要用到IP协议、ARP协议和OSPF协议。你的PC和百度服务器之间一般会有许多路由器之类的东西，IP协议指定了出发地（你的PC）和目的地（服务器）；你的数据会经过一个又一个路由器，OSPF决定了会经过那些路由器（用一种叫路由算法的玩意，找出最佳路径）；从一个路由器怎么传给下一个路由器？这是ARP协议的JOB，ARP负责求下一个节点的地址（我们不止是要目的地，还要中间节点的地址）。IP协议使用的是IP地址，整个发送过程中只涉及出发地和目的地2个IP地址，而ARP协议使用的是MAC地址，整个发送过程中涉及到每一个节点的MAP地址</p>
+<p>发送HTTP请求报文给服务器，如果服务器禁止你访问它就给你回个”Forbidden”，如果它暂时挂掉了就给你回个“内部服务错误”，如果它正常才给你回个“OK“并将你要的数据传给你；如果你还需要其它的东西再去跟它要（它一般还会给你的-_-）。</p>
+<p>你收到了服务器的回复，是一坨HTML形式的文本。浏览器必须要能够理解文本的内容，并快速地渲染到屏幕上（浏览器一般用有限自动机来理解文本内容，渲染的话就各看本事了，之所以微软IE卡成狗而谷歌浏览器很6，就是它们的渲染速度不同…）</p>
+<h2 id="6-4-Ping的整个过程，ICMP报文是什么"><a href="#6-4-Ping的整个过程，ICMP报文是什么" class="headerlink" title="6.4. Ping的整个过程，ICMP报文是什么"></a>6.4. Ping的整个过程，ICMP报文是什么</h2><h3 id="6-4-1-ICMP报文"><a href="#6-4-1-ICMP报文" class="headerlink" title="6.4.1. ICMP报文"></a>6.4.1. ICMP报文</h3><ul>
+<li>在IP通信中，经常有数据包到达不了对方的情况。原因是，在通信途中的某处的一个路由器由于不能处理所有的数据包，就将数据包一个一个丢弃了。或者，虽然到达了对方，但是由于搞错了端口号，服务器软件可能不能接受它。这时，在错误发生的现场，为了联络而飞过来的信鸽就是ICMP 报文。在IP 网络上，由于数据包被丢弃等原因，为了控制将必要的信息传递给发信方。ICMP 协议是为了辅助IP 协议，交换各种各样的控制信息而被制造出来的。</li>
+</ul>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/icmp%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F.jpg" alt="icmp报文格式"></p>
+<ul>
+<li>差错通知和信息查询</li>
+</ul>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/%E5%B7%AE%E9%94%99%E9%80%9A%E7%9F%A5%E5%92%8C%E4%BF%A1%E6%81%AF%E6%9F%A5%E8%AF%A2.jpg" alt="差错通知和信息查询"></p>
+<h3 id="6-4-2-ping-命令"><a href="#6-4-2-ping-命令" class="headerlink" title="6.4.2. ping 命令"></a>6.4.2. ping 命令</h3><p>ping 命令用来在IP 层次上调查与指定机器是否连通，调查数据包往复需要多少时间。为了实现这个功能，ping 命令使用了两个ICMP 报文。</p>
+<p><img src="/images/githubpages/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/ping%E5%91%BD%E4%BB%A4.jpg" alt="ping命令"></p>
+<p>同一网段内（实际过程的发生不到1毫秒）</p>
+<ul>
+<li><p>首先，如果主机A，要去ping主机B，那么主机A，就要封装二层报文，他会先查自己的MAC地址表，如果没有B的MAC地址，就会向外发送一个ARP广播包</p>
+</li>
+<li><p>交换机会收到这个报文后，交换机有学习MAC地址的功能，所以他会检索自己有没有保存主机B的MAC地址，如果有，就返回给主机A，如果没有，就会向所有端口发送ARP广播，其它主机收到后，发现不是在找自己，就纷纷丢弃了该报文，不去理会。直到主机B收到了报文后，就立即响应，我的MAC地址是多少，同时学到主机A的MAC地址，并按同样的ARP报文格式返回给主机A。</p>
+</li>
+</ul>
+<p>跨网段的ping</p>
+<ul>
+<li><p>如果主机A要ping主机C，那么主机A发现主机C的IP和自己不是同一网段，他就去找网关转发，但是他也不知道网关的MAC地址情况下呢？他就会像之前那个步骤一样先发送一个ARP广播，学到网关的MAC地址，再发封装ICMP报文给网关路由器.。</p>
+</li>
+<li><p>当路由器收到主机A发过来的ICMP报文，发现自己的目的地址是其本身MAC地址，根据目的的IP2.1.1.1，查路由表，发现2.1.1.1/24的路由表项，得到一个出口指针，去掉原来的MAC头部，加上自己的MAC地址向主机C转发。(如果网关也没有主机C的MAC地址，还是要向前面一个步骤一样，ARP广播一下即可相互学到。路由器2端口能学到主机D的MAC地址，主机D也能学到路由器2端口的MAC地址。)</p>
+</li>
+<li><p>最后，在主机C已学到路由器2端口MAC地址，路由器2端口转发给路由器1端口，路由1端口学到主机A的MAC地址的情况下，他们就不需要再做ARP解析，就将ICMP的回显请求回复过来。</p>
+</li>
+</ul>
+<h2 id="6-5-SSID、ESSID、BSSID区别"><a href="#6-5-SSID、ESSID、BSSID区别" class="headerlink" title="6.5. SSID、ESSID、BSSID区别"></a>6.5. SSID、ESSID、BSSID区别</h2><h3 id="6-5-1-SSID"><a href="#6-5-1-SSID" class="headerlink" title="6.5.1. SSID"></a>6.5.1. SSID</h3><p>SSID是Service Set Identifier的缩写，意思是：服务集标识。SSID技术可以将一个无线局域网分为几个需要不同身份验证的子网络，每一个子网络都需要独立的身份验证，只有通过身份验证的用户才可以进入相应的子网络，防止未被授权的用户进入本网络。</p>
+<p>什么是SSID？SSID（Service Set Identifier）也可以写为ESSID，用来区分不同的网络，最多可以有32个字符，无线网卡设置了不同的SSID就可以进入不同网络，SSID通常由AP广播出来，通过XP自带的扫描功能可以相看当前区域内的SSID。出于安全考虑可以不广播SSID，此时用户就要手工设置SSID才能进入相应的网络。简单说，SSID就是一个局域网的名称，只有设置为名称相同SSID的值的电脑才能互相通信。</p>
+<p>禁用SSID广播通俗地说，SSID便是你给自己的无线网络所取的名字。需要注意的是，同一生产商推出的无线路由器或AP都使用了相同的SSID，一旦那些企图非法连接的攻击者利用通用的初始化字符串来连接无线网络，就极易建立起一条非法的连接，从而给我们的无线网络带来威胁。因此，建议最好能够将 SSID命名为一些较有个性的名字。</p>
+<p>无线路由器一般都会提供“允许SSID广播”功能。如果不想让自己的无线网络被别人通过SSID名称搜索到，那么最好“禁止SSID广播”。你的无线网络仍然可以使用，只是不会出现在其他人所搜索到的可用网络列表中。</p>
+<p>小提示:通过禁止SSID广播设置后，无线网络的效率会受到一定的影响，但以此换取安全性的提高，笔者认为还是值得的。</p>
+<p>测试结果:由于没有进行SSID广播，该无线网络被无线网卡忽略了，尤其是在使用Windows XP管理无线网络时，达到了“掩人耳目”的目的。</p>
+<h3 id="6-5-2-BSSID"><a href="#6-5-2-BSSID" class="headerlink" title="6.5.2. BSSID"></a>6.5.2. BSSID</h3><p>BSS:一种特殊的Ad-hoc LAN的应用，称为Basic Service Set (BSS)，一群计算机设定相同的BSS名称，即可自成一个group，而此BSS名称，即所谓BSSID。</p>
+<h3 id="6-5-3-ESSID"><a href="#6-5-3-ESSID" class="headerlink" title="6.5.3. ESSID"></a>6.5.3. ESSID</h3><p>ESSID（也称为服务区别号）将被放置在到每个无线访问接入点中，它是无线客户端与无线访问接入点联系所必不可少的。利用特定存取点的ESSID来做存取的控制，是AP的一种安全保护机制，它强制每一个客户端都必须要有跟存取点相同的ESSID值。但是，如果你在无线网卡上设定其ESSID为“ANY”时，它就可以自动的搜寻在讯号范围内所有的存取点，并试图连上它。</p>
+<p>对于任何一个可能存取UWA-11接入点的适配器来说，无线设备首先决定这个适配器是否属于该网络，或扩展服务集。无线设备判断适配器的32位字符的标识ESSID是否和它自己的相符。即使有另外一套UWA-11产品，也没有人能够加入到网络或学习到跳频序列和定时。ESSID编程写入无线设备,并且在一个安装者密码的控制下，而且只能通过和设备的直接连接才能修改。如果需要在一个网络上有分别的网段，比如财务部门和公司其他部门拥有不同的网段，那么你可以编写不同的SSID。如果你需要支持移动用户和扩大带宽而连接多个无线设备，那么它们的SSID必须设置成一致而跳频序列应该不一样。所有这些设置都受UWA-11安装者密码的控制。<br>由于有了32位字符的SSID和3位字符的跳频序列，你会发现对于那些试图经由局域网的无线网段进入局域网的人来讲，想推断出确切的SSID和跳频序列有多么困难。</p>
+<hr>
+<p>参考：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/3141d4e46240">Android网络请求心路历程</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Android/" rel="tag"># Android</a>
+              <a href="/iBlogWebsite/tags/%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" rel="tag"># 知识汇总</a>
+              <a href="/iBlogWebsite/tags/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/" rel="tag"># 网络通信</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/12/09/2016/2016-12-09-Monkey%E5%91%BD%E4%BB%A4%E7%A4%BA%E4%BE%8B/" rel="prev" title="Monkey命令示例">
+      <i class="fa fa-chevron-left"></i> Monkey命令示例
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2017/01/04/2017/2017-01-04-Android%E4%B9%8B%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%95%B4%E7%90%86/" rel="next" title="Android之性能优化整理">
+      Android之性能优化整理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%BD%91%E7%BB%9C%E5%90%84%E5%B1%82%E7%9A%84%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">1. 网络各层的结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-OSI%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1.1. OSI模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E5%B1%82%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">1.2. 层模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E5%90%84%E5%B1%82%E5%8D%8F%E8%AE%AE%E4%B8%8E%E4%BD%9C%E7%94%A8"><span class="nav-number">1.3.</span> <span class="nav-text">1.3. 各层协议与作用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-UDP%E5%8D%8F%E8%AE%AE"><span class="nav-number">2.</span> <span class="nav-text">2. UDP协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-TCP%E5%8D%8F%E8%AE%AE"><span class="nav-number">3.</span> <span class="nav-text">3. TCP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-TCP-UDP%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">3.1.</span> <span class="nav-text">3.1. TCP&#x2F;UDP的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-TCP%E6%8A%A5%E6%96%87%E7%BB%93%E6%9E%84"><span class="nav-number">3.2.</span> <span class="nav-text">3.2. TCP报文结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="nav-number">3.3.</span> <span class="nav-text">3.3. 三次握手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-number">3.4.</span> <span class="nav-text">3.4. 四次挥手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-number">3.5.</span> <span class="nav-text">3.5. 流量控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-6-%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="nav-number">3.6.</span> <span class="nav-text">3.6. 拥塞控制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Http%E5%8D%8F%E8%AE%AE"><span class="nav-number">4.</span> <span class="nav-text">4. Http协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E6%8A%A5%E6%96%87%E7%BB%93%E6%9E%84"><span class="nav-number">4.1.</span> <span class="nav-text">4.1. 报文结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E7%8A%B6%E6%80%81%E8%AF%B4%E6%98%8E"><span class="nav-number">4.2.</span> <span class="nav-text">4.2. 状态说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Request%E7%9A%84%E5%87%A0%E7%A7%8D%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.3.</span> <span class="nav-text">4.3. Request的几种类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-Http1-1%E5%92%8CHttp1-0%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">4.4.</span> <span class="nav-text">4.4. Http1.1和Http1.0的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-Http%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86%E9%95%BF%E8%BF%9E%E6%8E%A5"><span class="nav-number">4.5.</span> <span class="nav-text">4.5. Http怎么处理长连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-6-HTTP%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6"><span class="nav-number">4.6.</span> <span class="nav-text">4.6. HTTP缓存机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Socket"><span class="nav-number">5.</span> <span class="nav-text">5. Socket</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E5%A5%97%E6%8E%A5%E5%AD%97%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">5.1.</span> <span class="nav-text">5.1. 套接字的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-%E5%BB%BA%E7%AB%8Bsocket%E8%BF%9E%E6%8E%A5"><span class="nav-number">5.2.</span> <span class="nav-text">5.2. 建立socket连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-%E7%9F%AD%E7%BA%BF%E9%87%8D%E8%BF%9E%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.3.</span> <span class="nav-text">5.3. 短线重连怎么实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6%E5%8F%88%E6%98%AF%E6%80%8E%E6%A0%B7%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.4.</span> <span class="nav-text">5.4. 心跳机制又是怎样实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E6%89%A9%E5%B1%95"><span class="nav-number">6.</span> <span class="nav-text">6. 扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-Socket%E3%80%81TCP-IP%E4%B8%8EHTTP"><span class="nav-number">6.1.</span> <span class="nav-text">6.1. Socket、TCP&#x2F;IP与HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-1-Socket%E8%BF%9E%E6%8E%A5%E4%B8%8ETCP-IP%E8%BF%9E%E6%8E%A5"><span class="nav-number">6.1.1.</span> <span class="nav-text">6.1.1. Socket连接与TCP&#x2F;IP连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-2-Socket%E8%BF%9E%E6%8E%A5%E4%B8%8EHTTP%E8%BF%9E%E6%8E%A5"><span class="nav-number">6.1.2.</span> <span class="nav-text">6.1.2. Socket连接与HTTP连接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-Cookie%E4%B8%8ESession%E7%9A%84%E4%BD%9C%E7%94%A8%E4%B8%8E%E5%8E%9F%E7%90%86"><span class="nav-number">6.2.</span> <span class="nav-text">6.2. Cookie与Session的作用与原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-1-Cookie"><span class="nav-number">6.2.1.</span> <span class="nav-text">6.2.1. Cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-2-Sessioin"><span class="nav-number">6.2.2.</span> <span class="nav-text">6.2.2. Sessioin</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-%E8%AE%BF%E9%97%AE%E4%B8%80%E4%B8%AA%E7%BD%91%E9%A1%B5%E5%85%B6%E6%95%B4%E4%B8%AA%E8%BF%87%E7%A8%8B%E6%98%AF%E6%80%8E%E6%A0%B7%E7%9A%84%EF%BC%9F"><span class="nav-number">6.3.</span> <span class="nav-text">6.3. 访问一个网页其整个过程是怎样的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-4-Ping%E7%9A%84%E6%95%B4%E4%B8%AA%E8%BF%87%E7%A8%8B%EF%BC%8CICMP%E6%8A%A5%E6%96%87%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">6.4.</span> <span class="nav-text">6.4. Ping的整个过程，ICMP报文是什么</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-1-ICMP%E6%8A%A5%E6%96%87"><span class="nav-number">6.4.1.</span> <span class="nav-text">6.4.1. ICMP报文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-2-ping-%E5%91%BD%E4%BB%A4"><span class="nav-number">6.4.2.</span> <span class="nav-text">6.4.2. ping 命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-5-SSID%E3%80%81ESSID%E3%80%81BSSID%E5%8C%BA%E5%88%AB"><span class="nav-number">6.5.</span> <span class="nav-text">6.5. SSID、ESSID、BSSID区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-1-SSID"><span class="nav-number">6.5.1.</span> <span class="nav-text">6.5.1. SSID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-2-BSSID"><span class="nav-number">6.5.2.</span> <span class="nav-text">6.5.2. BSSID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5-3-ESSID"><span class="nav-number">6.5.3.</span> <span class="nav-text">6.5.3. ESSID</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

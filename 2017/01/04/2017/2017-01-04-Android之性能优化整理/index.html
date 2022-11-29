@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/iBlogWebsite/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/iBlogWebsite/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/iBlogWebsite/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/iBlogWebsite/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/iBlogWebsite/css/main.css">
+
+
+<link rel="stylesheet" href="/iBlogWebsite/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"leeeyou.github.io","root":"/iBlogWebsite/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="2017年第一篇日志：【性能优化】知识汇总新鲜出炉，包括UI和组件的优化、图片的优化、线程优化、内存优化以及响应速度及卡顿优化，知道内存泄漏和内存溢出的区别吗？知道图片放错drawable文件夹导致失真的问题吗？赶紧瞅一瞅吧。 1. UI和组件的优化1.1. Android中常见的度量单位1.1.1. inch它表示设备的物理屏幕的对角线长度，其中1 inch &#x3D; 2.54 cm。 1.1.2.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android之性能优化整理">
+<meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2017/01/04/2017/2017-01-04-Android%E4%B9%8B%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%95%B4%E7%90%86/index.html">
+<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:description" content="2017年第一篇日志：【性能优化】知识汇总新鲜出炉，包括UI和组件的优化、图片的优化、线程优化、内存优化以及响应速度及卡顿优化，知道内存泄漏和内存溢出的区别吗？知道图片放错drawable文件夹导致失真的问题吗？赶紧瞅一瞅吧。 1. UI和组件的优化1.1. Android中常见的度量单位1.1.1. inch它表示设备的物理屏幕的对角线长度，其中1 inch &#x3D; 2.54 cm。 1.1.2.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2017/images/githubpages/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/%E5%B1%8F%E5%B9%95%E5%AF%86%E5%BA%A6%E5%AF%B9%E7%85%A7%E8%A1%A8.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2017/images/githubpages/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/%E5%AF%86%E5%BA%A6%E6%97%A0%E5%85%B3%E5%83%8F%E7%B4%A0%E4%B8%8E%E5%B1%8F%E5%B9%95%E5%AF%86%E5%BA%A6%E5%AF%B9%E7%85%A7%E8%A1%A8.png">
+<meta property="og:image" content="https://leeeyou.github.io/iBlogWebsite/2017/images/githubpages/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/%E5%9B%BE%E7%89%87%E7%9A%84%E5%AE%BD%E4%B8%BA144%EF%BC%8C%E9%AB%98%E4%B8%BA180%E6%94%BE%E5%9C%A8%E4%B8%8D%E5%90%8Cdrawable%E4%B8%AD%E5%86%85%E5%AD%98%E7%9A%84%E6%B6%88%E8%80%97%E6%83%85%E5%86%B5.png">
+<meta property="article:published_time" content="2017-01-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-05T03:22:54.371Z">
+<meta property="article:author" content="Leeeyou">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="知识汇总">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://leeeyou.github.io/iBlogWebsite/2017/images/githubpages/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/%E5%B1%8F%E5%B9%95%E5%AF%86%E5%BA%A6%E5%AF%B9%E7%85%A7%E8%A1%A8.png">
+
+<link rel="canonical" href="https://leeeyou.github.io/iBlogWebsite/2017/01/04/2017/2017-01-04-Android%E4%B9%8B%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%95%B4%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Android之性能优化整理 | Leeeyou123</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/iBlogWebsite/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Leeeyou123</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/iBlogWebsite/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/iBlogWebsite/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/iBlogWebsite/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/iBlogWebsite/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2017/01/04/2017/2017-01-04-Android%E4%B9%8B%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%95%B4%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android之性能优化整理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-01-04 00:00:00" itemprop="dateCreated datePublished" datetime="2017-01-04T00:00:00+08:00">2017-01-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-05 11:22:54" itemprop="dateModified" datetime="2021-03-05T11:22:54+08:00">2021-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>2017年第一篇日志：【性能优化】知识汇总新鲜出炉，包括UI和组件的优化、图片的优化、线程优化、内存优化以及响应速度及卡顿优化，知道内存泄漏和内存溢出的区别吗？知道图片放错drawable文件夹导致失真的问题吗？赶紧瞅一瞅吧。</p>
+<h1 id="1-UI和组件的优化"><a href="#1-UI和组件的优化" class="headerlink" title="1. UI和组件的优化"></a>1. UI和组件的优化</h1><h2 id="1-1-Android中常见的度量单位"><a href="#1-1-Android中常见的度量单位" class="headerlink" title="1.1. Android中常见的度量单位"></a>1.1. Android中常见的度量单位</h2><h3 id="1-1-1-inch"><a href="#1-1-1-inch" class="headerlink" title="1.1.1. inch"></a>1.1.1. inch</h3><p>它表示设备的物理屏幕的对角线长度，其中1 inch = 2.54 cm。</p>
+<h3 id="1-1-2-px"><a href="#1-1-2-px" class="headerlink" title="1.1.2. px"></a>1.1.2. px</h3><p>表示屏幕的像素。如分辨率为1920*1080，它表示屏幕的X方向上有1080个像素，Y方向上有1920个像素。</p>
+<h3 id="1-1-3-dpi和densityDpi"><a href="#1-1-3-dpi和densityDpi" class="headerlink" title="1.1.3. dpi和densityDpi"></a>1.1.3. dpi和densityDpi</h3><p>dot per inch简称为dpi，它表示每英寸上的像素点个数，所以它也常为屏幕密度。</p>
+<p>在Android中使用DisplayMetrics中的densityDpi字段表示该值，并且不少文档中常用dpi来简化或者指代densityDpi。</p>
+<p>如下屏幕密度对照表</p>
+<p><img src="../../../../images/githubpages/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/%E5%B1%8F%E5%B9%95%E5%AF%86%E5%BA%A6%E5%AF%B9%E7%85%A7%E8%A1%A8.png" alt="屏幕密度对照表"></p>
+<p>问题：通过代码获取到的densityDpi和我们计算出来的屏幕实际密度值440.582不一样，为什么？</p>
+<ul>
+<li><p>在每部手机出厂时都会为该手机设置屏幕密度，若其屏幕的实际密度是440dpi那么就会将其屏幕密度设置为与之接近的480dpi；如果实际密度为325dpi那么就会将其屏幕密度设置为与之接近的20dpi。这也就是说常见的屏幕密度是与每个显示级别的最大值相对应的，比如：120、160、240、320、480、640等。</p>
+</li>
+<li><p>有的手机不一定会选择120、160、240、320、480、640中的值作为屏幕密度，而是选择实际的dpi作为屏幕密度。比如小米手机，它的某些机型的densityDpi就是个非常规的值。</p>
+</li>
+</ul>
+<h3 id="1-1-4-dp"><a href="#1-1-4-dp" class="headerlink" title="1.1.4. dp"></a>1.1.4. dp</h3><p>density-independent pixel简称为dip或者dp,它表示与密度无关的像素。如果使用dp作为长度单位，那么该长度在不同密度的屏幕中显示的比例将保持一致。</p>
+<p>如下密度无关像素与屏幕密度对照表</p>
+<p><img src="../../../../images/githubpages/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/%E5%AF%86%E5%BA%A6%E6%97%A0%E5%85%B3%E5%83%8F%E7%B4%A0%E4%B8%8E%E5%B1%8F%E5%B9%95%E5%AF%86%E5%BA%A6%E5%AF%B9%E7%85%A7%E8%A1%A8.png" alt="密度无关像素与屏幕密度对照表"></p>
+<h3 id="1-1-5-sp"><a href="#1-1-5-sp" class="headerlink" title="1.1.5. sp"></a>1.1.5. sp</h3><p>scale-independent pixel简称为sp，它类似于dp，但主要用于表示字体的大小。</p>
+<h2 id="1-2-屏幕适配的问题"><a href="#1-2-屏幕适配的问题" class="headerlink" title="1.2. 屏幕适配的问题"></a>1.2. 屏幕适配的问题</h2><ol>
+<li>采用主流的分辨率设计UI(xhdpi或者xxhdpi)</li>
+<li>放在正确的drawable文件夹中</li>
+<li>统一使用dp和sp作为尺寸单位，利用dimens.xml自动切换</li>
+<li>利用开源项目：SupportMultipleScreensUtil、com.android.support:percent:22.2.0<ul>
+<li>PercentRelativeLayout</li>
+<li>PercentFrameLayout</li>
+<li>支持宽高以及margin</li>
+</ul>
+</li>
+</ol>
+<h2 id="1-3-布局优化"><a href="#1-3-布局优化" class="headerlink" title="1.3. 布局优化"></a>1.3. 布局优化</h2><ol>
+<li>删除布局中无用的控件和层级</li>
+<li>有选择的使用性能较低的ViewGroup：优先LinearLayout,FrameLayout</li>
+<li>采用<include>标签、<merge>标签和ViewStub。其中ViewStub的意义在于按需加载所需的布局文件</li>
+</ol>
+<h2 id="1-4-绘制优化"><a href="#1-4-绘制优化" class="headerlink" title="1.4. 绘制优化"></a>1.4. 绘制优化</h2><ol>
+<li>View的onDraw方法要避免执行大量的操作</li>
+</ol>
+<ul>
+<li>onDraw中不要创建新的局部对象</li>
+<li>onDraw方法中不要做耗时的任务，也不能执行成千上万次的循环操作。</li>
+</ul>
+<ol>
+<li>尽管每次循环都很轻量级，但是大量的循环仍然十分抢占CPU的时间片，这样会造成View的绘制过程不流畅</li>
+</ol>
+<h2 id="1-5-ListView优化"><a href="#1-5-ListView优化" class="headerlink" title="1.5. ListView优化"></a>1.5. ListView优化</h2><h3 id="1-5-1-重用converView"><a href="#1-5-1-重用converView" class="headerlink" title="1.5.1. 重用converView"></a>1.5.1. 重用converView</h3><p>通过复用converview来减少不必要的view的创建，另外Infalte操作会把xml文件实例化成相应的View实例，属于IO操作，是耗时操作。</p>
+<h3 id="1-5-2-减少findViewById-操作"><a href="#1-5-2-减少findViewById-操作" class="headerlink" title="1.5.2. 减少findViewById()操作"></a>1.5.2. 减少findViewById()操作</h3><p>将xml文件中的元素封装成viewholder静态类，通过converview的setTag和getTag方法将view与相应的holder对象绑定在一起，避免不必要的findviewbyid操作。</p>
+<h3 id="1-5-3-避免在-getView-方法中做耗时的操作"><a href="#1-5-3-避免在-getView-方法中做耗时的操作" class="headerlink" title="1.5.3. 避免在 getView 方法中做耗时的操作"></a>1.5.3. 避免在 getView 方法中做耗时的操作</h3><p>例如加载本地 Image 需要载入内存以及解析 Bitmap ，都是比较耗时的操作，如果用户快速滑动listview，会因为getview逻辑过于复杂耗时而造成滑动卡顿现象。用户滑动时候不要加载图片，待滑动完成再加载，可以使用这个第三方库glide</p>
+<h3 id="1-5-4-Item的布局层次结构尽量简单，避免布局太深或者不必要的重绘"><a href="#1-5-4-Item的布局层次结构尽量简单，避免布局太深或者不必要的重绘" class="headerlink" title="1.5.4. Item的布局层次结构尽量简单，避免布局太深或者不必要的重绘"></a>1.5.4. Item的布局层次结构尽量简单，避免布局太深或者不必要的重绘</h3><h3 id="1-5-5-尽量能保证Adapter的hasStableIds-返回-true"><a href="#1-5-5-尽量能保证Adapter的hasStableIds-返回-true" class="headerlink" title="1.5.5. 尽量能保证Adapter的hasStableIds() 返回 true"></a>1.5.5. 尽量能保证Adapter的hasStableIds() 返回 true</h3><p>这样在 notifyDataSetChanged() 的时候，如果item内容并没有变化，ListView 将不会重新绘制这个 View，达到优化的目的。</p>
+<p>在一些场景中，ScollView内会包含多个ListView，可以把listview的高度写死固定下来。由于ScollView在快速滑动过程中需要大量计算每一个listview的高度，阻塞了UI线程导致卡顿现象出现，如果我们每一个item的高度都是均匀的，可以通过计算把listview的高度确定下来，避免卡顿现象出现。</p>
+<h3 id="1-5-6-使用-RecycleView-代替listview"><a href="#1-5-6-使用-RecycleView-代替listview" class="headerlink" title="1.5.6. 使用 RecycleView 代替listview"></a>1.5.6. 使用 RecycleView 代替listview</h3><p>每个item内容的变动，listview都需要去调用notifyDataSetChanged来更新全部的item，太浪费性能了。RecycleView可以实现当个item的局部刷新，并且引入了增加和删除的动态效果，在性能上和定制上都有很大的改善。</p>
+<h3 id="1-5-7-ListView中元素避免半透明"><a href="#1-5-7-ListView中元素避免半透明" class="headerlink" title="1.5.7. ListView中元素避免半透明"></a>1.5.7. ListView中元素避免半透明</h3><p>半透明绘制需要大量乘法计算，在滑动时不停重绘会造成大量的计算，在比较差的机子上会比较卡。在设计上能不半透明就不不半透明。实在要弄就把在滑动的时候把半透明设置成不透明，滑动完再重新设置成半透明。根据列表的滑动状态来控制任务的执行频率，比如当列表滑动时显然不太适合开启大量的异步任务。</p>
+<h3 id="1-5-8-尽量开启硬件加速"><a href="#1-5-8-尽量开启硬件加速" class="headerlink" title="1.5.8. 尽量开启硬件加速"></a>1.5.8. 尽量开启硬件加速</h3><p>硬件加速提升巨大，避免使用一些不支持的函数导致含泪关闭某个地方的硬件加速。当然这一条不只是对 ListView。</p>
+<h1 id="2-图片的优化"><a href="#2-图片的优化" class="headerlink" title="2. 图片的优化"></a>2. 图片的优化</h1><h2 id="2-1-Bitmap优化"><a href="#2-1-Bitmap优化" class="headerlink" title="2.1. Bitmap优化"></a>2.1. Bitmap优化</h2><ol>
+<li>及时的销毁</li>
+</ol>
+<ul>
+<li>recycle并不能确定立即就会将Bitmap释放掉，但是会给虚拟机一个暗示：“该图片可以释放了”,还有就是， 虽然recycle()从源码上看，调用它应该能立即释放Bitmap的主要内存，但是测试表明它并没能立即释放内存。故我们还需手动设置为NULL这样还能大大的加速Bitmap的主要内存的释放。</li>
+</ul>
+<ol>
+<li>设置一定的采样率</li>
+<li>使用缓存LruCache 以及本地缓存</li>
+</ol>
+<h2 id="2-2-drawable图片的加载导致失真的问题"><a href="#2-2-drawable图片的加载导致失真的问题" class="headerlink" title="2.2. drawable图片的加载导致失真的问题"></a>2.2. drawable图片的加载导致失真的问题</h2><p><img src="../../../../images/githubpages/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/%E5%9B%BE%E7%89%87%E7%9A%84%E5%AE%BD%E4%B8%BA144%EF%BC%8C%E9%AB%98%E4%B8%BA180%E6%94%BE%E5%9C%A8%E4%B8%8D%E5%90%8Cdrawable%E4%B8%AD%E5%86%85%E5%AD%98%E7%9A%84%E6%B6%88%E8%80%97%E6%83%85%E5%86%B5.png" alt="图片的宽为144，高为180放在不同drawable中内存的消耗情况"></p>
+<p>假设手机的dpi值为480，把有一张图片放到drawable-xxhdpi里在手机上显示出来是不失真的，非常合适；但是错放到了drawable-xhdpi(其TypedValue的value值为320)后再次显示时发现图片被放大了，而且放大了480/320=1.5倍。既然图片被放大了那么该图片所占的内存当然也变大了。</p>
+<p>这也就解释了我们有时遇到的类似困惑：为什么图片放在drawable-xxhdpi是正常的，但是放到drawable-mdpi后图片不仅仅放大失真而且所占内存也大幅增加了。</p>
+<p>图片放在drawable-nodpi中，那么该图片不会被缩放；也就是说该图片在不同分辨率的手机上都只显示原图的大小。例如，把刚才这张图片放到drawable-nodpi中，那么它在各个手机上显示时它的宽均为144，高均为180。</p>
+<h1 id="3-线程优化"><a href="#3-线程优化" class="headerlink" title="3. 线程优化"></a>3. 线程优化</h1><h2 id="3-1-采用线程池"><a href="#3-1-采用线程池" class="headerlink" title="3.1. 采用线程池"></a>3.1. 采用线程池</h2><p>线程池可以重用内部的线程，从而避免了线程的创建和销毁所带来的性能开销</p>
+<p>同时线程池还能有效的控制线程池的最大并发数，避免大量的线程因互相抢占系统资源而导致阻塞现象的发生</p>
+<h1 id="4-内存优化"><a href="#4-内存优化" class="headerlink" title="4. 内存优化"></a>4. 内存优化</h1><h2 id="4-1-内存管理"><a href="#4-1-内存管理" class="headerlink" title="4.1. 内存管理"></a>4.1. 内存管理</h2><h3 id="4-1-1-分配机制"><a href="#4-1-1-分配机制" class="headerlink" title="4.1.1. 分配机制"></a>4.1.1. 分配机制</h3><p>Android采用弹性的分配方式，也就是刚开始并不会一下分配很多内存给每个进程，而是给每一个进程分配一个“够用”的量。这个量是根据每一个设备实际的物理内存大小来决定的。</p>
+<p>当前的内存可能不够使用了，这时候Android又会为每个进程分配一些额外的内存大小。</p>
+<p>Android系统的宗旨是最大限度的让更多的进程存活在内存中，因为这样的话，下一次用户再启动应用，不需要重新创建进程，只需要恢复已有的进程就可以了，减少了应用的启动时间，提高了用户体验。</p>
+<h3 id="4-1-2-回收机制"><a href="#4-1-2-回收机制" class="headerlink" title="4.1.2. 回收机制"></a>4.1.2. 回收机制</h3><p>Android对内存的使用方式是“尽最大限度的使用”，这一点继承了Linux的优点。Android会在内存中保存尽可能多的数据，即使有些进程不再使用了，但是它的数据还被存储在内存中，所以Android现在不推荐显式的“退出”应用。</p>
+<p>当用户下次再启动应用的时候，只需要恢复当前进程就可以了，不需要重新创建进程，这样就可以减少应用的启动时间。</p>
+<p>只有当Android系统发现内存不够使用，需要回收内存的时候，Android系统就会需要杀死其他进程，来回收足够的内存。所以Android会有限清理那些已经不再使用的进程，以保证最小的副作用。</p>
+<p>Android杀死进程有两个参考条件</p>
+<ol>
+<li><p>进程优先级</p>
+<ul>
+<li>前台进程</li>
+<li>可见进程</li>
+<li>服务进程</li>
+<li>后台进程</li>
+<li>存放于一个LRU缓存列表中，先杀死处于列表尾部的进程</li>
+<li>空进程</li>
+<li>正常情况下，为了平衡系统整体性能，Android不保存这些进程</li>
+</ul>
+</li>
+<li><p>回收收益</p>
+<ul>
+<li>当Android系统开始杀死LRU缓存中的进程时，系统会判断每个进程杀死后带来的回收收益。因为Android总是倾向于杀死一个能回收更多内存的进程，从而可以杀死更少的进程，来获取更多的内存。杀死的进程越少，对用户体验的影响就越小。</li>
+</ul>
+</li>
+</ol>
+<h3 id="4-1-3-官方推荐的App内存使用方式"><a href="#4-1-3-官方推荐的App内存使用方式" class="headerlink" title="4.1.3. 官方推荐的App内存使用方式"></a>4.1.3. 官方推荐的App内存使用方式</h3><ol>
+<li>当Service完成任务后，尽量停止它</li>
+<li>在UI不可见的时候，释放掉一些只有UI使用的资源</li>
+<li>在系统内存紧张的时候，尽可能多的释放掉一些非重要资源</li>
+<li>检查自己最大可用的内存大小</li>
+<li>避免滥用Bitmap导致的内存浪费</li>
+<li>使用针对内存优化过的数据容器</li>
+<li>意识到内存的过度消耗<ul>
+<li>避免创建不必要的对象。</li>
+<li>在合适的生命周期中，合理的管理资源。</li>
+<li>在系统内存不足时，主动释放更多的资源。</li>
+</ul>
+</li>
+<li>抽象代码也会带来更多的内存消耗</li>
+<li>避免使用依赖注入的框架</li>
+<li>使用多进程<ul>
+<li>把消耗内存过大的模块，或者需要长期在后台运行的模块，移入到单独的进程中运行。Android会为每一个进程单独分配内存，所以理论上App就可以使用到更多的内存。但是多进程是一把双刃剑，错误的使用，会带来其他很多的问题。</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-2-内存泄漏"><a href="#4-2-内存泄漏" class="headerlink" title="4.2. 内存泄漏"></a>4.2. 内存泄漏</h2><p>指程序在申请内存后，无法释放已申请的内存空间，一次内存泄露危害可以忽略，但内存泄露堆积后果很严重，无论多少内存,迟早会被占光。</p>
+<h3 id="4-2-1-Activity引起内存泄漏"><a href="#4-2-1-Activity引起内存泄漏" class="headerlink" title="4.2.1. Activity引起内存泄漏"></a>4.2.1. Activity引起内存泄漏</h3><p>在 Java 中，非静态匿名内部类会持有其外部类的隐式引用，如果你没有考虑过这一点，那么存储该引用会导致 Activity 被保留，而不是被垃圾回收机制回收。</p>
+<p>如果你的内存泄漏发生在 Activity 中，那么你将损失大量的内存空间。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    *  示例向我们展示了在 Activity 的配置改变时（配置改变会导致其下的 Activity 实例被销</span></span><br><span class="line"><span class="comment">    *  毁）存活。此外，Activity 的 context 也是内存泄漏的一部分，因为每一个线程都被初始</span></span><br><span class="line"><span class="comment">    *  化为匿名内部类，使得每一个线程都持有一个外部 Activity 实例的隐式引用，使得</span></span><br><span class="line"><span class="comment">    *  Activity 不会被 Java 的垃圾回收机制回收。</span></span><br><span class="line"><span class="comment">    */</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">    exampleOne();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">exampleOne</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> Thread() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                SystemClock.sleep(<span class="number">1000</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>举例来说，在使用应用的时候，你执行了10次横屏/竖屏操作，每一次方向的改变都会执行下面的代码，每一次配置的改变都会使 Android 系统新建一个 Activity 并把改变前的 Activity 交给垃圾回收机制回收。但因为线程持有旧 Activity 的隐式引用，使该 Activity 没有被垃圾回收机制回收。这样的问题会导致每一个新建的 Activity 都将发生内存泄漏，与 Activity 相关的所有资源文件也不会被回收，其中的内存泄漏有多严重可想而知。（该线程类声明为私有的静态内部类就可以解决这个问题）</p>
+<h3 id="4-2-2-AsyncTask导致的内存泄漏"><a href="#4-2-2-AsyncTask导致的内存泄漏" class="headerlink" title="4.2.2. AsyncTask导致的内存泄漏"></a>4.2.2. AsyncTask导致的内存泄漏</h3><p>问题点</p>
+<ul>
+<li>持有外部context强引用</li>
+<li>持有外部UI组件强引用</li>
+</ul>
+<p>解决办法</p>
+<ul>
+<li>对context采用WeakRefrence,在使用之前判断是否为空。</li>
+<li>在Activity生命周期结束前，去cancel AsyncTask，因为Activity都要销毁了，这个时候再跑线程，绘UI显然已经没什么意义了。</li>
+</ul>
+<h3 id="4-2-3-线程引起内存泄漏"><a href="#4-2-3-线程引起内存泄漏" class="headerlink" title="4.2.3. 线程引起内存泄漏"></a>4.2.3. 线程引起内存泄漏</h3><p>在Java中线程是垃圾回收机制的根源，也就是说，在运行系统中DVM虚拟机总会使硬件持有所有运行状态的进程的引用，结果导致处于运行状态的线程将永远不会被回收。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 除了我们需要实现销毁逻辑以保证线程不会发生内存泄漏，其他代码和示例2相同。在退出当前</span></span><br><span class="line"><span class="comment">* Activity 前使用 onDestroy() 方法结束你的运行中线程是个不错的选择</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> MyThread mThread;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        exampleThree();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">exampleThree</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mThread = <span class="keyword">new</span> MyThread();</span><br><span class="line">        mThread.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 私有的静态内部类不会持有其外部类的引用，使得 Activity 实例不会在配置改变时发生内</span></span><br><span class="line"><span class="comment">    * 存泄漏</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> mRunning = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            mRunning = <span class="keyword">true</span>;</span><br><span class="line">            <span class="keyword">while</span> (mRunning) &#123;</span><br><span class="line">            SystemClock.sleep(<span class="number">1000</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            mRunning = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onDestroy();</span><br><span class="line">        mThread.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-4-结论"><a href="#4-2-4-结论" class="headerlink" title="4.2.4. 结论"></a>4.2.4. 结论</h3><ol>
+<li>避免写出内存泄露的代码<ul>
+<li>静态变量导致的内存泄露</li>
+<li>单例模式导致的内存泄露，单例模式的特点是其生命周期和Application保持一致，因此Activity对象无法被及时释放</li>
+<li>属性动画导致的内存泄露，在Activity的onDestroy中调用animator.cancel()来停止动画</li>
+<li>创建过多对象导致内存在短时间内快速被消耗掉了</li>
+</ul>
+</li>
+<li>通过TraceView、MAT等工具找出潜在的内存泄露</li>
+<li>适当的使用WeakReference</li>
+<li>尽可能使用静态内部类而不是非静态内部类</li>
+<li>不要总想着 Java 的垃圾回收机制会帮你解决所有内存回收问题<ul>
+<li>为你的后台线程实现销毁逻辑是你在使用线程时必须时刻铭记的细节，此外，你在设计销毁逻辑时要根据 Activity 的生命周期去设计，避免出现 Bug。</li>
+</ul>
+</li>
+<li>考虑你是否真的需要使用线程</li>
+</ol>
+<h2 id="4-3-内存溢出"><a href="#4-3-内存溢出" class="headerlink" title="4.3. 内存溢出"></a>4.3. 内存溢出</h2><p>指程序在申请内存时，没有足够的内存空间供其使用，出现OOM。memory leak会最终会导致out of memory。比如申请了一个integer，但给它存了long才能存下的数，那就是内存溢出</p>
+<p>解决办法</p>
+<ul>
+<li>减少每个对象占用的内存，比如压缩图片</li>
+<li>申请大内存</li>
+</ul>
+<h2 id="4-4-APK大小优化"><a href="#4-4-APK大小优化" class="headerlink" title="4.4. APK大小优化"></a>4.4. APK大小优化</h2><p>不必过度优化你的代码，要优化你的选择。</p>
+<h3 id="4-4-1-优点"><a href="#4-4-1-优点" class="headerlink" title="4.4.1. 优点"></a>4.4.1. 优点</h3><ol>
+<li>减少APP下载和安装的时间</li>
+<li>减少APP安装后占用的存储空间</li>
+<li>理论上更少的字节码也意味着需要执行的指令更少，需要加载进内存的代码页发生缺页的情况也更少，这些显然对于资源密集型使用场景例如应用冷启动起到很好的性能优化作用。</li>
+</ol>
+<h3 id="4-4-2-具体实施"><a href="#4-4-2-具体实施" class="headerlink" title="4.4.2. 具体实施"></a>4.4.2. 具体实施</h3><ol>
+<li>压缩图片<ul>
+<li>没有alpha通道的png图，可压缩成jpg减少体积；</li>
+<li>对于体积特别大(超过50k)的图片资源可以考虑有损压缩，jpg采用优图压缩，png尝试采用pngquant压缩，输出视觉判断是否可行；</li>
+<li>采用webp格式的图片</li>
+<li>采用 ImageOptim压缩图片</li>
+</ul>
+</li>
+<li>删除无用资源</li>
+</ol>
+<h1 id="5-响应速度及卡顿优化"><a href="#5-响应速度及卡顿优化" class="headerlink" title="5. 响应速度及卡顿优化"></a>5. 响应速度及卡顿优化</h1><p>大多数手机的屏幕刷新频率是60hz，如果在1000/60=16.67ms内没有办法把这一帧的任务执行完毕，就会发生丢帧的现象。丢帧越多，用户感受到的卡顿情况就越严重。</p>
+<p>渲染操作通常依赖于两个核心组件：CPU与GPU。CPU负责包括Measure，Layout，Record，Execute的计算操作，GPU负责Rasterization(栅格化)操作。CPU通常存在的问题的原因是存在非必需的视图组件，它不仅仅会带来重复的计算操作，而且还会占用额外的GPU资源。</p>
+<p>针对原理来作出解释如何优化</p>
+<ul>
+<li>减少视图的层级结构</li>
+<li>移除Window默认的Background</li>
+<li>移除XML布局文件中非必需的Background</li>
+<li>按需显示占位背景图片</li>
+<li>优化自定义view的ondraw方法</li>
+<li>listview滑动取消图片加载</li>
+<li>listview采用viewholder</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/iBlogWebsite/tags/Android/" rel="tag"># Android</a>
+              <a href="/iBlogWebsite/tags/%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/" rel="tag"># 知识汇总</a>
+              <a href="/iBlogWebsite/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag"># 性能优化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2016/12/28/2016/2016-12-28-Android%E4%B9%8B%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%95%B4%E7%90%86/" rel="prev" title="Android之网络通信整理">
+      <i class="fa fa-chevron-left"></i> Android之网络通信整理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/iBlogWebsite/2017/01/06/2017/2017-01-06-%E6%95%B0%E6%8D%AE%E6%91%98%E8%A6%81%E3%80%81%E7%AD%BE%E5%90%8D%E5%92%8C%E8%AF%81%E4%B9%A6%EF%BC%8C%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8B/" rel="next" title="数据摘要、签名和证书，了解一下">
+      数据摘要、签名和证书，了解一下 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-UI%E5%92%8C%E7%BB%84%E4%BB%B6%E7%9A%84%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">1. UI和组件的优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Android%E4%B8%AD%E5%B8%B8%E8%A7%81%E7%9A%84%E5%BA%A6%E9%87%8F%E5%8D%95%E4%BD%8D"><span class="nav-number">1.1.</span> <span class="nav-text">1.1. Android中常见的度量单位</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-inch"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1.1. inch</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-px"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.1.2. px</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-3-dpi%E5%92%8CdensityDpi"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.1.3. dpi和densityDpi</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-4-dp"><span class="nav-number">1.1.4.</span> <span class="nav-text">1.1.4. dp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-5-sp"><span class="nav-number">1.1.5.</span> <span class="nav-text">1.1.5. sp</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.2.</span> <span class="nav-text">1.2. 屏幕适配的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E5%B8%83%E5%B1%80%E4%BC%98%E5%8C%96"><span class="nav-number">1.3.</span> <span class="nav-text">1.3. 布局优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-%E7%BB%98%E5%88%B6%E4%BC%98%E5%8C%96"><span class="nav-number">1.4.</span> <span class="nav-text">1.4. 绘制优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-ListView%E4%BC%98%E5%8C%96"><span class="nav-number">1.5.</span> <span class="nav-text">1.5. ListView优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-1-%E9%87%8D%E7%94%A8converView"><span class="nav-number">1.5.1.</span> <span class="nav-text">1.5.1. 重用converView</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-2-%E5%87%8F%E5%B0%91findViewById-%E6%93%8D%E4%BD%9C"><span class="nav-number">1.5.2.</span> <span class="nav-text">1.5.2. 减少findViewById()操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-3-%E9%81%BF%E5%85%8D%E5%9C%A8-getView-%E6%96%B9%E6%B3%95%E4%B8%AD%E5%81%9A%E8%80%97%E6%97%B6%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">1.5.3.</span> <span class="nav-text">1.5.3. 避免在 getView 方法中做耗时的操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-4-Item%E7%9A%84%E5%B8%83%E5%B1%80%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84%E5%B0%BD%E9%87%8F%E7%AE%80%E5%8D%95%EF%BC%8C%E9%81%BF%E5%85%8D%E5%B8%83%E5%B1%80%E5%A4%AA%E6%B7%B1%E6%88%96%E8%80%85%E4%B8%8D%E5%BF%85%E8%A6%81%E7%9A%84%E9%87%8D%E7%BB%98"><span class="nav-number">1.5.4.</span> <span class="nav-text">1.5.4. Item的布局层次结构尽量简单，避免布局太深或者不必要的重绘</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-5-%E5%B0%BD%E9%87%8F%E8%83%BD%E4%BF%9D%E8%AF%81Adapter%E7%9A%84hasStableIds-%E8%BF%94%E5%9B%9E-true"><span class="nav-number">1.5.5.</span> <span class="nav-text">1.5.5. 尽量能保证Adapter的hasStableIds() 返回 true</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-6-%E4%BD%BF%E7%94%A8-RecycleView-%E4%BB%A3%E6%9B%BFlistview"><span class="nav-number">1.5.6.</span> <span class="nav-text">1.5.6. 使用 RecycleView 代替listview</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-7-ListView%E4%B8%AD%E5%85%83%E7%B4%A0%E9%81%BF%E5%85%8D%E5%8D%8A%E9%80%8F%E6%98%8E"><span class="nav-number">1.5.7.</span> <span class="nav-text">1.5.7. ListView中元素避免半透明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-8-%E5%B0%BD%E9%87%8F%E5%BC%80%E5%90%AF%E7%A1%AC%E4%BB%B6%E5%8A%A0%E9%80%9F"><span class="nav-number">1.5.8.</span> <span class="nav-text">1.5.8. 尽量开启硬件加速</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%9B%BE%E7%89%87%E7%9A%84%E4%BC%98%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">2. 图片的优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Bitmap%E4%BC%98%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">2.1. Bitmap优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-drawable%E5%9B%BE%E7%89%87%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%AF%BC%E8%87%B4%E5%A4%B1%E7%9C%9F%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">2.2. drawable图片的加载导致失真的问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E7%BA%BF%E7%A8%8B%E4%BC%98%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">3. 线程优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E9%87%87%E7%94%A8%E7%BA%BF%E7%A8%8B%E6%B1%A0"><span class="nav-number">3.1.</span> <span class="nav-text">3.1. 采用线程池</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">4. 内存优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">4.1. 内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-1-%E5%88%86%E9%85%8D%E6%9C%BA%E5%88%B6"><span class="nav-number">4.1.1.</span> <span class="nav-text">4.1.1. 分配机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-2-%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6"><span class="nav-number">4.1.2.</span> <span class="nav-text">4.1.2. 回收机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-3-%E5%AE%98%E6%96%B9%E6%8E%A8%E8%8D%90%E7%9A%84App%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.3.</span> <span class="nav-text">4.1.3. 官方推荐的App内存使用方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="nav-number">4.2.</span> <span class="nav-text">4.2. 内存泄漏</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-Activity%E5%BC%95%E8%B5%B7%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="nav-number">4.2.1.</span> <span class="nav-text">4.2.1. Activity引起内存泄漏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-AsyncTask%E5%AF%BC%E8%87%B4%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="nav-number">4.2.2.</span> <span class="nav-text">4.2.2. AsyncTask导致的内存泄漏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-%E7%BA%BF%E7%A8%8B%E5%BC%95%E8%B5%B7%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="nav-number">4.2.3.</span> <span class="nav-text">4.2.3. 线程引起内存泄漏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-4-%E7%BB%93%E8%AE%BA"><span class="nav-number">4.2.4.</span> <span class="nav-text">4.2.4. 结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA"><span class="nav-number">4.3.</span> <span class="nav-text">4.3. 内存溢出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-APK%E5%A4%A7%E5%B0%8F%E4%BC%98%E5%8C%96"><span class="nav-number">4.4.</span> <span class="nav-text">4.4. APK大小优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-1-%E4%BC%98%E7%82%B9"><span class="nav-number">4.4.1.</span> <span class="nav-text">4.4.1. 优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-2-%E5%85%B7%E4%BD%93%E5%AE%9E%E6%96%BD"><span class="nav-number">4.4.2.</span> <span class="nav-text">4.4.2. 具体实施</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%93%8D%E5%BA%94%E9%80%9F%E5%BA%A6%E5%8F%8A%E5%8D%A1%E9%A1%BF%E4%BC%98%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">5. 响应速度及卡顿优化</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+      src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/iBlogWebsite/archives/">
+        
+          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/iBlogWebsite/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/iBlogWebsite/tags/">
+          
+        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Leeeyou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Leeeyou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/iBlogWebsite/lib/anime.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.min.js"></script>
+  <script src="/iBlogWebsite/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/iBlogWebsite/js/utils.js"></script>
+
+<script src="/iBlogWebsite/js/motion.js"></script>
+
+
+<script src="/iBlogWebsite/js/schemes/muse.js"></script>
+
+
+<script src="/iBlogWebsite/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/iBlogWebsite/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
