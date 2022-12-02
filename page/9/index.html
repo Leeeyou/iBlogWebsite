@@ -183,6 +183,118 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2016/03/06/2016/2016-03-06-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%20%E7%AC%AC10%E7%AB%A0%20%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/iBlogWebsite/2016/03/06/2016/2016-03-06-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%20%E7%AC%AC10%E7%AB%A0%20%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/" class="post-title-link" itemprop="url">Android艺术探索 第10章 消息机制</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2016-03-06T00:00:00+08:00">2016-03-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="1-Andorid的消息机制概述"><a href="#1-Andorid的消息机制概述" class="headerlink" title="1. Andorid的消息机制概述"></a>1. Andorid的消息机制概述</h1><p>主要是指Handler的运行机制，Handler的运行需要底层的MessageQueue和Looper的支撑。</p>
+<p>Handler的主要作用是将一个任务切换到某个指定的线程中去执行，为了解决在子线程中无法切换到UI的矛盾，Andorid规定访问UI必须在主线程中执行，ViewRootImpl对UI线程操作做了验证。</p>
+<p>系统为什么不允许在子线程中访问UI呢？</p>
+<ul>
+<li>Andorid的UI控件不是线程安全的，如果在多线程中并发访问会导致其处于不可预期的状态。</li>
+<li>为什么不对UI控件加锁访问？因为加锁会使得访问UI的逻辑变复杂，同时锁机制会降低UI访问的效率。</li>
+<li>所以最简单高效的方法就是采用单线程模型来处理UI操作。</li>
+</ul>
+<h1 id="2-Android的消息机制分析"><a href="#2-Android的消息机制分析" class="headerlink" title="2. Android的消息机制分析"></a>2. Android的消息机制分析</h1><h2 id="2-1-ThreadLocal的工作原理"><a href="#2-1-ThreadLocal的工作原理" class="headerlink" title="2.1. ThreadLocal的工作原理"></a>2.1. ThreadLocal的工作原理</h2><p>参考：<a href="https://leeeyou.github.io/iBlogWebsite/2017/04/14/2017/2017-04-14-Java%E4%B9%8B%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/#15-ThreadLocal">Java之基础知识汇总#ThreadLocal</a></p>
+<h2 id="2-2-消息队列的工作原理"><a href="#2-2-消息队列的工作原理" class="headerlink" title="2.2. 消息队列的工作原理"></a>2.2. 消息队列的工作原理</h2><ol>
+<li>MessageQueue主要包括两个操作：插入和读取。</li>
+<li>读取操作本身会伴随着删除操作。</li>
+<li>插入和读取对应的方法分别为enqueueMessage和next。</li>
+<li>它的内部实现并不是队列，而是一个<strong>单链表的数据结构</strong>来维护消息列表，单链表在插入和删除上比较有优势。</li>
+</ol>
+<h2 id="2-3-Looper的工作原理"><a href="#2-3-Looper的工作原理" class="headerlink" title="2.3. Looper的工作原理"></a>2.3. Looper的工作原理</h2><ol>
+<li>Looper扮演着消息循环的角色。</li>
+<li>Looper除了prepare方法外，还提供了prepareMainLooper方法，这个方法主要是给主线程(即ActivityThread)创建Looper使用的。</li>
+<li>Looper提供了quit和quitSafely来退出一个Looper。</li>
+<li>Looper的loop方法是一个死循环，唯一跳出循环的方式是MessageQueue的next方法返回null。</li>
+<li>Looper处理消息的流程<ul>
+<li> msg.target.dispatchMessage(msg)</li>
+<li> 这里的dispatch是在Looper中执行的，这样就成功将代码逻辑切换到了指定线程</li>
+</ul>
+</li>
+</ol>
+<h2 id="2-4-Handler的工作原理"><a href="#2-4-Handler的工作原理" class="headerlink" title="2.4. Handler的工作原理"></a>2.4. Handler的工作原理</h2><ol>
+<li>Handler创建时会采用当前线程的Looper构建内部消息循环系统，如果当前没有Looper则报错。</li>
+<li>Handler通过post或send将msg投递到MessageQueue中。</li>
+<li>Looper轮询消息队列并且运行在创建Handler的线程中，这样一来Handler中的业务逻辑就被切换到创建Handler所在的线程中执行了。</li>
+</ol>
+<blockquote>
+<p>问题：有两个Handler同时被创建，Looper是怎样保证将Msg分发到正确的Handler中执行的？</p>
+</blockquote>
+<p>下图是Handler机制原理图，包括了线程的数量关系：</p>
+<p><img src="https://github.com/Leeeyou/Img/blob/master/Handler%E6%9C%BA%E5%88%B6/2019%E5%B9%B4%E5%A4%8D%E4%B9%A0%E5%BD%92%E6%A1%A3-Handler%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E5%9B%BE.png?raw=true" alt="2019年复习归档-Handler机制原理图"></p>
+<h1 id="3-主线程的消息循环"><a href="#3-主线程的消息循环" class="headerlink" title="3. 主线程的消息循环"></a>3. 主线程的消息循环</h1><p>Android的主线程就是ActivityThread，主线程的入口是main，在main方法中系统会通过Looper.prepareMainLooper()来创建主线程的Looper和一个MessageQueue，并通过Looper.loop()来开启主线程的消息循环。</p>
+<p>ActivityThread通过ApplicationThread和AMS进行进程间通信，AMS以进程间通信的方式完成ActivityThread的请求后回调ApplicationThread中的Binder方法，然后ApplicationThread会向H发送消息。</p>
+<p>H收到消息后会将ApplicationThread中的逻辑切换到ActivityThread中去执行，即切换到主线程中去执行。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2016/03/05/2016/2016-03-05-Android%E8%89%BA%E6%9C%AF%E6%8E%A2%E7%B4%A2%20%E7%AC%AC9%E7%AB%A0%20%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6%E7%9A%84%E5%B7%A5%E4%BD%9C%E8%BF%87%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -908,87 +1020,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2016/02/22/2016/2016-02-22-%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%E8%BF%9B%E9%98%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
-      <meta itemprop="name" content="Leeeyou">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leeeyou123">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/iBlogWebsite/2016/02/22/2016/2016-02-22-%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%E8%BF%9B%E9%98%B6/" class="post-title-link" itemprop="url">算法之排序进阶</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2016-02-22 00:00:00" itemprop="dateCreated datePublished" datetime="2016-02-22T00:00:00+08:00">2016-02-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>小范围排序、有序数组合并、重复值判断、三色排序问题、有序矩阵查找、最短子数组、相邻两数最大差值</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/iBlogWebsite/2016/02/22/2016/2016-02-22-%E7%AE%97%E6%B3%95%E4%B9%8B%E6%8E%92%E5%BA%8F%E8%BF%9B%E9%98%B6/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1060,7 +1091,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/iBlogWebsite/archives/">
         
-          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-count">110</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1073,7 +1104,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/iBlogWebsite/tags/">
           
-        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-count">74</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

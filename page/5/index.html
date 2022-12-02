@@ -183,6 +183,129 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2018/04/11/2018/2018-04-11-%E7%AE%97%E6%B3%95%E4%B9%8B%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
+      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leeeyou123">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/iBlogWebsite/2018/04/11/2018/2018-04-11-%E7%AE%97%E6%B3%95%E4%B9%8B%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">算法之复杂度分析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-11 00:00:00" itemprop="dateCreated datePublished" datetime="2018-04-11T00:00:00+08:00">2018-04-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/iBlogWebsite/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>对于算法的复杂度，一直是懵懂状态。索性这次将这段时间听到看到的一些内容整理出来，以求准确清晰的理解它。</p>
+<p>听吴军老师的音频，才了解在计算机发展初期，对于算法好坏的评判标准科学家也是不清楚的，1965年哈特马尼斯（Juris Hartmanis）和斯坦恩斯（Richard Stearns）提出了算法复杂度的概念（二人后来因此获得了图灵奖），计算机科学家们开始考虑一个公平的、一致的评判算法好坏的方法。不过，最早将复杂度严格量化衡量的是著名计算机科学家、算法分析之父 <strong>高德纳（Don Knuth）</strong> 。今天全世界计算机领域都以高德纳的思想为准。</p>
+<p>高德纳的思想主要包括这三个部分：</p>
+<ol>
+<li><p>在比较算法的快慢时，需要考虑数据量特别特别大，大到近乎无穷大时的情况。为什么要比大数的情况，而不比小数的情况呢？因为计算机的发明就是为了处理大量数据的，而且数据越处理越多。</p>
+</li>
+<li><p>决定算法快慢的因素虽然可能很多，但是所有的因素都可以被分为两类。第一类是不随数据量变化的因素，第二类是随着数量变化的。</p>
+<ul>
+<li><p>比如说，有一种大小排序的算法，它的运算次数是10倍的N平方，其中N是要排序的数字的数量。前面的那个10倍是个常数，和N的大小显然没有关系，10个数排序是如此，一亿个数排序时也是如此。而后面的N平方自然和N有关系了。高德纳讲，我们在研究算法时，不必考虑前面那个不变的常数，它是10倍，还是1倍，或者是100倍，只需要看后面那个变化的因素即可。</p>
+</li>
+<li><p>因为N这个数趋近于无穷大时，前面那个不变的常数的影响是微乎其微的，算法的速度主要由后面一个因素决定。比如，当N＝10的时候，N平方就是100；N＝100，N平方就是1万；N＝1万，N平方就是一亿……总之，N平方这个因子的变化非常快。更广泛地讲，任何随着N变化的因素，通常会造成量级的差异。量级就如同芝麻和西瓜的差异，西瓜和地球的差异。100个芝麻是无法和一个西瓜去对比的。</p>
+</li>
+</ul>
+</li>
+<li><p>如果两种算法 <strong>在量级上相当</strong> ，在计算机科学里，就认为它们是一样好的，也就是计算机科学家并不关心三五倍的差别，这就好比1粒芝麻和5粒芝麻都是芝麻量级的东西，大家就不要比了。只有当科学家们不关心几倍的差异后，才可能集中精力考虑量级的差异。也就是说，计算机科学家要尽可能地去捡西瓜。事实上在计算机科学领域，如果谁说自己把目前最好的算法速度提升了一倍，这种论文是无法发表的。</p>
+</li>
+</ol>
+<p>在了解了高德纳提出的思想后，对于算法复杂度关心的点以及评判标准才有了“最正宗”的理解。关心的是大量数据的问题，排除掉不变的因素，且只关注量级的差别，这其实是一个理想的环境，这种假设是非常有意义的。吴军老师说“回顾下科学发展的历史，那些能总结出理论的人要做的第一件事，就是多虑掉所有次要的因素，构建一个理想的环境（或者虚拟的环境），其目的是找到真正的主要矛盾，先把主要问题解决了再说。这些人的思维方式，比普通人是高出一大截的。我们都同意艺术上要有想象力，其实在科学上也是如此，抽象的想象力很重要。”</p>
+<p>在有了上面这段内容作为基础后，下面对时间复杂度和空间复杂度的讲述会简单很多。</p>
+<h1 id="1-时间复杂度"><a href="#1-时间复杂度" class="headerlink" title="1. 时间复杂度"></a>1. 时间复杂度</h1><p>一句话描述就是：<strong>一个算法在问题规模不断增大时对应的时间增长曲线。</strong><br>看完下面这两张图，你大概能理解问题规模的增大以及时间增长曲线之间的关系。</p>
+<p><img src="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2018/code/algorithm-time-complexity-summary.jpg?raw=true" alt="algorithm-time-complexity-summary"></p>
+<p><img src="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2018/code/algorithm-time-complexity-problem-size.jpg?raw=true" alt="algorithm-time-complexity-problem-size"></p>
+<p>从第二张图可以直观的反应出指数、立方和平方级别同线性对数级别的时间增长曲线不在一个量级上。所以你在写代码时，到底选择怎样的时间曲线增长量级是不是有底了？这里其实也印证了高德纳思想的第1和第3点，那第2点排除掉不变的因素怎么理解，这需要用到数学公式了。</p>
+<p>在数学上定义： 存在常数 c，使得当 N &gt;= c 时 T(N) &lt;= f(N)，表示为 T(n) = O(f(n)) 。<br>算法需要执行的运算次数 用输入大小n的函数表示，即 T(n)。如下图示：  </p>
+<p><img src="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2018/code/algorithm-time-complexity-math.jpg?raw=true" alt="algorithm-time-complexity-math"></p>
+<p>当 N &gt;= 2 的时候，f(n) = n^2 总是大于 T(n) = n + 2 的，于是我们说 f(n) 的增长速度是大于或者等于 T(n) 的，也说 f(n) 是 T(n) 的上界，可以表示为 T(n) = O(f(n))。</p>
+<p>因为f(n) 的增长速度是大于或者等于 T(n) 的，即T(n) = O(f(n))，所以我们可以用 f(n) 的增长速度来度量 T(n) 的增长速度，所以我们说这个算法的时间复杂度是 O(f(n))。其实就是我们通常所说的大O推倒法，几条重要的准则如下：<br>1.用常数1来取代运行时间中所有加法常数。<br>2.修改后的运行次数函数中，只保留最高阶项。<br>3.如果最高阶项存在且不是1，则去除与这个项相乘的常数。  </p>
+<p>至此，时间复杂度讲述完毕，没有复杂的描述，利用几张图和一个数学公式推倒就能理解好。另外还需要掌握时间复杂度分析的基本策略：<strong>从内向外分析，从最深层开始分析。如果遇到函数调用，要深入函数进行分析。</strong></p>
+<h1 id="2-空间复杂度"><a href="#2-空间复杂度" class="headerlink" title="2. 空间复杂度"></a>2. 空间复杂度</h1><p>空间复杂度讨论的是<strong>算法所需要的辅助存储空间</strong>，其中输入数据所占用的具体空间取决于问题本身, 与算法无关。记作：<br>S(n) = O(f(n))</p>
+<p>若算法执行时间时所需要的辅助空间相对于输入数据量而言是一个常数，则称这个算法为原地工作， 辅助空间为O(1)。</p>
+<p>将一维数组a中的n个数据逆序存放到原数组中, 下面是两种算法:</p>
+<p>[算法1]<br>S(n) = O(n)  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; n; i++)    b[i] = a[n - i - <span class="number">1</span>];   <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; n; i++)    a[i] = b[i]  </span><br></pre></td></tr></table></figure>
+
+<p>[算法2]<br>S(n) = O(1)  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i=<span class="number">0</span>; i &lt; n/<span class="number">2</span>; i++)&#123;    t = a[i];    a[i] = a[n - i - <span class="number">1</span>];    a[n - i - <span class="number">1</span>] = t;   &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>算法1的空间复杂度为O(n), 需要一个大小为n的辅助数组b</li>
+<li>算法2的空间复杂度为O(1), 仅需要一个变量t, 与问题规模n无关</li>
+</ul>
+<p>算法的空间复杂度与时间复杂度合称为算法的复杂度。面对不同的算法如何选择主要就从这两个方面去考虑，理想情况是一个算法的时间与空间复杂度都小，但这是很难做到的，面对不同的情况要具体问题具体分析: 是以时间换空间, 还是以空间换时间。</p>
+<p>参考：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/f4cca5ce055a">(数据结构）十分钟从零搞定时间复杂度（计算算法的时间复杂度)</a>  </li>
+<li><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/21387264">如何理解算法时间复杂度的表示法O(n²)、O(n)、O(1)、O(nlogn)等？</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/itachi85/article/details/54882603"> 算法（一）时间复杂度</a>  </li>
+<li><a target="_blank" rel="noopener" href="https://ghui.me/post/2016/08/algorithm_performance/">算法的性能分析</a>  </li>
+<li><a href="https://leeeyou.github.io/2016/02/01/blog-2016-02-01-%E7%AE%97%E6%B3%95%E4%B9%8B%E5%9F%BA%E6%9C%AC%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">算法之基本排序算法</a>  </li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2018/02/27/2018/2018-02-27-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8BAndroid%E7%BE%A4%E8%8B%B1%E4%BC%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1610,89 +1733,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://leeeyou.github.io/iBlogWebsite/2017/03/14/2017/2017-03-14-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E6%9C%88%E4%BA%AE%E4%B8%8E%E5%85%AD%E4%BE%BF%E5%A3%AB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
-      <meta itemprop="name" content="Leeeyou">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leeeyou123">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/iBlogWebsite/2017/03/14/2017/2017-03-14-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E6%9C%88%E4%BA%AE%E4%B8%8E%E5%85%AD%E4%BE%BF%E5%A3%AB/" class="post-title-link" itemprop="url">读书笔记之月亮与六便士</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2017-03-14 00:00:00" itemprop="dateCreated datePublished" datetime="2017-03-14T00:00:00+08:00">2017-03-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-29 20:35:27" itemprop="dateModified" datetime="2022-11-29T20:35:27+08:00">2022-11-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/iBlogWebsite/categories/opinion/" itemprop="url" rel="index"><span itemprop="name">opinion</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><img src="../../../../images/readingNotes/%E6%9C%88%E4%BA%AE%E4%B8%8E%E5%85%AD%E4%BE%BF%E5%A3%AB/%E6%9C%88%E4%BA%AE%E4%B8%8E%E5%85%AD%E4%BE%BF%E5%A3%AB.jpg" alt="月亮与六便士"></p>
-<p>忘了何时开始关注《月亮与六便士》，可能是看了某篇荐书类的文章，直到前两天看完，最大的感受便是惊叹作者叙述技法的娴熟，读来行云流水，自有一气呵成之快感。</p>
-<p>看到很多人喷译者的导读过长，甚是不能理解。难道不看导读的你真能看懂作者想要表达的现实主义吗？你能理解作者为何取名为《月亮与六便士》？你能明白小说的结尾说的那段话又有什么深意？</p>
-<p>起初读起前几章，似乎乏味到想弃读；转折点大概是在斯特里克兰突然离开伦敦之时，此时才明白他是故事的主人公，故而随着作者叙事技法的高超，越来越精彩，一切似乎都是水到渠成，至少在阅读量有限的我来说是这样的。</p>
-<p>作者对于人物的刻画相当擅长，如第十一章中：“我发现她的举手投足颇有自相矛盾之处，这让我感到大惑不解。她确实非常悲伤，但为了激起我的同情，她竟然会将悲伤表演给我看。她的痛哭流涕显然是经过精心准备的，因为她在身边放了大量的手帕，我特别佩服她的深谋远虑，但回想起来，这也许会让她的眼泪没有那么动人。我无法确定她希望她的丈夫回家，是因为还爱着她丈夫，还是因为害怕人言物议。我忍不住怀疑在她支离破碎的心里，除了夫妻反目造成的酸楚，是否也混杂着虚荣心受损带来的痛苦——这种动机在年轻的我看来是很可耻的。那时候我尚未明白人性是多么的悖谬，我还不知道真挚诚恳底下也许埋藏着矫揉造作，高风亮节背后可能隐匿着卑鄙无耻，也不知道无赖恶棍心里或许存留着良善之意。”本来还对她怀有同情心，在作者的一段心里刻画之后，让人对她的遭遇有种“丑人多作怪”的“愉悦”。</p>
-<p>书中金句不断，有的犀利，有的则直戳心底，如：“我们胃口都很好，我是因为年纪尚轻，他则是因为毫无良心。”这里表面上展现了斯特里克兰的“毫无良心”，其实看到最后时并非是这样。</p>
-<p>再比如：“有的人也号称他们不在意别人的看法，但他们多半是在自己骗自己。总的来说，这些人只有在相信没人能发现他们的逾规越矩之处时才敢为所欲为。他们顶多就是因为有了几个亲朋好友的赞许，愿意去做一些与大多数人的观点相悖的事情。假如你的离经叛道无非是你这类人的惯用伎俩，那么在世人面前表现得离经叛道并不是很困难的事情。这会让你对自己肃然起敬。你既可以标榜自己勇气过人，又无须冒什么实际的危险。但渴望得到认可也许是文明人最根深蒂固的本能。哪怕是最不守妇道的女人，若是舆论纷纷指责她伤风败俗，她也会赶紧跑去求某个德高望重的人士为她主持公道。如果有人告诉我他们完全无视别人的看法，那我是不相信的。这是一种无知的虚张声势。这些人的意思无非是，他们不怕由于一些微不足道的过失而受到指责，因为他们自信没有人能发现。”这时我们来思考一个问题：人们嘴上说不在意别人的看法，还是在窃喜那些逾规越矩的行为没有被发现而已?</p>
-<p>再比如：“现在我清楚地认识到，卑鄙和高尚、凶恶和仁慈、憎恨和爱恋是能够并存于同一颗人类的心灵的。”人是多么复杂的生物，在某种情况下是那么的卑鄙、丑陋；而在另一种处境下又是那么的善良和仁慈…</p>
-<p>最后我想聊聊书名《月亮与六便士》，一开始并不理解它的含义，通过导读了解作者的时代背景后才明白，毛姆开始的著作总是受到同行的排挤和批评，对热爱文学创作的他来说，经济的困窘或可一笑置之，心血长久无人问津却会造成致命的信心动摇。但优秀的作品总不会一直黯淡下去，转机很快在大西洋彼岸出现：其美国版在同年7月推出，首印五千本旋即售罄，到年底竟然卖掉将近十万册，进而让沉寂数年的《人性的枷锁》重见天日，并最终在文学史上奠定了无可撼动的经典地位。就我个人而言，了解到上面的背景之后，不经起了一身鸡皮疙瘩，或许是为了优秀作品的光芒再现，或许是同情毛姆的创作经历。《月亮与六便士》中的月亮象征着崇高的理想追求和美妙的精神境界，六便士这种小面额的硬币代表着世俗的鸡虫得失与蝇头小利。至于精神与物质之间如何取舍，作者并没有给出一个结论，其实也并不需要什么结论，这完全取决于你如何看待生活的意义，取决于你认为你应该对社会做出什么贡献，应该对自己有什么要求。</p>
-<p>所以小说的最后作者突兀的提到自己的叔叔亨利当牧师是说的一句话：魔鬼总是随心所欲的引用经文，他记得从前一个先令就能买到十三只上等的牡蛎。这里暂且不谈其引申的含义，就那句经文而言，最有可能的就是“你们不要论断人，免得你们被论断”，也就是不要轻易的judge别人，因为人和人的相互了解往往肤浅、局限而片面，能够做出公正的评判只有全知全能的上帝——假如这样的上帝果真存在的话。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1764,7 +1804,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/iBlogWebsite/archives/">
         
-          <span class="site-state-item-count">109</span>
+          <span class="site-state-item-count">110</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1777,7 +1817,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/iBlogWebsite/tags/">
           
-        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-count">74</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
