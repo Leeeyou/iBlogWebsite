@@ -9005,7 +9005,7 @@
   <entry>
     <title>个人博客hexo环境搭建</title>
     <url>/iBlogWebsite/2022/12/02/2022/2022-12-02-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2hexo%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
-    <content><![CDATA[<p><img src="https://github.com/Leeeyou/blog/blob/master/images/2022/wallpaper/2022-02-18-ekaterina-sazonova-CMhxw3lgZ7M-unsplash-modified.webp?raw=true" alt="2022-02-18-ekaterina-sazonova-CMhxw3lgZ7M-unsplash-modified.webp"></p>
+    <content><![CDATA[<p><img src="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2022/wallpaper/2022-12-02-wallpaper.png?raw=true" alt="2022-12-02-wallpaper"></p>
 <h1 id="1-hexo环境安装"><a href="#1-hexo环境安装" class="headerlink" title="1. hexo环境安装"></a>1. hexo环境安装</h1><ul>
 <li><p>在macOS上安装homebrew</p>
 <ul>
@@ -9044,7 +9044,7 @@
 <h2 id="2-1-首先要准备好SSH-key并配置到系统中"><a href="#2-1-首先要准备好SSH-key并配置到系统中" class="headerlink" title="2.1 首先要准备好SSH key并配置到系统中"></a>2.1 首先要准备好SSH key并配置到系统中</h2><p>macOS下查看ssh，首先进入到用户根目录，然后快捷键 <strong>Shift+Command+.</strong> 以显示隐藏文件，进入 <strong>.ssh</strong> 目录看是否存在key，若无，则新创建一个。<br><img src="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2022/code/2022-12-02-09-50-04.png?raw=true"></p>
 <p>新建SSH key以及将其添加到系统环境变量的细节，参考：<a href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent</a><br><img src="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2022/code/2022-12-02-09-51-54.png?raw=true"></p>
 <h2 id="2-2-接着将SSH-key配置到github上"><a href="#2-2-接着将SSH-key配置到github上" class="headerlink" title="2.2 接着将SSH key配置到github上"></a>2.2 接着将SSH key配置到github上</h2><p>登录github，进入到设置页，然后将SSH key配置到该账号下，详细步骤参考：<a href="https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account">https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account</a><br><img src="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2022/code/2022-12-02-09-54-54.png?raw=true"></p>
-<h2 id="2-3-最后才能通过-hexo-d-命令正确的发布到仓库"><a href="#2-3-最后才能通过-hexo-d-命令正确的发布到仓库" class="headerlink" title="2.3 最后才能通过 hexo d 命令正确的发布到仓库"></a>2.3 最后才能通过 <strong>hexo d</strong> 命令正确的发布到仓库</h2><p>将上面两步做好后，再使用 <strong>hexo d</strong> 命令发布，如有问题再根据具体报错情况解决。</p>
+<h2 id="2-3-最后才能通过-hexo-g-d-命令正确的发布到仓库"><a href="#2-3-最后才能通过-hexo-g-d-命令正确的发布到仓库" class="headerlink" title="2.3 最后才能通过 hexo g -d 命令正确的发布到仓库"></a>2.3 最后才能通过 <strong>hexo g -d</strong> 命令正确的发布到仓库</h2><p>将上面两步做好后，再使用 <strong>hexo g -d</strong> 命令发布，如有问题再根据具体报错情况解决。</p>
 <p>当然这条命令对应的发布仓库是在_config.yml中配置好的，如下图所示：<br><img src="https://github.com/Leeeyou/iBlogWebsite/blob/master/images/2022/code/2022-12-02-09-59-03.png?raw=true"></p>
 ]]></content>
       <categories>
