@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="手把手debug源码之RecyclerView">
 <meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2019/02/12/2019/2019-02-12-%E6%89%8B%E6%8A%8A%E6%89%8Bdebug%E6%BA%90%E7%A0%81%E4%B9%8BRecyclerView/index.html">
-<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:site_name" content="Liyou">
 <meta property="og:description" content="RecyclerView的使用场景非常丰富，而本篇的源码分析基于上下滑动一个列表的场景来观察它的复用-回收机制。本文基于27.0.0版本进行分析，如下是Demo展示：  RecyclerView继承自ViewGroup，属于系统级别的自定义控件，而它的源码长达12000多行，还不包括抽取出去的其他辅助类、管理类等，可想而知其复杂性，本文的分析思路主要是集中在RecyclerView的缓存机制上，通">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2019/code/source-code-analysis-recyclerview-demo.gif?raw=true">
@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2019/code/source-code-analysis-recyclerview-partial-refresh-example.gif?raw=true">
 <meta property="article:published_time" content="2019-02-11T16:00:00.000Z">
 <meta property="article:modified_time" content="2022-11-29T12:35:27.972Z">
-<meta property="article:author" content="Leeeyou">
+<meta property="article:author" content="Liyou">
 <meta property="article:tag" content="RecyclerView">
 <meta property="article:tag" content="源码解析">
 <meta name="twitter:card" content="summary">
@@ -51,7 +51,7 @@
   };
 </script>
 
-  <title>手把手debug源码之RecyclerView | Leeeyou123</title>
+  <title>手把手debug源码之RecyclerView | Liyou</title>
   
 
 
@@ -102,7 +102,7 @@
 
     <a href="/iBlogWebsite/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">Leeeyou123</h1>
+      <h1 class="site-title">Liyou</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -198,12 +198,12 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
-      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="name" content="Liyou">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leeeyou123">
+      <meta itemprop="name" content="Liyou">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -416,9 +416,9 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+    <img class="site-author-image" itemprop="image" alt="Liyou"
       src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
-  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <p class="site-author-name" itemprop="name">Liyou</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap motion-element">
@@ -475,7 +475,7 @@
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+  <span class="author" itemprop="copyrightHolder">Liyou</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>

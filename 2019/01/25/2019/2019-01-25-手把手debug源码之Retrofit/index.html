@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="手把手debug源码之Retrofit">
 <meta property="og:url" content="https://leeeyou.github.io/iBlogWebsite/2019/01/25/2019/2019-01-25-%E6%89%8B%E6%8A%8A%E6%89%8Bdebug%E6%BA%90%E7%A0%81%E4%B9%8BRetrofit/index.html">
-<meta property="og:site_name" content="Leeeyou123">
+<meta property="og:site_name" content="Liyou">
 <meta property="og:description" content="本文基于Retrofit2.5.0进行源码分析，以发送一个异步get网络请求为例，直到取回数据再渲染到页面的整个过程。Gif示例如下：  本文不过多解释Retrofit是怎样使用的，本文假设你已经使用过它并对其有一定程度的了解，那么你应该清楚它有几个可以自由配置的属性分别是：callFactory、converterFactories、callAdapterFactories、callbackEx">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2019/code/source-code-analysis-retrofit-demo.gif?raw=true">
@@ -40,7 +40,7 @@
 <meta property="og:image" content="https://github.com/Leeeyou/blog/blob/master/images/2019/code/source-code-analysis-retrofit-outline.png?raw=true">
 <meta property="article:published_time" content="2019-01-24T16:00:00.000Z">
 <meta property="article:modified_time" content="2022-11-29T12:35:27.972Z">
-<meta property="article:author" content="Leeeyou">
+<meta property="article:author" content="Liyou">
 <meta property="article:tag" content="源码解析">
 <meta property="article:tag" content="Retrofit">
 <meta name="twitter:card" content="summary">
@@ -59,7 +59,7 @@
   };
 </script>
 
-  <title>手把手debug源码之Retrofit | Leeeyou123</title>
+  <title>手把手debug源码之Retrofit | Liyou</title>
   
 
 
@@ -110,7 +110,7 @@
 
     <a href="/iBlogWebsite/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">Leeeyou123</h1>
+      <h1 class="site-title">Liyou</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -206,12 +206,12 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
-      <meta itemprop="name" content="Leeeyou">
+      <meta itemprop="name" content="Liyou">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leeeyou123">
+      <meta itemprop="name" content="Liyou">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -462,9 +462,9 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="Leeeyou"
+    <img class="site-author-image" itemprop="image" alt="Liyou"
       src="https://avatars1.githubusercontent.com/u/6735624?s=460&v=4">
-  <p class="site-author-name" itemprop="name">Leeeyou</p>
+  <p class="site-author-name" itemprop="name">Liyou</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap motion-element">
@@ -521,7 +521,7 @@
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">Leeeyou</span>
+  <span class="author" itemprop="copyrightHolder">Liyou</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
